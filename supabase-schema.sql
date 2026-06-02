@@ -17,9 +17,13 @@ create table if not exists public.members (
   created_at  timestamptz default now()
 );
 
--- Add status column if upgrading an existing DB
+-- Add columns if upgrading an existing DB
 alter table public.members add column if not exists
   status text not null check (status in ('active', 'suspended')) default 'active';
+alter table public.members add column if not exists
+  stripe_customer_id text unique;
+alter table public.members add column if not exists
+  current_period_end timestamptz;
 
 -- Row Level Security
 alter table public.members enable row level security;
@@ -175,24 +179,33 @@ create policy "Admins can manage check_ins"
 alter publication supabase_realtime add table public.check_ins;
 
 -- ============================================================
--- Payments table (admin revenue section)
+-- Payments table (admin revenue section + member billing history)
 -- ============================================================
 create table if not exists public.payments (
-  id            uuid primary key default uuid_generate_v4(),
-  member_id     uuid references public.members(id) on delete cascade not null,
-  member_name   text not null,
-  plan_type     text not null check (plan_type in ('basic', 'premium', 'elite')),
-  amount        numeric(10, 2) not null,
-  paid_at       timestamptz not null default now(),
-  status        text not null check (status in ('paid', 'failed', 'refunded')) default 'paid'
+  id                  uuid primary key default uuid_generate_v4(),
+  member_id           uuid references public.members(id) on delete cascade not null,
+  member_name         text not null,
+  plan_type           text not null check (plan_type in ('basic', 'premium', 'elite')),
+  amount              numeric(10, 2) not null,
+  paid_at             timestamptz not null default now(),
+  status              text not null check (status in ('paid', 'failed', 'refunded')) default 'paid',
+  payment_intent_id   text,
+  stripe_invoice_id   text,
+  invoice_url         text
 );
+
+-- Add Stripe columns to existing payments table
+alter table public.payments add column if not exists payment_intent_id text;
+alter table public.payments add column if not exists stripe_invoice_id  text;
+alter table public.payments add column if not exists invoice_url        text;
 
 create index if not exists payments_member_id_idx on public.payments(member_id);
 create index if not exists payments_paid_at_idx on public.payments(paid_at desc);
+create index if not exists payments_payment_intent_idx on public.payments(payment_intent_id);
 
 alter table public.payments enable row level security;
 
--- Only admins can read payments
+-- Admins can read all payments
 create policy "Admins can read payments"
   on public.payments for select
   using (
@@ -201,3 +214,16 @@ create policy "Admins can read payments"
       where user_id = auth.uid() and role = 'admin'
     )
   );
+
+-- Members can read their own payments
+create policy "Members can read own payments"
+  on public.payments for select
+  using (
+    member_id = (
+      select id from public.members where user_id = auth.uid()
+    )
+  );
+
+-- Service role (webhook) can insert payments — handled by admin client (bypasses RLS)
+-- If you want Postgres-level insert policy for the anon key, add:
+-- create policy "Service role insert" on public.payments for insert with check (true);

@@ -13,6 +13,8 @@ export interface Member {
   member_id: string
   role: 'member' | 'admin'
   status: MemberStatus
+  stripe_customer_id: string | null
+  current_period_end: string | null   // ISO date — when the current billing period ends
   created_at: string
 }
 
@@ -30,9 +32,12 @@ export interface Payment {
   member_id: string          // FK → members.id (uuid)
   member_name: string
   plan_type: PlanType
-  amount: number
+  amount: number             // in dollars (e.g. 29.00)
   paid_at: string
   status: PaymentStatus
+  payment_intent_id: string | null
+  stripe_invoice_id: string | null
+  invoice_url: string | null
 }
 
 export interface Plan {
@@ -62,4 +67,10 @@ export interface OverviewStats {
   revenueThisMonth: number
   checkInsToday: number
   planBreakdown: Record<PlanType, number>
+}
+
+export interface MonthlyRevenue {
+  month: string   // "Jan 2025"
+  revenue: number
+  count: number
 }

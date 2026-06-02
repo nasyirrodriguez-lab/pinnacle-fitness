@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { Plan } from '@/lib/types'
+import CheckoutButton from '@/components/pricing/CheckoutButton'
 
 const fallbackPlans: Plan[] = [
   {
@@ -53,7 +53,7 @@ const fallbackPlans: Plan[] = [
 export default async function PricingPage() {
   const supabase = await createClient()
   const { data } = await supabase.from('plans').select('*').order('price')
-  const plans: Plan[] = (data && data.length > 0) ? data : fallbackPlans
+  const plans: Plan[] = data && data.length > 0 ? data : fallbackPlans
 
   return (
     <div className="bg-zinc-950">
@@ -91,6 +91,7 @@ export default async function PricingPage() {
                   <span className="text-4xl font-black text-white">${plan.price}</span>
                   <span className="text-zinc-500 text-sm mb-1">/{plan.duration}</span>
                 </div>
+                <p className="mt-2 text-xs text-zinc-600">Billed monthly · Cancel anytime</p>
               </div>
 
               <ul className="space-y-3 mb-8 flex-1">
@@ -110,28 +111,33 @@ export default async function PricingPage() {
                 ))}
               </ul>
 
-              <Link
-                href="/auth"
-                className={`block w-full rounded-xl py-3 text-center text-sm font-bold transition-colors ${
-                  plan.highlight
-                    ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-lg shadow-orange-500/20'
-                    : 'border border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white'
-                }`}
-              >
-                Join Now — {plan.name}
-              </Link>
+              <CheckoutButton
+                planSlug={plan.slug}
+                planName={plan.name}
+                highlight={plan.highlight}
+              />
             </div>
           ))}
         </div>
 
+        {/* Stripe badge */}
+        <div className="mt-8 flex justify-center">
+          <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs text-zinc-500">
+            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+            Payments secured by Stripe · 256-bit SSL
+          </div>
+        </div>
+
         {/* FAQ strip */}
-        <div className="mt-16 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8">
+        <div className="mt-14 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8">
           <h3 className="text-lg font-bold text-white mb-6 text-center">Common Questions</h3>
           <div className="grid sm:grid-cols-2 gap-6">
             {[
               { q: 'Is there a joining fee?', a: 'No joining fees, ever. Pay only your monthly plan.' },
-              { q: 'Can I switch plans?', a: 'Yes — upgrade or downgrade at any time from your dashboard.' },
-              { q: 'Is there a contract?', a: 'No contracts. Cancel anytime with 30 days notice.' },
+              { q: 'Can I switch plans?', a: 'Yes — upgrade or downgrade at any time from your billing portal.' },
+              { q: 'Is there a contract?', a: 'No contracts. Cancel anytime directly from your dashboard.' },
               { q: 'Do you offer student discounts?', a: 'Contact us with your student ID for 20% off any plan.' },
             ].map(({ q, a }) => (
               <div key={q}>
