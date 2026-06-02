@@ -10,3 +10,22 @@ export interface Member {
   member_id: string
   role: 'member' | 'admin'
 }
+
+export interface Plan {
+  id: string
+  name: string
+  slug: PlanType
+  price: number
+  duration: string
+  features: string[]
+  highlight: boolean
+}
+
+export interface Coach {
+  id: string
+  name: string
+  photo_url: string
+  specialties: string[]
+  bio: string
+  order: number
+}

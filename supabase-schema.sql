@@ -51,3 +51,89 @@ create policy "Admins can update members"
 
 -- To make a user an admin, run:
 -- update public.members set role = 'admin' where email = 'your@email.com';
+
+-- ============================================================
+-- Plans table (marketing pricing page)
+-- ============================================================
+create table if not exists public.plans (
+  id          uuid primary key default uuid_generate_v4(),
+  name        text not null,
+  slug        text not null unique check (slug in ('basic', 'premium', 'elite')),
+  price       integer not null,
+  duration    text not null default 'month',
+  features    text[] not null default '{}',
+  highlight   boolean not null default false,
+  created_at  timestamptz default now()
+);
+
+alter table public.plans enable row level security;
+
+create policy "Anyone can read plans"
+  on public.plans for select
+  using (true);
+
+-- Seed plans
+insert into public.plans (name, slug, price, duration, features, highlight) values
+  ('Basic',   'basic',   29, 'month',
+   array['Full gym floor access','Cardio equipment','Locker rooms & showers','Free fitness assessment'],
+   false),
+  ('Premium', 'premium', 59, 'month',
+   array['Everything in Basic','Unlimited group classes','Sauna & steam room','2 guest passes/month','Nutrition workshop access'],
+   true),
+  ('Elite',   'elite',   99, 'month',
+   array['Everything in Premium','4 PT sessions/month','24/7 gym access','Dedicated locker','Quarterly body composition scan','Priority class booking'],
+   false)
+on conflict (slug) do nothing;
+
+-- ============================================================
+-- Coaches table (marketing coaches page)
+-- ============================================================
+create table if not exists public.coaches (
+  id           uuid primary key default uuid_generate_v4(),
+  name         text not null,
+  photo_url    text not null default '',
+  specialties  text[] not null default '{}',
+  bio          text not null default '',
+  "order"      integer not null default 0,
+  created_at   timestamptz default now()
+);
+
+alter table public.coaches enable row level security;
+
+create policy "Anyone can read coaches"
+  on public.coaches for select
+  using (true);
+
+-- Seed coaches
+insert into public.coaches (name, photo_url, specialties, bio, "order") values
+  ('Marcus Rivera',
+   'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus&backgroundColor=b6e3f4',
+   array['Strength & Conditioning','Powerlifting','Sports Performance'],
+   'Former collegiate athlete with 10+ years of coaching experience. Marcus specializes in building raw strength and athletic performance through evidence-based programming.',
+   1),
+  ('Priya Nair',
+   'https://api.dicebear.com/7.x/avataaars/svg?seed=Priya&backgroundColor=d1d4f9',
+   array['Yoga & Mobility','Functional Fitness','Rehabilitation'],
+   'Certified yoga instructor and functional movement specialist. Priya helps clients move pain-free, improve flexibility, and build a body that lasts.',
+   2),
+  ('Jake Thompson',
+   'https://api.dicebear.com/7.x/avataaars/svg?seed=Jake&backgroundColor=c0aede',
+   array['HIIT & Cardio','Weight Loss','Group Classes'],
+   'High-energy coach who thrives in group settings. Jake''s HIIT sessions are legendary — expect to work hard, laugh harder, and see real results.',
+   3),
+  ('Sofia Mendes',
+   'https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia&backgroundColor=ffdfbf',
+   array['Nutrition Coaching','Body Composition','Mindset & Wellness'],
+   'Registered dietitian turned personal trainer. Sofia takes a holistic approach to health — because what you eat and how you think matters as much as how you train.',
+   4),
+  ('Deon Williams',
+   'https://api.dicebear.com/7.x/avataaars/svg?seed=Deon&backgroundColor=ffd5dc',
+   array['Boxing & Combat Fitness','Cardio Conditioning','Confidence Building'],
+   'Ex-amateur boxer turned certified PT. Deon brings intensity and discipline from the ring to every training session — beginners and advanced athletes alike.',
+   5),
+  ('Lena Kowalski',
+   'https://api.dicebear.com/7.x/avataaars/svg?seed=Lena&backgroundColor=b6e3f4',
+   array['Pilates','Posture Correction','Pre/Postnatal Fitness'],
+   'Pilates-certified trainer with a background in dance. Lena''s clients love her attention to form, her calming coaching style, and the deep core burn she delivers.',
+   6)
+on conflict do nothing;

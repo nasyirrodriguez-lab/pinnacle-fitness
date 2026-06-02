@@ -1,13 +1,3 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-
-export default async function Home() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (user) {
-    redirect('/dashboard')
-  } else {
-    redirect('/auth')
-  }
-}
+// Root / is handled by app/(marketing)/page.tsx via the route group.
+// This file is intentionally a pass-through redirect for any edge cases.
+export { default } from './(marketing)/page'
