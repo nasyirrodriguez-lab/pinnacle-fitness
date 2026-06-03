@@ -12,7 +12,7 @@ export default function HomePage() {
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-black/55 pointer-events-none" />
         <div className="relative z-10 flex flex-col justify-end min-h-screen pb-16 px-6 sm:px-12 max-w-4xl">
           <p className="text-xs font-medium tracking-[0.15em] uppercase text-white/60 mb-4">
             Pinnacle GYM
@@ -107,7 +107,7 @@ export default function HomePage() {
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/60 pointer-events-none" />
         <div className="absolute bottom-0 left-0 p-12">
           <p className="text-xs font-medium tracking-[0.15em] uppercase text-white/60 mb-4">The Club</p>
           <h2 className="font-serif text-4xl sm:text-6xl text-white">
