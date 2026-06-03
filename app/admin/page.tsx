@@ -75,7 +75,7 @@ export default async function AdminPage() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-zinc-600 hidden sm:block">Signed in as {caller.name}</span>
+            <span className="text-xs text-zinc-600 hidden sm:block">Signed in as {user.email}</span>
             <a href="/dashboard" className="text-xs text-zinc-500 hover:text-zinc-300 transition">
               My Dashboard
             </a>
