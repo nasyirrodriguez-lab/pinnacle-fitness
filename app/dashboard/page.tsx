@@ -81,7 +81,7 @@ export default async function DashboardPage() {
         {/* Renew banner */}
         {member.current_period_end && (
           <div className="mb-8">
-            <RenewBanner periodEnd={member.current_period_end} planSlug={member.plan_type} />
+            <RenewBanner periodEnd={member.current_period_end} planSlug={member.plan_type ?? 'basic'} />
           </div>
         )}
 
@@ -98,11 +98,11 @@ export default async function DashboardPage() {
           <div className="lg:col-span-2 bg-white border border-[#E8E3D9] rounded-2xl p-6">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="font-serif text-xl text-[#1C1A17]">{member.name}</h2>
+                <h2 className="font-serif text-xl text-[#1C1A17]">{member.name ?? 'Member'}</h2>
                 <p className="text-[#6B6560] text-sm mt-0.5">{member.email}</p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${planColors[member.plan_type]}`}>
-                {member.plan_type}
+              <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${planColors[member.plan_type ?? ''] ?? 'bg-[#E8E3D9] text-[#6B6560]'}`}>
+                {member.plan_type ?? '—'}
               </span>
             </div>
 
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
             },
             {
               label: 'Plan Type',
-              value: member.plan_type.charAt(0).toUpperCase() + member.plan_type.slice(1),
+              value: member.plan_type ? member.plan_type.charAt(0).toUpperCase() + member.plan_type.slice(1) : '—',
               color: 'text-[#C85C2D]',
             },
             {
