@@ -13,7 +13,7 @@ export default function HomePage() {
         }}
       >
         <div className="absolute inset-0 bg-black/55 pointer-events-none" />
-        <div className="relative z-10 flex flex-col justify-end min-h-screen pb-16 px-6 sm:px-12 max-w-4xl">
+        <div className="relative flex flex-col justify-end min-h-screen pb-16 px-6 sm:px-12 max-w-4xl">
           <p className="text-xs font-medium tracking-[0.15em] uppercase text-white/60 mb-4">
             Pinnacle GYM
           </p>
