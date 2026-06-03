@@ -13,9 +13,9 @@ export default async function AdminPage() {
   // Use service-role client so RLS cannot block the role check
   const adminClient = createAdminClient()
   const { data: caller } = await adminClient
-    .from('members')
-    .select('role, name')
-    .eq('user_id', user.id)
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
     .single()
 
   if (!caller || caller.role !== 'admin') redirect('/dashboard')
