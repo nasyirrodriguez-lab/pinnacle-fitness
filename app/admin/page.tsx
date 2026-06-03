@@ -1,0 +1,92 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import LogoutButton from '@/components/LogoutButton'
+import AdminDashboard from '@/components/admin/AdminDashboard'
+import type { Member, CheckIn, Payment, OverviewStats } from '@/lib/types'
+
+export default async function AdminPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth')
+
+  const { data: caller } = await supabase
+    .from('members')
+    .select('role, name')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!caller || caller.role !== 'admin') redirect('/dashboard')
+
+  // --- Parallel data fetches ---
+  const today = new Date().toISOString().split('T')[0]
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+
+  const [membersRes, checkInsRes, paymentsRes] = await Promise.all([
+    supabase.from('members').select('*').order('created_at', { ascending: false }),
+    supabase
+      .from('check_ins')
+      .select('*')
+      .gte('checked_in_at', `${today}T00:00:00`)
+      .order('checked_in_at', { ascending: false }),
+    supabase
+      .from('payments')
+      .select('*')
+      .order('paid_at', { ascending: false }),
+  ])
+
+  const members = (membersRes.data ?? []) as Member[]
+  const checkIns = (checkInsRes.data ?? []) as CheckIn[]
+  const payments = (paymentsRes.data ?? []) as Payment[]
+
+  // Revenue this month (paid only)
+  const revenueThisMonth = payments
+    .filter((p) => p.status === 'paid' && p.paid_at >= monthStart)
+    .reduce((sum, p) => sum + p.amount, 0)
+
+  const planBreakdown = members.reduce(
+    (acc, m) => { acc[m.plan_type] = (acc[m.plan_type] ?? 0) + 1; return acc },
+    { basic: 0, premium: 0, elite: 0 }
+  )
+
+  const stats: OverviewStats = {
+    totalMembers: members.length,
+    activeMembers: members.filter((m) => (m.status ?? 'active') === 'active').length,
+    suspendedMembers: members.filter((m) => m.status === 'suspended').length,
+    revenueThisMonth,
+    checkInsToday: checkIns.length,
+    planBreakdown,
+  }
+
+  return (
+    <div className="min-h-screen bg-zinc-950">
+      {/* Top header */}
+      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
+        <div className="flex h-14 items-center justify-between px-5 md:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-500">
+              <span className="text-xs font-black text-white">P</span>
+            </div>
+            <span className="font-bold text-white tracking-tight hidden sm:block">Pinnacle Fitness</span>
+            <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-medium">
+              Admin
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-zinc-600 hidden sm:block">Signed in as {caller.name}</span>
+            <a href="/dashboard" className="text-xs text-zinc-500 hover:text-zinc-300 transition">
+              My Dashboard
+            </a>
+            <LogoutButton />
+          </div>
+        </div>
+      </header>
+
+      <AdminDashboard
+        stats={stats}
+        members={members}
+        checkIns={checkIns}
+        payments={payments}
+      />
+    </div>
+  )
+}

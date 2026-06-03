@@ -1,0 +1,72 @@
+import { createClient } from '@/lib/supabase/server'
+import type { Coach } from '@/lib/types'
+
+const fallbackCoaches: Coach[] = [
+  {
+    id: '1',
+    name: 'Nasyir Rodriguez',
+    photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nasyir',
+    specialties: ['Strength & Conditioning', 'Community Training'],
+    bio: 'Co-founder of Pinnacle Fitness and head coach. Nasyir built this gym around one belief — that the right environment changes everything. His coaching is direct, progressive, and built for real people with real goals.',
+    order: 1,
+  },
+  {
+    id: '2',
+    name: 'Matthew Sirjoo',
+    photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Matthew',
+    specialties: ['Programming', 'Performance Training'],
+    bio: 'Co-founder and head coach at Pinnacle. Matthew brings structure and precision to every program. His approach is methodical — he believes that consistency built on the right foundation is what produces lasting results.',
+    order: 2,
+  },
+  {
+    id: '3',
+    name: 'Stefan Kaufman',
+    photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Stefan',
+    specialties: ['Sport Specific Performance', 'Athletic Development'],
+    bio: 'Head coach for Strength & Performance at Pinnacle. Stefan works exclusively with competitive athletes, identifying the precise physical gaps that limit performance and building targeted programs to close them.',
+    order: 3,
+  },
+]
+
+export default async function CoachesPage() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('coaches').select('*').order('order')
+  const coaches: Coach[] = (data && data.length > 0) ? data : fallbackCoaches
+
+  return (
+    <div className="bg-[#F5F0E8] min-h-screen pt-20">
+      {/* Header */}
+      <div className="py-20 px-6 sm:px-12 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+        <div>
+          <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">The Team</p>
+          <h1 className="font-serif text-4xl sm:text-5xl text-[#1C1A17]">The people behind Pinnacle.</h1>
+        </div>
+        <div className="flex items-center md:pt-10">
+          <p className="text-[#6B6560] text-lg leading-relaxed">
+            Our coaches are more than trainers. Each brings a distinct expertise and a shared belief that the right environment changes everything.
+          </p>
+        </div>
+      </div>
+
+      {/* Coach cards */}
+      <div className="px-6 sm:px-12 pb-20 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {coaches.map((coach) => (
+            <div
+              key={coach.id}
+              className="bg-white rounded-2xl border border-[#E8E3D9] p-8"
+            >
+              <h2 className="font-serif text-xl text-[#1C1A17] mb-1">{coach.name}</h2>
+              <p className="text-[#C85C2D] text-sm font-medium">
+                {coach.specialties[0]}
+              </p>
+              {coach.bio && (
+                <p className="text-[#6B6560] text-sm mt-4 leading-relaxed">{coach.bio}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
