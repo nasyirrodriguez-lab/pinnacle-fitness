@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 const links = [
   { href: '/', label: 'Home' },
@@ -16,6 +16,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
 
   useEffect(() => {
     function onScroll() {
@@ -41,14 +42,17 @@ export default function Navbar() {
         <div className="mx-auto max-w-6xl px-6 sm:px-12">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-baseline gap-1.5">
+            <button
+              onClick={() => router.push('/')}
+              className="flex items-baseline gap-1.5 cursor-pointer"
+            >
               <span className={`font-serif italic text-2xl font-normal ${transparent ? 'text-white' : 'text-[#1C1A17]'}`}>
                 Pinnacle
               </span>
-              <span className={`text-xs tracking-[0.15em] uppercase font-medium ${transparent ? 'text-white/80' : 'text-[#6B6560]'}`}>
+              <span className={`text-xs tracking-[0.15em] uppercase font-medium ${transparent ? 'text-white/80' : 'text[#6B6560]'}`}>
                 GYM
               </span>
-            </Link>
+            </button>
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-7">
