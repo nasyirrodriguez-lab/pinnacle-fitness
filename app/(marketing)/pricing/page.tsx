@@ -5,50 +5,47 @@ import CheckoutButton from '@/components/pricing/CheckoutButton'
 const fallbackPlans: Plan[] = [
   {
     id: '1',
-    name: 'Basic',
+    name: '8 Sessions',
     slug: 'basic',
-    price: 29,
+    price: 700,
     duration: 'month',
     highlight: false,
-    features: [
-      'Full gym floor access',
-      'Cardio equipment',
-      'Locker rooms & showers',
-      'Free fitness assessment',
-    ],
+    features: [],
   },
   {
     id: '2',
-    name: 'Premium',
+    name: '12 Sessions',
     slug: 'premium',
-    price: 59,
+    price: 900,
     duration: 'month',
     highlight: true,
-    features: [
-      'Everything in Basic',
-      'Unlimited group classes',
-      'Sauna & steam room',
-      '2 guest passes/month',
-      'Nutrition workshop access',
-    ],
+    features: [],
   },
   {
     id: '3',
-    name: 'Elite',
+    name: 'Unlimited',
     slug: 'elite',
-    price: 99,
+    price: 1000,
     duration: 'month',
     highlight: false,
-    features: [
-      'Everything in Premium',
-      '4 PT sessions/month',
-      '24/7 gym access',
-      'Dedicated locker',
-      'Quarterly body composition scan',
-      'Priority class booking',
-    ],
+    features: [],
   },
 ]
+
+const planDetails: Record<string, { name: string; description: string }> = {
+  basic: {
+    name: '8 Sessions',
+    description: 'Eight coached sessions a month gives you the structure to stop guessing and start progressing. A coach who knows your name, knows your goals, and builds every session around getting you there. Perfect if you are balancing life and still want real results.',
+  },
+  premium: {
+    name: '12 Sessions',
+    description: 'Three sessions a week, coached, consistent, and progressive. This is the plan where most people see their biggest shift — not just physically, but mentally. You become part of the rhythm of Pinnacle. You stop waiting to feel motivated and just show up, because your coach and your community expect you to.',
+  },
+  elite: {
+    name: 'Unlimited',
+    description: 'For the fully committed. Unlimited coached sessions, open gym access, and priority scheduling mean your only job is to show up. This plan is for people who have decided that their health is non-negotiable — and want a gym that matches that energy every single day.',
+  },
+}
 
 export default async function PricingPage() {
   const supabase = await createClient()
@@ -56,98 +53,59 @@ export default async function PricingPage() {
   const plans: Plan[] = data && data.length > 0 ? data : fallbackPlans
 
   return (
-    <div className="bg-zinc-950">
+    <div className="bg-[#F5F0E8] min-h-screen pt-20">
       {/* Header */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-16 pb-12 text-center">
-        <h1 className="text-4xl sm:text-5xl font-black text-white">Simple, Honest Pricing</h1>
-        <p className="mt-4 text-zinc-400 max-w-lg mx-auto text-sm sm:text-base">
-          No hidden fees. No long-term lock-ins. Pick the plan that fits your goals and cancel any time.
+      <div className="text-center py-20 px-6">
+        <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Memberships</p>
+        <h1 className="font-serif text-5xl sm:text-7xl text-[#1C1A17]">Pick your plan.</h1>
+        <p className="text-[#6B6560] text-lg max-w-xl mx-auto mt-4 leading-relaxed">
+          Flexible plans built for every type of athlete — whether you train twice a week or every single day.
         </p>
-      </section>
+      </div>
 
-      {/* Plans grid */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative rounded-2xl border p-8 flex flex-col ${
-                plan.highlight
-                  ? 'border-orange-500 bg-zinc-900 shadow-2xl shadow-orange-500/10 scale-[1.02]'
-                  : 'border-zinc-800 bg-zinc-900'
-              }`}
-            >
-              {plan.highlight && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-orange-500 px-4 py-1 text-xs font-bold text-white shadow">
-                    Most Popular
-                  </span>
+      {/* Plan cards */}
+      <div className="max-w-5xl mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {plans.map((plan) => {
+          const details = planDetails[plan.slug]
+          const displayName = details?.name ?? plan.name
+          const description = details?.description ?? ''
+          if (plan.highlight) {
+            return (
+              <div key={plan.id} className="bg-[#1F3D2B] rounded-2xl p-8 relative">
+                <span className="absolute -top-3.5 left-6 bg-[#C85C2D] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">
+                  Most Popular
+                </span>
+                <h2 className="font-serif text-3xl text-white mb-4">{displayName}</h2>
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="font-serif text-3xl text-[#C85C2D]">${plan.price}</span>
+                  <span className="text-white/60 text-sm">/ month</span>
                 </div>
-              )}
-
-              <div className="mb-6">
-                <h2 className="text-lg font-bold text-white">{plan.name}</h2>
-                <div className="mt-3 flex items-end gap-1">
-                  <span className="text-4xl font-black text-white">${plan.price}</span>
-                  <span className="text-zinc-500 text-sm mb-1">/{plan.duration}</span>
-                </div>
-                <p className="mt-2 text-xs text-zinc-600">Billed monthly · Cancel anytime</p>
+                <p className="text-white/75 text-sm leading-relaxed my-8">{description}</p>
+                <CheckoutButton
+                  planSlug={plan.slug}
+                  planName={displayName}
+                  highlight={true}
+                />
               </div>
-
-              <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5 text-sm text-zinc-300">
-                    <svg
-                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-orange-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
+            )
+          }
+          return (
+            <div key={plan.id} className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
+              <h2 className="font-serif text-3xl text-[#1C1A17] mb-4">{displayName}</h2>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="font-serif text-3xl text-[#C85C2D]">${plan.price}</span>
+                <span className="text-[#6B6560] text-sm">/ month</span>
+              </div>
+              <p className="text-[#6B6560] text-sm leading-relaxed my-8">{description}</p>
               <CheckoutButton
                 planSlug={plan.slug}
-                planName={plan.name}
-                highlight={plan.highlight}
+                planName={displayName}
+                highlight={false}
               />
             </div>
-          ))}
-        </div>
-
-        {/* Stripe badge */}
-        <div className="mt-8 flex justify-center">
-          <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs text-zinc-500">
-            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            Payments secured by Stripe · 256-bit SSL
-          </div>
-        </div>
-
-        {/* FAQ strip */}
-        <div className="mt-14 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8">
-          <h3 className="text-lg font-bold text-white mb-6 text-center">Common Questions</h3>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {[
-              { q: 'Is there a joining fee?', a: 'No joining fees, ever. Pay only your monthly plan.' },
-              { q: 'Can I switch plans?', a: 'Yes — upgrade or downgrade at any time from your billing portal.' },
-              { q: 'Is there a contract?', a: 'No contracts. Cancel anytime directly from your dashboard.' },
-              { q: 'Do you offer student discounts?', a: 'Contact us with your student ID for 20% off any plan.' },
-            ].map(({ q, a }) => (
-              <div key={q}>
-                <p className="text-sm font-semibold text-white mb-1">{q}</p>
-                <p className="text-sm text-zinc-500">{a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          )
+        })}
+      </div>
     </div>
   )
 }

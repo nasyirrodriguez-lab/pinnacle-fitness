@@ -49,10 +49,10 @@ export default function CheckoutButton({ planSlug, planName, highlight }: Props)
       <button
         onClick={handleClick}
         disabled={loading}
-        className={`block w-full rounded-xl py-3 text-center text-sm font-bold transition-colors disabled:opacity-60 ${
+        className={`block w-full rounded-full py-3.5 text-center text-sm font-medium transition-colors disabled:opacity-60 ${
           highlight
-            ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-lg shadow-orange-500/20'
-            : 'border border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white'
+            ? 'bg-[#C85C2D] text-white hover:bg-[#b34f26]'
+            : 'bg-[#1F3D2B] text-white hover:bg-[#172e1f]'
         }`}
       >
         {loading ? (
@@ -64,10 +64,10 @@ export default function CheckoutButton({ planSlug, planName, highlight }: Props)
             Redirecting…
           </span>
         ) : (
-          `Join Now — ${planName}`
+          `Start with ${planName}`
         )}
       </button>
-      {error && <p className="mt-2 text-xs text-red-400 text-center">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-600 text-center">{error}</p>}
     </div>
   )
 }

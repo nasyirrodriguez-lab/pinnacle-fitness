@@ -7,15 +7,15 @@ import RenewBanner from '@/components/dashboard/RenewBanner'
 import type { Member } from '@/lib/types'
 
 const planColors: Record<string, string> = {
-  basic: 'bg-zinc-700 text-zinc-200',
-  premium: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
-  elite: 'bg-orange-500/20 text-orange-300 border border-orange-500/30',
+  basic: 'bg-[#E8E3D9] text-[#6B6560]',
+  premium: 'bg-[#1F3D2B]/10 text-[#1F3D2B] border border-[#1F3D2B]/20',
+  elite: 'bg-[#C85C2D]/10 text-[#C85C2D] border border-[#C85C2D]/20',
 }
 
 const planPerks: Record<string, string[]> = {
-  basic: ['Gym floor access', 'Locker rooms', 'Cardio equipment'],
-  premium: ['All Basic perks', 'Group classes', 'Sauna & steam room', '2 guest passes/month'],
-  elite: ['All Premium perks', '4 PT sessions/month', '24/7 access', 'Nutrition coaching'],
+  basic: ['Eight coached sessions per month', 'Locker rooms', 'Full gym access'],
+  premium: ['Twelve coached sessions per month', 'All basic perks', 'Priority scheduling'],
+  elite: ['Unlimited coached sessions', 'Open gym access', 'Priority scheduling', '24/7 access'],
 }
 
 export default async function DashboardPage() {
@@ -31,9 +31,9 @@ export default async function DashboardPage() {
 
   if (!member) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F5F0E8] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-zinc-400">Member profile not found.</p>
+          <p className="text-[#6B6560]">Member profile not found.</p>
           <LogoutButton />
         </div>
       </div>
@@ -49,27 +49,25 @@ export default async function DashboardPage() {
     : 'No active subscription'
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[#F5F0E8]">
       {/* Header */}
-      <header className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-[#E8E3D9] bg-[#F5F0E8]/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-orange-500 rounded-md flex items-center justify-center">
-              <span className="text-white font-black text-xs">P</span>
-            </div>
-            <span className="text-white font-bold tracking-tight">Pinnacle Fitness</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-serif italic text-xl text-[#1C1A17]">Pinnacle</span>
+            <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard/payments"
-              className="text-xs text-zinc-500 hover:text-zinc-300 transition"
+              className="text-xs text-[#6B6560] hover:text-[#1C1A17] transition"
             >
               Billing
             </Link>
             {member.role === 'admin' && (
               <Link
                 href="/admin"
-                className="text-xs text-orange-400 hover:text-orange-300 font-medium border border-orange-500/30 px-3 py-1.5 rounded-lg hover:bg-orange-500/10 transition"
+                className="text-xs text-[#C85C2D] hover:text-[#b34f26] font-medium border border-[#C85C2D]/30 px-3 py-1.5 rounded-lg hover:bg-[#C85C2D]/5 transition"
               >
                 Admin
               </Link>
@@ -89,44 +87,44 @@ export default async function DashboardPage() {
 
         {/* Welcome */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">
-            Welcome back, <span className="text-orange-400">{member.name.split(' ')[0]}</span>
+          <h1 className="font-serif text-3xl text-[#1C1A17]">
+            Welcome back, <span className="text-[#C85C2D]">{member.name.split(' ')[0]}</span>
           </h1>
-          <p className="text-zinc-500 mt-1">Here's your membership overview</p>
+          <p className="text-[#6B6560] mt-1">Here&apos;s your membership overview</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Member Card */}
-          <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <div className="lg:col-span-2 bg-white border border-[#E8E3D9] rounded-2xl p-6">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-white">{member.name}</h2>
-                <p className="text-zinc-500 text-sm mt-0.5">{member.email}</p>
+                <h2 className="font-serif text-xl text-[#1C1A17]">{member.name}</h2>
+                <p className="text-[#6B6560] text-sm mt-0.5">{member.email}</p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${planColors[member.plan_type]}`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${planColors[member.plan_type]}`}>
                 {member.plan_type}
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-zinc-800 rounded-xl p-4">
-                <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Member Since</p>
-                <p className="text-white font-semibold text-sm">{joinDate}</p>
+              <div className="bg-[#F5F0E8] rounded-xl p-4">
+                <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-1">Member Since</p>
+                <p className="text-[#1C1A17] font-medium text-sm">{joinDate}</p>
               </div>
-              <div className="bg-zinc-800 rounded-xl p-4">
-                <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Member ID</p>
-                <p className="text-orange-400 font-mono font-semibold text-sm">{member.member_id}</p>
+              <div className="bg-[#F5F0E8] rounded-xl p-4">
+                <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-1">Member ID</p>
+                <p className="text-[#C85C2D] font-mono font-semibold text-sm">{member.member_id}</p>
               </div>
             </div>
 
             {/* Plan perks */}
             <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wide mb-3">Your Plan Includes</p>
+              <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-3">Your Plan Includes</p>
               <ul className="space-y-2">
                 {planPerks[member.plan_type].map((perk) => (
-                  <li key={perk} className="flex items-center gap-2 text-sm text-zinc-300">
-                    <span className="w-4 h-4 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
-                      <svg className="w-2.5 h-2.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <li key={perk} className="flex items-center gap-2 text-sm text-[#1C1A17]">
+                    <span className="w-4 h-4 rounded-full bg-[#C85C2D]/10 border border-[#C85C2D]/30 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-2.5 h-2.5 text-[#C85C2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     </span>
@@ -138,10 +136,10 @@ export default async function DashboardPage() {
           </div>
 
           {/* QR Code Card */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center">
-            <p className="text-xs text-zinc-500 uppercase tracking-wide mb-4">Gym Check-In QR</p>
+          <div className="bg-white border border-[#E8E3D9] rounded-2xl p-6 flex flex-col items-center justify-center">
+            <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-4">Gym Check-In QR</p>
             <MemberQRCode memberId={member.member_id} />
-            <p className="text-xs text-zinc-600 mt-4 text-center">
+            <p className="text-xs text-[#6B6560] mt-4 text-center">
               Show this code at the front desk to check in
             </p>
           </div>
@@ -153,22 +151,22 @@ export default async function DashboardPage() {
             {
               label: 'Plan Status',
               value: member.status === 'active' ? 'Active' : 'Suspended',
-              color: member.status === 'active' ? 'text-green-400' : 'text-red-400',
+              color: member.status === 'active' ? 'text-[#1F3D2B]' : 'text-red-600',
             },
             {
               label: 'Plan Type',
               value: member.plan_type.charAt(0).toUpperCase() + member.plan_type.slice(1),
-              color: 'text-orange-400',
+              color: 'text-[#C85C2D]',
             },
             {
               label: 'Next Billing',
               value: periodEndLabel,
-              color: 'text-zinc-300',
+              color: 'text-[#1C1A17]',
             },
           ].map(({ label, value, color }) => (
-            <div key={label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
-              <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{label}</p>
-              <p className={`font-semibold text-xs sm:text-sm ${color}`}>{value}</p>
+            <div key={label} className="bg-white border border-[#E8E3D9] rounded-xl p-4 text-center">
+              <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-1">{label}</p>
+              <p className={`font-medium text-xs sm:text-sm ${color}`}>{value}</p>
             </div>
           ))}
         </div>
@@ -177,7 +175,7 @@ export default async function DashboardPage() {
         <div className="mt-4 flex gap-3 flex-wrap">
           <Link
             href="/dashboard/payments"
-            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition border border-zinc-800 rounded-lg px-3 py-2 hover:bg-zinc-900"
+            className="flex items-center gap-1.5 text-xs text-[#6B6560] hover:text-[#1C1A17] transition border border-[#E8E3D9] rounded-lg px-3 py-2 hover:bg-white"
           >
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -186,7 +184,7 @@ export default async function DashboardPage() {
           </Link>
           <Link
             href="/pricing"
-            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition border border-zinc-800 rounded-lg px-3 py-2 hover:bg-zinc-900"
+            className="flex items-center gap-1.5 text-xs text-[#6B6560] hover:text-[#1C1A17] transition border border-[#E8E3D9] rounded-lg px-3 py-2 hover:bg-white"
           >
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

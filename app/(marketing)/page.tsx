@@ -1,151 +1,143 @@
 import Link from 'next/link'
 
-const features = [
-  {
-    icon: '🏋️',
-    title: 'State-of-the-Art Equipment',
-    desc: 'Over 200 machines and free-weight stations, maintained and updated yearly.',
-  },
-  {
-    icon: '🧑‍🏫',
-    title: 'Expert Coaches',
-    desc: 'Certified personal trainers with specialties in strength, cardio, nutrition, and more.',
-  },
-  {
-    icon: '🧖',
-    title: 'Recovery Suite',
-    desc: 'Sauna, steam room, ice bath, and massage chairs — because recovery is training too.',
-  },
-  {
-    icon: '📱',
-    title: 'Member App & QR Check-In',
-    desc: 'Digital membership card with QR code. No fob needed — your phone is your key.',
-  },
-  {
-    icon: '🥗',
-    title: 'Nutrition Bar',
-    desc: 'Post-workout smoothies, protein shakes, and healthy snacks on-site.',
-  },
-  {
-    icon: '⏰',
-    title: '24/7 Elite Access',
-    desc: 'Elite members get round-the-clock access — train on your schedule, not ours.',
-  },
-]
-
-const stats = [
-  { value: '12K+', label: 'Active Members' },
-  { value: '40+', label: 'Group Classes/Week' },
-  { value: '25', label: 'Expert Coaches' },
-  { value: '5★', label: 'Average Rating' },
-]
-
 export default function HomePage() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-zinc-950">
-        {/* Background glow */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-orange-500/10 blur-3xl" />
-        </div>
-
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-24 md:py-36 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 text-xs font-medium text-orange-400 mb-8">
-            <span className="h-1.5 w-1.5 rounded-full bg-orange-400 animate-pulse" />
-            Now accepting new members
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.05]">
-            Train Like You
-            <br />
-            <span className="text-orange-500">Mean It.</span>
-          </h1>
-
-          <p className="mt-6 text-base sm:text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed">
-            Pinnacle Fitness is the premium gym experience for people serious about results.
-            World-class equipment, elite coaching, and a community that pushes you further.
+      {/* Section 1 - Hero */}
+      <section
+        className="min-h-screen relative"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="relative z-10 flex flex-col justify-end min-h-screen pb-16 px-6 sm:px-12 max-w-4xl">
+          <p className="text-xs font-medium tracking-[0.15em] uppercase text-white/60 mb-4">
+            Pinnacle GYM
           </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+          <h1 className="font-serif text-5xl sm:text-7xl font-normal text-white leading-tight mb-6">
+            Train with us.
+          </h1>
+          <p className="text-white/80 text-lg max-w-xl mb-10">
+            Pinnacle Fitness is where people come to train hard, find their rhythm, and build something together.
+          </p>
+          <div className="flex flex-wrap gap-4">
             <Link
               href="/auth"
-              className="rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-bold text-white hover:bg-orange-400 transition-colors shadow-lg shadow-orange-500/20"
+              className="bg-[#C85C2D] text-white rounded-full px-7 py-3 text-sm font-medium hover:bg-[#b34f26] transition-colors"
             >
-              Start Your Membership
+              Become a member ↗
             </Link>
             <Link
-              href="/pricing"
-              className="rounded-xl border border-zinc-700 px-8 py-3.5 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
+              href="/programs"
+              className="border border-white text-white rounded-full px-7 py-3 text-sm font-medium hover:bg-white/10 transition-colors"
             >
-              View Plans
+              See programs
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Stats bar */}
-      <section className="border-y border-zinc-800 bg-zinc-900/50">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {stats.map(({ value, label }) => (
-              <div key={label}>
-                <p className="text-3xl sm:text-4xl font-black text-orange-500">{value}</p>
-                <p className="text-sm text-zinc-500 mt-1">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-20 md:py-28">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-black text-white">Everything You Need</h2>
-          <p className="mt-3 text-zinc-500 max-w-lg mx-auto text-sm sm:text-base">
-            From cutting-edge equipment to expert coaching — we've built the ultimate training environment.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map(({ icon, title, desc }) => (
-            <div
-              key={title}
-              className="group rounded-2xl border border-zinc-800 bg-zinc-900 p-6 hover:border-orange-500/40 hover:bg-zinc-900/80 transition-all"
-            >
-              <div className="mb-4 text-3xl">{icon}</div>
-              <h3 className="font-bold text-white mb-2 text-sm sm:text-base">{title}</h3>
-              <p className="text-zinc-500 text-sm leading-relaxed">{desc}</p>
+      {/* Section 2 - What we're about */}
+      <section className="bg-[#F5F0E8]">
+        <div className="px-6 sm:px-12 py-20 max-w-6xl mx-auto">
+          <h2 className="font-serif text-4xl sm:text-5xl mb-12 text-[#1C1A17]">What we&apos;re about.</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
+              <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Community</p>
+              <p className="text-[#1C1A17] leading-relaxed">
+                Train alongside people who push you, know you, and show up with you.
+              </p>
             </div>
-          ))}
+            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
+              <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Outdoor setting</p>
+              <p className="text-[#1C1A17] leading-relaxed">
+                Open skies, full weight floor, machines, and a dedicated turf area.
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-8 md:col-span-2">
+              <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Real results</p>
+              <p className="text-[#1C1A17] leading-relaxed">
+                Structured programming built around your goals — not just your effort.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* CTA Banner */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-20">
-        <div className="relative overflow-hidden rounded-3xl bg-orange-500 px-8 py-14 text-center">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/10 blur-2xl translate-x-16 -translate-y-16" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-black/10 blur-2xl -translate-x-16 translate-y-16" />
+      {/* Section 3 - Belief */}
+      <section className="bg-[#F5F0E8]">
+        <div className="px-6 sm:px-12 py-20 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+          <div>
+            <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Our Belief</p>
+            <h2 className="font-serif text-4xl sm:text-5xl text-[#1C1A17]">Built for the everyday person.</h2>
           </div>
-          <div className="relative">
-            <h2 className="text-3xl sm:text-4xl font-black text-white">Ready to Hit Pinnacle?</h2>
-            <p className="mt-3 text-orange-100 text-sm sm:text-base max-w-md mx-auto">
-              Join thousands of members already training smarter. No contracts, cancel anytime.
+          <div>
+            <p className="text-[#6B6560] text-lg leading-relaxed">
+              Pinnacle Fitness was built on one idea — that the right environment changes everything. We are an outdoor training community where progress is the goal, and the people around you make it happen.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/auth"
-                className="rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-orange-600 hover:bg-orange-50 transition-colors"
-              >
-                Join Now — It's Free to Sign Up
-              </Link>
-              <Link
-                href="/pricing"
-                className="rounded-xl border border-white/30 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
-              >
-                See Pricing
-              </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4 - CTA */}
+      <section className="bg-[#F5F0E8] py-24 px-6 text-center">
+        <h2 className="font-serif text-4xl sm:text-6xl text-[#1C1A17] mb-4">Come try a day on us.</h2>
+        <p className="text-[#6B6560] max-w-xl mx-auto mt-4 text-lg">
+          Walk in for a class, a lift, or one on one. The fastest way to know if this place is for you is to be in it.
+        </p>
+        <div className="mt-10">
+          <Link
+            href="/auth"
+            className="bg-[#C85C2D] text-white rounded-full px-7 py-3 text-sm font-medium hover:bg-[#b34f26] transition-colors inline-block"
+          >
+            Get started
+          </Link>
+        </div>
+      </section>
+
+      {/* Section 5 - Full-width photo */}
+      <section
+        className="relative h-[60vh] min-h-[400px]"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=80)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute bottom-0 left-0 p-12">
+          <p className="text-xs font-medium tracking-[0.15em] uppercase text-white/60 mb-4">The Club</p>
+          <h2 className="font-serif text-4xl sm:text-6xl text-white">
+            Built for everyday people who show up.
+          </h2>
+        </div>
+      </section>
+
+      {/* Section 6 - Club details */}
+      <section className="bg-[#F5F0E8]">
+        <div className="px-6 sm:px-12 py-20 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+          <div>
+            <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">The Club</p>
+            <h2 className="font-serif text-4xl text-[#1C1A17]">Just show up — we&apos;ll handle the rest.</h2>
+          </div>
+          <div>
+            <p className="text-[#6B6560] leading-relaxed mb-4">
+              Pinnacle is more than a gym. It&apos;s a place people actually want to be. The space is intentional, the coaching is real, and the community is the kind that keeps you coming back.
+            </p>
+            <p className="text-[#6B6560] leading-relaxed mb-8">
+              Whether you&apos;re here for your first session or your thousandth, you&apos;ll find exactly what you need to move forward.
+            </p>
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-[#C85C2D] text-xs tracking-[0.15em] uppercase font-medium">Outdoor Setting</span>
+              <span className="text-[#E8E3D9]">•</span>
+              <span className="text-[#C85C2D] text-xs tracking-[0.15em] uppercase font-medium">Free Weights &amp; Machines</span>
+              <span className="text-[#E8E3D9]">•</span>
+              <span className="text-[#C85C2D] text-xs tracking-[0.15em] uppercase font-medium">Turf Zone</span>
+              <span className="text-[#E8E3D9]">•</span>
+              <span className="text-[#C85C2D] text-xs tracking-[0.15em] uppercase font-medium">Community First</span>
             </div>
           </div>
         </div>

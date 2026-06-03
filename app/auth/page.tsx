@@ -68,36 +68,34 @@ export default function AuthPage() {
   }
 
   const plans = [
-    { id: 'basic', label: 'Basic', price: '$29/mo', perks: 'Gym access, lockers' },
-    { id: 'premium', label: 'Premium', price: '$59/mo', perks: 'Classes, sauna, guest passes' },
-    { id: 'elite', label: 'Elite', price: '$99/mo', perks: 'PT sessions, all amenities, 24/7' },
+    { id: 'basic', label: '8 Sessions', price: '$700/mo', perks: 'Eight coached sessions per month' },
+    { id: 'premium', label: '12 Sessions', price: '$900/mo', perks: 'Three sessions a week, coached & progressive' },
+    { id: 'elite', label: 'Unlimited', price: '$1000/mo', perks: 'Unlimited coached sessions + open gym access' },
   ] as const
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F5F0E8] px-4 py-16">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-black text-sm">P</span>
-            </div>
-            <span className="text-2xl font-bold text-white tracking-tight">Pinnacle Fitness</span>
+          <div className="flex items-baseline gap-1.5 justify-center mb-2">
+            <span className="font-serif italic text-2xl text-[#1C1A17]">Pinnacle</span>
+            <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
           </div>
-          <p className="text-zinc-500 text-sm">Your premium membership portal</p>
+          <p className="text-[#6B6560] text-sm">Your membership portal</p>
         </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 shadow-sm">
           {/* Tab switcher */}
-          <div className="flex bg-zinc-800 rounded-lg p-1 mb-8">
+          <div className="flex bg-[#F5F0E8] rounded-full p-1 mb-8">
             {(['login', 'signup'] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => { setMode(m); setError(''); setMessage('') }}
-                className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`flex-1 py-2 rounded-full text-sm font-medium transition-all ${
                   mode === m
-                    ? 'bg-orange-500 text-white shadow'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-[#C85C2D] text-white shadow-sm'
+                    : 'text-[#6B6560] hover:text-[#1C1A17]'
                 }`}
               >
                 {m === 'login' ? 'Sign In' : 'Join Now'}
@@ -106,12 +104,12 @@ export default function AuthPage() {
           </div>
 
           {error && (
-            <div className="mb-5 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
               {error}
             </div>
           )}
           {message && (
-            <div className="mb-5 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
+            <div className="mb-5 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
               {message}
             </div>
           )}
@@ -119,32 +117,32 @@ export default function AuthPage() {
           <form onSubmit={mode === 'login' ? handleLogin : handleSignup} className="space-y-5">
             {mode === 'signup' && (
               <div>
-                <label className="block text-xs font-medium text-zinc-400 mb-1.5">Full Name</label>
+                <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Alex Johnson"
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-sm"
+                  className="w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
+              <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-sm"
+                className="w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Password</label>
+              <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Password</label>
               <input
                 type="password"
                 value={password}
@@ -152,21 +150,21 @@ export default function AuthPage() {
                 required
                 placeholder="••••••••"
                 minLength={6}
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-sm"
+                className="w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm"
               />
             </div>
 
             {mode === 'signup' && (
               <div>
-                <label className="block text-xs font-medium text-zinc-400 mb-2">Membership Plan</label>
+                <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-2">Membership Plan</label>
                 <div className="space-y-2">
                   {plans.map((p) => (
                     <label
                       key={p.id}
-                      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
                         plan === p.id
-                          ? 'border-orange-500 bg-orange-500/10'
-                          : 'border-zinc-700 bg-zinc-800 hover:border-zinc-600'
+                          ? 'border-[#C85C2D] bg-[#C85C2D]/5'
+                          : 'border-[#E8E3D9] bg-white hover:border-[#C85C2D]/40'
                       }`}
                     >
                       <input
@@ -175,14 +173,14 @@ export default function AuthPage() {
                         value={p.id}
                         checked={plan === p.id}
                         onChange={() => setPlan(p.id)}
-                        className="accent-orange-500"
+                        className="accent-[#C85C2D]"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-semibold text-white">{p.label}</span>
-                          <span className="text-orange-400 text-sm font-bold">{p.price}</span>
+                          <span className="text-sm font-medium text-[#1C1A17]">{p.label}</span>
+                          <span className="text-[#C85C2D] text-sm font-semibold">{p.price}</span>
                         </div>
-                        <p className="text-xs text-zinc-500 mt-0.5">{p.perks}</p>
+                        <p className="text-xs text-[#6B6560] mt-0.5">{p.perks}</p>
                       </div>
                     </label>
                   ))}
@@ -193,7 +191,7 @@ export default function AuthPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-orange-500 hover:bg-orange-400 disabled:bg-orange-500/50 text-white font-semibold rounded-lg transition-colors text-sm"
+              className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
             >
               {loading ? 'Please wait…' : mode === 'login' ? 'Sign In' : 'Create Account'}
             </button>

@@ -39,59 +39,60 @@ const hours = [
 
 export default function ContactPage() {
   return (
-    <div className="bg-zinc-950">
+    <div className="bg-[#F5F0E8] min-h-screen pt-20">
       {/* Header */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-16 pb-12 text-center">
-        <h1 className="text-4xl sm:text-5xl font-black text-white">Get in Touch</h1>
-        <p className="mt-4 text-zinc-400 max-w-md mx-auto text-sm sm:text-base">
-          Questions about membership, classes, or anything else? We're here for you.
+      <div className="py-20 px-6 sm:px-12 max-w-6xl mx-auto">
+        <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Contact</p>
+        <h1 className="font-serif text-4xl sm:text-5xl text-[#1C1A17] mb-4">Get in touch.</h1>
+        <p className="text-[#6B6560] text-lg max-w-md">
+          Questions about membership, classes, or anything else? We&apos;re here for you.
         </p>
-      </section>
+      </div>
 
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-20">
+      <div className="px-6 sm:px-12 pb-24 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          {/* Left column — info + map */}
+          {/* Left column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Contact cards */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
+            {/* Contact info */}
+            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-6 space-y-5">
               {contactInfo.map(({ icon, label, value }) => (
                 <div key={label} className="flex items-start gap-4">
-                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-orange-500/15 text-orange-400">
+                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#F5F0E8] text-[#C85C2D]">
                     {icon}
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-0.5">{label}</p>
-                    <p className="text-sm text-zinc-300 whitespace-pre-line">{value}</p>
+                    <p className="text-xs font-medium text-[#6B6560] uppercase tracking-[0.15em] mb-0.5">{label}</p>
+                    <p className="text-sm text-[#1C1A17] whitespace-pre-line">{value}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Hours */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-              <h3 className="text-sm font-bold text-white mb-4">Opening Hours</h3>
+            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-6">
+              <h3 className="text-xs font-medium text-[#6B6560] uppercase tracking-[0.15em] mb-4">Opening Hours</h3>
               <ul className="space-y-2">
                 {hours.map(({ day, time }) => (
                   <li key={day} className="flex justify-between text-sm">
-                    <span className="text-zinc-500">{day}</span>
-                    <span className="text-zinc-300 font-medium">{time}</span>
+                    <span className="text-[#6B6560]">{day}</span>
+                    <span className="text-[#1C1A17] font-medium">{time}</span>
                   </li>
                 ))}
-                <li className="pt-2 border-t border-zinc-800 flex justify-between text-sm">
-                  <span className="text-orange-400 font-medium">Elite Members</span>
-                  <span className="text-orange-400 font-medium">24/7</span>
+                <li className="pt-2 border-t border-[#E8E3D9] flex justify-between text-sm">
+                  <span className="text-[#C85C2D] font-medium">Unlimited Members</span>
+                  <span className="text-[#C85C2D] font-medium">24/7</span>
                 </li>
               </ul>
             </div>
 
-            {/* Google Maps embed */}
-            <div className="rounded-2xl border border-zinc-800 overflow-hidden">
+            {/* Map */}
+            <div className="rounded-2xl border border-[#E8E3D9] overflow-hidden">
               <iframe
                 title="Pinnacle Fitness Location"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3445.8875!2d-97.7430!3d30.2672!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDE2JzAyLjAiTiA5N8KwNDQnMzQuOCJX!5e0!3m2!1sen!2sus!4v1700000000000"
                 width="100%"
                 height="220"
-                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
+                style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -101,13 +102,13 @@ export default function ContactPage() {
 
           {/* Right column — form */}
           <div className="lg:col-span-3">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
-              <h2 className="text-lg font-bold text-white mb-6">Send Us a Message</h2>
+            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
+              <h2 className="font-serif text-2xl text-[#1C1A17] mb-6">Send Us a Message</h2>
               <ContactForm />
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   )
 }
