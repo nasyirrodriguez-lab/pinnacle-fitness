@@ -88,7 +88,7 @@ export default async function DashboardPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="font-serif text-3xl text-[#1C1A17]">
-            Welcome back, <span className="text-[#C85C2D]">{member.name.split(' ')[0]}</span>
+            Welcome back, <span className="text-[#C85C2D]">{(member?.name || 'Member').split(' ')[0]}</span>
           </h1>
           <p className="text-[#6B6560] mt-1">Here&apos;s your membership overview</p>
         </div>
