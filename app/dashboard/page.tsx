@@ -121,7 +121,7 @@ export default async function DashboardPage() {
             <div>
               <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-3">Your Plan Includes</p>
               <ul className="space-y-2">
-                {planPerks[member.plan_type].map((perk) => (
+                {(planPerks[member.plan_type] || []).map((perk) => (
                   <li key={perk} className="flex items-center gap-2 text-sm text-[#1C1A17]">
                     <span className="w-4 h-4 rounded-full bg-[#C85C2D]/10 border border-[#C85C2D]/30 flex items-center justify-center flex-shrink-0">
                       <svg className="w-2.5 h-2.5 text-[#C85C2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
