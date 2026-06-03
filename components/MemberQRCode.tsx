@@ -12,8 +12,8 @@ export default function MemberQRCode({ memberId }: { memberId: string }) {
         width: 180,
         margin: 2,
         color: {
-          dark: '#ffffff',
-          light: '#18181b',
+          dark: '#1C1A17',
+          light: '#ffffff',
         },
       })
     }
@@ -21,10 +21,10 @@ export default function MemberQRCode({ memberId }: { memberId: string }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="p-3 bg-zinc-800 rounded-xl border border-zinc-700">
+      <div className="p-3 bg-white rounded-xl border border-[#E8E3D9]">
         <canvas ref={canvasRef} className="rounded-lg" />
       </div>
-      <p className="text-xs text-zinc-500 font-mono tracking-widest">{memberId}</p>
+      <p className="text-xs text-[#6B6560] font-mono tracking-widest">{memberId}</p>
     </div>
   )
 }
