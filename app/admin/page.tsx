@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import LogoutButton from '@/components/LogoutButton'
 import AdminDashboard from '@/components/admin/AdminDashboard'
 import type { Member, CheckIn, Payment, OverviewStats } from '@/lib/types'
@@ -9,7 +10,9 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth')
 
-  const { data: caller } = await supabase
+  // Use service-role client so RLS cannot block the role check
+  const adminClient = createAdminClient()
+  const { data: caller } = await adminClient
     .from('members')
     .select('role, name')
     .eq('user_id', user.id)
