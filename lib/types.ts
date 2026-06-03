@@ -10,7 +10,7 @@ export interface Member {
   email: string
   plan_type: PlanType
   join_date: string
-  member_id: string
+  member_code: string
   role: 'member' | 'admin'
   status: MemberStatus
   stripe_customer_id: string | null

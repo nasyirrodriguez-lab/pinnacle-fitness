@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const customer = await stripe.customers.create({
       email: member.email,
       name: member.name,
-      metadata: { member_id: member.id, member_code: member.member_id },
+      metadata: { member_id: member.id, member_code: member.member_code },
     })
     customerId = customer.id
 
@@ -49,14 +49,14 @@ export async function POST(req: NextRequest) {
     subscription_data: {
       metadata: {
         member_id: member.id,
-        member_code: member.member_id,
+        member_code: member.member_code,
         member_name: member.name,
         plan_slug: planSlug,
       },
     },
     metadata: {
       member_id: member.id,
-      member_code: member.member_id,
+      member_code: member.member_code,
       member_name: member.name,
       plan_slug: planSlug,
     },

@@ -85,7 +85,7 @@ export default function MemberModal({ member, onClose, onSaved }: Props) {
         {/* Read-only info strip */}
         <div className="grid grid-cols-3 gap-px bg-zinc-800 text-center text-xs">
           {[
-            { label: 'Member ID', val: member.member_id, mono: true },
+            { label: 'Member ID', val: member.member_code, mono: true },
             { label: 'Joined', val: joinDate },
             { label: 'Status', val: status, color: status === 'active' ? 'text-green-400' : 'text-red-400' },
           ].map(({ label, val, mono, color }) => (

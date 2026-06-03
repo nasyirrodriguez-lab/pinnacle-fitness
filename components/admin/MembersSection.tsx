@@ -20,7 +20,7 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
   const filtered = useMemo(() => {
     const q = query.toLowerCase()
     return members.filter((m) => {
-      const matchQ = !q || m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.member_id.toLowerCase().includes(q)
+      const matchQ = !q || m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.member_code.toLowerCase().includes(q)
       const matchPlan = filterPlan === 'all' || m.plan_type === filterPlan
       const matchStatus = filterStatus === 'all' || (m.status ?? 'active') === filterStatus
       return matchQ && matchPlan && matchStatus
@@ -96,7 +96,7 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
                     >
                       <td className="px-5 py-4">
                         <p className="font-semibold text-white">{m.name}</p>
-                        <p className="text-xs text-orange-400 font-mono mt-0.5">{m.member_id}</p>
+                        <p className="text-xs text-orange-400 font-mono mt-0.5">{m.member_code}</p>
                       </td>
                       <td className="px-5 py-4 text-zinc-400 text-xs">{m.email}</td>
                       <td className="px-5 py-4">

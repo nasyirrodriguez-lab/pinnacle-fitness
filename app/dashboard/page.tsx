@@ -113,7 +113,7 @@ export default async function DashboardPage() {
               </div>
               <div className="bg-[#F5F0E8] rounded-xl p-4">
                 <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-1">Member ID</p>
-                <p className="text-[#C85C2D] font-mono font-semibold text-sm">{member.member_id}</p>
+                <p className="text-[#C85C2D] font-mono font-semibold text-sm">{member.member_code}</p>
               </div>
             </div>
 
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
           {/* QR Code Card */}
           <div className="bg-white border border-[#E8E3D9] rounded-2xl p-6 flex flex-col items-center justify-center">
             <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-4">Gym Check-In QR</p>
-            <MemberQRCode memberId={member.member_id} />
+            <MemberQRCode memberCode={member.member_code} />
             <p className="text-xs text-[#6B6560] mt-4 text-center">
               Show this code at the front desk to check in
             </p>
