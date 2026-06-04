@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(req: NextRequest) {
-  const { userId, fullName, email } = await req.json()
+  const { userId, fullName } = await req.json()
 
   if (!userId || !fullName) {
     return NextResponse.json({ error: 'Missing userId or fullName' }, { status: 400 })
@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
   const { error } = await admin.from('profiles').upsert({
     id: userId,
     full_name: fullName,
-    email,
     updated_at: new Date().toISOString(),
   })
 

@@ -50,7 +50,7 @@ export default function AuthPage() {
       const profileRes = await fetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: data.user.id, fullName: name, email }),
+        body: JSON.stringify({ userId: data.user.id, fullName: name }),
       })
       if (!profileRes.ok) {
         const { error: msg } = await profileRes.json()
