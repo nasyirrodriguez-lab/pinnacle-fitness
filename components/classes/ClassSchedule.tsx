@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import type { GymClass, Booking } from '@/lib/types'
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -36,7 +37,6 @@ export default function ClassSchedule({
   const [bookedIds, setBookedIds] = useState(initialBooked)
   const [bookingIdMap, setBookingIdMap] = useState(initialBookingIds)
   const [loading, setLoading] = useState<string | null>(null)
-  const [error, setError] = useState('')
 
   // My upcoming bookings (confirmed)
   const myBookings = bookings.filter((b) => b.status === 'confirmed')
@@ -45,20 +45,19 @@ export default function ClassSchedule({
     .filter(Boolean) as GymClass[]
 
   async function handleBook(classId: string) {
+    const gymClass = classes.find((c) => c.id === classId)
     setLoading(classId)
-    setError('')
     const res = await fetch('/api/classes/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ classId }),
     })
     if (res.ok) {
-      const data = await res.json()
-      // Optimistically mark as booked
       setBookedIds((prev) => new Set([...prev, classId]))
+      toast.success(`Class booked! See you at ${gymClass?.name ?? 'class'}.`)
     } else {
       const { error: msg } = await res.json()
-      setError(msg || 'Failed to book class')
+      toast.error(msg || 'Failed to book class. Please try again.')
     }
     setLoading(null)
   }
@@ -67,7 +66,6 @@ export default function ClassSchedule({
     const bookingId = bookingIdMap[classId]
     if (!bookingId) return
     setLoading(classId)
-    setError('')
     const res = await fetch('/api/classes/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -80,11 +78,15 @@ export default function ClassSchedule({
         return next
       })
       setBookings((prev) =>
-        prev.map((b) => (b.id === bookingId ? { ...b, status: 'cancelled' } : b))
+        prev.map((b) => (b.id === bookingId ? { ...b, status: 'cancelled' as const } : b))
       )
+      toast('Booking cancelled.', {
+        icon: '○',
+        style: { borderColor: '#C85C2D30', color: '#C85C2D' },
+      })
     } else {
       const { error: msg } = await res.json()
-      setError(msg || 'Failed to cancel')
+      toast.error(msg || 'Failed to cancel. Please try again.')
     }
     setLoading(null)
   }
@@ -102,12 +104,6 @@ export default function ClassSchedule({
 
   return (
     <div className="space-y-10">
-      {error && (
-        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-          {error}
-        </div>
-      )}
-
       {/* My Bookings */}
       <section>
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">My Upcoming Classes</p>
