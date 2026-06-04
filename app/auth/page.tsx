@@ -46,14 +46,15 @@ export default function AuthPage() {
     if (data.user) {
       const memberCode = `PF-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
 
-      // profiles: identity info
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: data.user.id,
-        full_name: name,
-        email,
+      // profiles: write via API route to bypass RLS (user not yet confirmed)
+      const profileRes = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: data.user.id, fullName: name, email }),
       })
-      if (profileError) {
-        setError(profileError.message)
+      if (!profileRes.ok) {
+        const { error: msg } = await profileRes.json()
+        setError(msg ?? 'Failed to save profile')
         setLoading(false)
         return
       }
