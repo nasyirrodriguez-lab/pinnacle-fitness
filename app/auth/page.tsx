@@ -64,7 +64,6 @@ export default function AuthPage() {
         user_id: data.user.id,
         member_code: memberCode,
         plan_type: plan,
-        join_date: new Date().toISOString().split('T')[0],
       })
       if (memberError) {
         setError(memberError.message)
