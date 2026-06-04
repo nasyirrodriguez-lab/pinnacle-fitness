@@ -44,19 +44,29 @@ export default function AuthPage() {
     }
 
     if (data.user) {
-      const memberId = `PF-${Date.now().toString(36).toUpperCase()}`
-      const { error: insertError } = await supabase.from('members').insert({
-        user_id: data.user.id,
-        name,
+      const memberCode = `PF-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+
+      // profiles: identity info
+      const { error: profileError } = await supabase.from('profiles').upsert({
+        id: data.user.id,
+        full_name: name,
         email,
+      })
+      if (profileError) {
+        setError(profileError.message)
+        setLoading(false)
+        return
+      }
+
+      // members: membership record
+      const { error: memberError } = await supabase.from('members').insert({
+        user_id: data.user.id,
+        member_code: memberCode,
         plan_type: plan,
         join_date: new Date().toISOString().split('T')[0],
-        member_id: memberId,
-        role: 'member',
       })
-
-      if (insertError) {
-        setError(insertError.message)
+      if (memberError) {
+        setError(memberError.message)
         setLoading(false)
         return
       }
