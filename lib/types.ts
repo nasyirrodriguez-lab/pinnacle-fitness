@@ -69,6 +69,26 @@ export interface OverviewStats {
   planBreakdown: Record<PlanType, number>
 }
 
+export interface GymClass {
+  id: string
+  name: string
+  coach_name: string
+  day_of_week: number   // 0=Sun … 6=Sat
+  start_time: string    // "HH:MM:SS"
+  duration_min: number
+  location: string
+  max_spots: number
+  created_at: string
+}
+
+export interface Booking {
+  id: string
+  class_id: string
+  member_id: string
+  booked_at: string
+  status: 'confirmed' | 'cancelled'
+}
+
 export interface MonthlyRevenue {
   month: string   // "Jan 2025"
   revenue: number

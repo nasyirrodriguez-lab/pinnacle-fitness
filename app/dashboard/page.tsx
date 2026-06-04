@@ -173,6 +173,15 @@ export default async function DashboardPage() {
         {/* Quick links */}
         <div className="mt-4 flex gap-3 flex-wrap">
           <Link
+            href="/dashboard/classes"
+            className="flex items-center gap-1.5 text-xs text-[#6B6560] hover:text-[#1C1A17] transition border border-[#E8E3D9] rounded-lg px-3 py-2 hover:bg-white"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Book a class
+          </Link>
+          <Link
             href="/dashboard/payments"
             className="flex items-center gap-1.5 text-xs text-[#6B6560] hover:text-[#1C1A17] transition border border-[#E8E3D9] rounded-lg px-3 py-2 hover:bg-white"
           >

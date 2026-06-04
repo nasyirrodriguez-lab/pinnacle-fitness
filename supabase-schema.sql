@@ -227,3 +227,72 @@ create policy "Members can read own payments"
 -- Service role (webhook) can insert payments — handled by admin client (bypasses RLS)
 -- If you want Postgres-level insert policy for the anon key, add:
 -- create policy "Service role insert" on public.payments for insert with check (true);
+
+-- ============================================================
+-- Classes table (weekly schedule)
+-- ============================================================
+create table if not exists public.classes (
+  id           uuid primary key default uuid_generate_v4(),
+  name         text not null,
+  coach_name   text not null,
+  day_of_week  integer not null check (day_of_week between 0 and 6), -- 0=Sun,1=Mon,...,6=Sat
+  start_time   time not null,
+  duration_min integer not null default 60,
+  location     text not null default 'Main Floor',
+  max_spots    integer not null default 20,
+  created_at   timestamptz default now()
+);
+
+alter table public.classes enable row level security;
+
+create policy "Anyone authenticated can read classes"
+  on public.classes for select
+  using (auth.role() = 'authenticated');
+
+-- Seed sample classes
+insert into public.classes (name, coach_name, day_of_week, start_time, duration_min, location, max_spots) values
+  ('Morning HIIT',        'Nasyir Rodriguez', 1, '06:00', 45, 'Turf Zone',    16),
+  ('Strength & Power',    'Matthew Sirjoo',   1, '09:00', 60, 'Weight Floor', 12),
+  ('Mobility & Recovery', 'Stefan Kaufman',   1, '18:00', 45, 'Studio',       20),
+  ('Barbell Club',        'Matthew Sirjoo',   2, '07:00', 75, 'Weight Floor', 10),
+  ('Cardio Burn',         'Nasyir Rodriguez', 2, '12:00', 45, 'Turf Zone',    18),
+  ('Evening HIIT',        'Stefan Kaufman',   2, '19:00', 45, 'Turf Zone',    16),
+  ('Full Body Circuit',   'Nasyir Rodriguez', 3, '06:00', 60, 'Turf Zone',    14),
+  ('Olympic Lifting',     'Matthew Sirjoo',   3, '10:00', 90, 'Weight Floor',  8),
+  ('Yoga Flow',           'Stefan Kaufman',   4, '07:00', 60, 'Studio',       20),
+  ('Power Hour',          'Nasyir Rodriguez', 4, '18:00', 60, 'Turf Zone',    16),
+  ('Strength Foundations','Matthew Sirjoo',   5, '09:00', 60, 'Weight Floor', 12),
+  ('Friday HIIT',         'Nasyir Rodriguez', 5, '17:00', 45, 'Turf Zone',    18),
+  ('Saturday Strength',   'Matthew Sirjoo',   6, '08:00', 75, 'Weight Floor', 14),
+  ('Active Recovery',     'Stefan Kaufman',   6, '10:00', 60, 'Studio',       20),
+  ('Sunday Mobility',     'Stefan Kaufman',   0, '09:00', 60, 'Studio',       20)
+on conflict do nothing;
+
+-- ============================================================
+-- Bookings table
+-- ============================================================
+create table if not exists public.bookings (
+  id         uuid primary key default uuid_generate_v4(),
+  class_id   uuid references public.classes(id) on delete cascade not null,
+  member_id  uuid references public.members(id) on delete cascade not null,
+  booked_at  timestamptz default now(),
+  status     text not null check (status in ('confirmed', 'cancelled')) default 'confirmed',
+  unique(class_id, member_id)
+);
+
+create index if not exists bookings_member_id_idx on public.bookings(member_id);
+create index if not exists bookings_class_id_idx on public.bookings(class_id);
+
+alter table public.bookings enable row level security;
+
+create policy "Members can read own bookings"
+  on public.bookings for select
+  using (member_id = (select id from public.members where user_id = auth.uid()));
+
+create policy "Members can insert own bookings"
+  on public.bookings for insert
+  with check (member_id = (select id from public.members where user_id = auth.uid()));
+
+create policy "Members can update own bookings"
+  on public.bookings for update
+  using (member_id = (select id from public.members where user_id = auth.uid()));
