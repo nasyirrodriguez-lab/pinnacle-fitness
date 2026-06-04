@@ -46,27 +46,14 @@ export default function AuthPage() {
     if (data.user) {
       const memberCode = `PF-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
 
-      // profiles: write via API route to bypass RLS (user not yet confirmed)
-      const profileRes = await fetch('/api/profile/update', {
+      const res = await fetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: data.user.id, fullName: name }),
+        body: JSON.stringify({ userId: data.user.id, fullName: name, memberCode }),
       })
-      if (!profileRes.ok) {
-        const { error: msg } = await profileRes.json()
-        setError(msg ?? 'Failed to save profile')
-        setLoading(false)
-        return
-      }
-
-      // members: membership record
-      const { error: memberError } = await supabase.from('members').insert({
-        user_id: data.user.id,
-        member_code: memberCode,
-        plan_type: plan,
-      })
-      if (memberError) {
-        setError(memberError.message)
+      if (!res.ok) {
+        const { error: msg } = await res.json()
+        setError(msg ?? 'Failed to create account')
         setLoading(false)
         return
       }

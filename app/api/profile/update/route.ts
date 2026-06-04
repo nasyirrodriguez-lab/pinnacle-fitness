@@ -2,21 +2,30 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(req: NextRequest) {
-  const { userId, fullName } = await req.json()
+  const { userId, fullName, memberCode } = await req.json()
 
-  if (!userId || !fullName) {
-    return NextResponse.json({ error: 'Missing userId or fullName' }, { status: 400 })
+  if (!userId || !fullName || !memberCode) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
   const admin = createAdminClient()
 
-  const { error } = await admin.from('profiles').upsert({
+  // profiles: id, full_name only
+  const { error: profileError } = await admin.from('profiles').upsert({
     id: userId,
     full_name: fullName,
   })
+  if (profileError) {
+    return NextResponse.json({ error: profileError.message }, { status: 500 })
+  }
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  // members: user_id, member_code only
+  const { error: memberError } = await admin.from('members').insert({
+    user_id: userId,
+    member_code: memberCode,
+  })
+  if (memberError) {
+    return NextResponse.json({ error: memberError.message }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true })
