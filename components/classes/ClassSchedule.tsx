@@ -3,8 +3,12 @@
 import { useState } from 'react'
 import type { GymClass, Booking } from '@/lib/types'
 
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const DAY_SHORT: Record<string, string> = {
+  Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu',
+  Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun',
+}
+const TODAY_NAME = DAY_ORDER[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]
 
 function formatTime(t: string) {
   const [h, m] = t.split(':').map(Number)
@@ -34,10 +38,7 @@ export default function ClassSchedule({
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
 
-  // Today's day index for highlighting
-  const todayIdx = new Date().getDay()
-
-  // My upcoming bookings (confirmed, sorted by day)
+  // My upcoming bookings (confirmed)
   const myBookings = bookings.filter((b) => b.status === 'confirmed')
   const myBookingClasses = myBookings
     .map((b) => classes.find((c) => c.id === b.class_id))
@@ -88,18 +89,16 @@ export default function ClassSchedule({
     setLoading(null)
   }
 
-  // Group classes by day
-  const byDay: Record<number, GymClass[]> = {}
+  // Group classes by day_of_week string
+  const byDay: Record<string, GymClass[]> = {}
   for (const c of classes) {
-    if (!byDay[c.day_of_week]) byDay[c.day_of_week] = []
-    byDay[c.day_of_week].push(c)
+    const key = String(c.day_of_week)
+    if (!byDay[key]) byDay[key] = []
+    byDay[key].push(c)
   }
-  // Sort each day by start_time
   for (const day in byDay) {
     byDay[day].sort((a, b) => a.start_time.localeCompare(b.start_time))
   }
-
-  const orderedDays = [1, 2, 3, 4, 5, 6, 0] // Mon–Sun
 
   return (
     <div className="space-y-10">
@@ -126,7 +125,7 @@ export default function ClassSchedule({
                     <p className="text-xs text-[#6B6560] mt-0.5">{c.coach_name}</p>
                   </div>
                   <span className="text-xs px-2 py-1 bg-[#C85C2D]/10 text-[#C85C2D] rounded-full font-medium">
-                    {DAY_SHORT[c.day_of_week]}
+                    {DAY_SHORT[c.day_of_week] ?? c.day_of_week}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-[#6B6560] mb-4">
@@ -153,15 +152,15 @@ export default function ClassSchedule({
       <section>
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Weekly Schedule</p>
         <div className="space-y-6">
-          {orderedDays.map((dayIdx) => {
-            const dayCls = byDay[dayIdx]
+          {DAY_ORDER.map((dayName) => {
+            const dayCls = byDay[dayName]
             if (!dayCls || dayCls.length === 0) return null
-            const isToday = dayIdx === todayIdx
+            const isToday = dayName === TODAY_NAME
             return (
-              <div key={dayIdx}>
+              <div key={dayName}>
                 <div className="flex items-center gap-3 mb-3">
                   <h2 className={`font-serif text-lg ${isToday ? 'text-[#C85C2D]' : 'text-[#1C1A17]'}`}>
-                    {DAYS[dayIdx]}
+                    {dayName}
                   </h2>
                   {isToday && (
                     <span className="text-xs px-2 py-0.5 bg-[#C85C2D]/10 text-[#C85C2D] rounded-full font-medium">
@@ -172,7 +171,7 @@ export default function ClassSchedule({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {dayCls.map((c) => {
                     const isBooked = bookedIds.has(c.id)
-                    const spots = spotsByClassId[c.id] ?? c.max_spots
+                    const spots = spotsByClassId[c.id] ?? 0
                     const spotsLeft = c.max_spots - spots
                     const full = spotsLeft <= 0
                     return (

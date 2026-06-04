@@ -73,7 +73,7 @@ export interface GymClass {
   id: string
   name: string
   coach_name: string
-  day_of_week: number   // 0=Sun … 6=Sat
+  day_of_week: string   // "Monday", "Tuesday", etc.
   start_time: string    // "HH:MM:SS"
   duration_min: number
   location: string
