@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import MemberQRCode from '@/components/MemberQRCode'
 import LogoutButton from '@/components/LogoutButton'
 import RenewBanner from '@/components/dashboard/RenewBanner'
+import HomeLogoButton from '@/components/dashboard/HomeLogoButton'
 import type { Member } from '@/lib/types'
 
 const planColors: Record<string, string> = {
@@ -53,10 +54,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <header className="border-b border-[#E8E3D9] bg-[#F5F0E8]/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-baseline gap-1.5">
-            <span className="font-serif italic text-xl text-[#1C1A17]">Pinnacle</span>
-            <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
-          </Link>
+          <HomeLogoButton />
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard/payments"
