@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
   const { error } = await admin.from('profiles').upsert({
     id: userId,
     full_name: fullName,
-    updated_at: new Date().toISOString(),
   })
 
   if (error) {
