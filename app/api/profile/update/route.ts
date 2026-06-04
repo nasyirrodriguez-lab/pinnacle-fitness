@@ -11,19 +11,19 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient()
 
   // profiles: id, full_name only
-  const { error: profileError } = await admin.from('profiles').upsert({
-    id: userId,
-    full_name: fullName,
-  })
+  const { error: profileError } = await admin.from('profiles').upsert(
+    { id: userId, full_name: fullName },
+    { onConflict: 'id' }
+  )
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 500 })
   }
 
   // members: user_id, member_code only
-  const { error: memberError } = await admin.from('members').insert({
-    user_id: userId,
-    member_code: memberCode,
-  })
+  const { error: memberError } = await admin.from('members').upsert(
+    { user_id: userId, member_code: memberCode },
+    { onConflict: 'user_id', ignoreDuplicates: true }
+  )
   if (memberError) {
     return NextResponse.json({ error: memberError.message }, { status: 500 })
   }
