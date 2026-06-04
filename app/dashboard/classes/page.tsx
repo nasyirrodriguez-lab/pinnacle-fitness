@@ -32,6 +32,9 @@ export default async function ClassesPage() {
   if (classesRes.error) console.error('[classes] fetch error:', classesRes.error.message)
   if (bookingsRes.error) console.error('[bookings] fetch error:', bookingsRes.error.message)
 
+  console.log('Classes result:', JSON.stringify(classesRes.data, null, 2))
+  console.log('Classes error:', classesRes.error)
+
   const allClasses = (classesRes.data ?? []) as GymClass[]
   const myBookings = (bookingsRes.data ?? []) as Booking[]
 
