@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import LogoutButton from '@/components/LogoutButton'
 import HomeLogoButton from '@/components/dashboard/HomeLogoButton'
 import ClassSchedule from '@/components/classes/ClassSchedule'
@@ -19,23 +20,21 @@ export default async function ClassesPage() {
 
   if (!member) redirect('/dashboard')
 
-  // Fetch all classes + member's bookings in parallel
-  const [{ data: classes }, { data: bookings }, bookingCountsRes] = await Promise.all([
-    supabase.from('classes').select('*').order('day_of_week').order('start_time'),
-    supabase
-      .from('bookings')
-      .select('*')
-      .eq('member_id', member.id),
-    supabase
-      .from('bookings')
-      .select('class_id, count:id')
-      .eq('status', 'confirmed'),
+  // Use admin client for classes (bypasses any RLS issues on public data)
+  const admin = createAdminClient()
+
+  const [classesRes, bookingsRes, countsRes] = await Promise.all([
+    admin.from('classes').select('*').order('day_of_week').order('start_time'),
+    supabase.from('bookings').select('*').eq('member_id', member.id),
+    admin.from('bookings').select('class_id').eq('status', 'confirmed'),
   ])
 
-  const allClasses = (classes ?? []) as GymClass[]
-  const myBookings = (bookings ?? []) as Booking[]
+  if (classesRes.error) console.error('[classes] fetch error:', classesRes.error.message)
+  if (bookingsRes.error) console.error('[bookings] fetch error:', bookingsRes.error.message)
 
-  // Build a set of class IDs the member has confirmed bookings for
+  const allClasses = (classesRes.data ?? []) as GymClass[]
+  const myBookings = (bookingsRes.data ?? []) as Booking[]
+
   const bookedClassIds = new Set(
     myBookings.filter((b) => b.status === 'confirmed').map((b) => b.class_id)
   )
@@ -44,12 +43,10 @@ export default async function ClassesPage() {
     if (b.status === 'confirmed') bookingIdByClassId[b.class_id] = b.id
   }
 
-  // Confirmed booking counts per class
+  // Count confirmed bookings per class
   const spotsByClassId: Record<string, number> = {}
-  if (bookingCountsRes.data) {
-    for (const row of bookingCountsRes.data as { class_id: string; count: number }[]) {
-      spotsByClassId[row.class_id] = Number(row.count)
-    }
+  for (const row of (countsRes.data ?? []) as { class_id: string }[]) {
+    spotsByClassId[row.class_id] = (spotsByClassId[row.class_id] ?? 0) + 1
   }
 
   return (
