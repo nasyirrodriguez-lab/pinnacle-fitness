@@ -151,6 +151,14 @@ export default function AuthPage() {
               />
             </div>
 
+            {mode === 'login' && (
+              <div className="text-right -mt-2">
+                <a href="/forgot-password" className="text-xs text-[#6B6560] hover:text-[#C85C2D] transition">
+                  Forgot password?
+                </a>
+              </div>
+            )}
+
             {mode === 'signup' && (
               <div>
                 <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-2">Membership Plan</label>
