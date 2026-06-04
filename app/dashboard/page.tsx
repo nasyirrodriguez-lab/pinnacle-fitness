@@ -24,11 +24,10 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth')
 
-  const { data: member } = await supabase
-    .from('members')
-    .select('*')
-    .eq('user_id', user.id)
-    .single<Member>()
+  const [{ data: member }, { data: profile }] = await Promise.all([
+    supabase.from('members').select('*').eq('user_id', user.id).single<Member>(),
+    supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+  ])
 
   if (!member) {
     return (
@@ -41,13 +40,19 @@ export default async function DashboardPage() {
     )
   }
 
-  const joinDate = new Date(member.join_date).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
+  const fullName: string = profile?.full_name || user.email || 'Member'
+  const firstName = fullName.split(' ')[0]
+
+  const memberSince = new Date(member.created_at).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long',
   })
 
   const periodEndLabel = member.current_period_end
     ? new Date(member.current_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'No active subscription'
+
+  const planStatus = member.status === 'active' ? 'Active' : member.status === 'suspended' ? 'Suspended' : 'Active'
+  const planStatusColor = member.status === 'suspended' ? 'text-red-600' : 'text-[#1F3D2B]'
 
   return (
     <div className="min-h-screen bg-[#F5F0E8]">
@@ -86,7 +91,7 @@ export default async function DashboardPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="font-serif text-3xl text-[#1C1A17]">
-            Welcome back, <span className="text-[#C85C2D]">{(member?.name || 'Member').split(' ')[0]}</span>
+            Welcome back, <span className="text-[#C85C2D]">{firstName}</span>
           </h1>
           <p className="text-[#6B6560] mt-1">Here&apos;s your membership overview</p>
         </div>
@@ -96,8 +101,8 @@ export default async function DashboardPage() {
           <div className="lg:col-span-2 bg-white border border-[#E8E3D9] rounded-2xl p-6">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="font-serif text-xl text-[#1C1A17]">{member.name ?? 'Member'}</h2>
-                <p className="text-[#6B6560] text-sm mt-0.5">{member.email}</p>
+                <h2 className="font-serif text-xl text-[#1C1A17]">{fullName}</h2>
+                <p className="text-[#6B6560] text-sm mt-0.5">{user.email}</p>
               </div>
               <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${planColors[member.plan_type ?? ''] ?? 'bg-[#E8E3D9] text-[#6B6560]'}`}>
                 {member.plan_type ?? '—'}
@@ -107,7 +112,7 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-[#F5F0E8] rounded-xl p-4">
                 <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-1">Member Since</p>
-                <p className="text-[#1C1A17] font-medium text-sm">{joinDate}</p>
+                <p className="text-[#1C1A17] font-medium text-sm">{memberSince}</p>
               </div>
               <div className="bg-[#F5F0E8] rounded-xl p-4">
                 <p className="text-xs text-[#6B6560] uppercase tracking-[0.1em] mb-1">Member ID</p>
@@ -146,11 +151,7 @@ export default async function DashboardPage() {
         {/* Stats bar */}
         <div className="mt-6 grid grid-cols-3 gap-4">
           {[
-            {
-              label: 'Plan Status',
-              value: member.status === 'active' ? 'Active' : 'Suspended',
-              color: member.status === 'active' ? 'text-[#1F3D2B]' : 'text-red-600',
-            },
+            { label: 'Plan Status', value: planStatus, color: planStatusColor },
             {
               label: 'Plan Type',
               value: member.plan_type ? member.plan_type.charAt(0).toUpperCase() + member.plan_type.slice(1) : '—',
