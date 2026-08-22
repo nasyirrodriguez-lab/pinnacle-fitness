@@ -9,7 +9,7 @@ const contactInfo = [
       </svg>
     ),
     label: 'Address',
-    value: '1200 Pinnacle Blvd, Suite 100\nAustin, TX 78701',
+    value: '227 Western Main Road\nCocorite, Trinidad',
   },
   {
     icon: (
@@ -18,7 +18,7 @@ const contactInfo = [
       </svg>
     ),
     label: 'Phone',
-    value: '(512) 555-0192',
+    value: '688-6887 / 724-5734',
   },
   {
     icon: (
@@ -27,7 +27,7 @@ const contactInfo = [
       </svg>
     ),
     label: 'Email',
-    value: 'hello@pinnaclefitness.com',
+    value: 'pinnaclefitness@gmail.com',
   },
 ]
 
@@ -89,7 +89,7 @@ export default function ContactPage() {
             <div className="rounded-2xl border border-[#E8E3D9] overflow-hidden">
               <iframe
                 title="Pinnacle Fitness Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3445.8875!2d-97.7430!3d30.2672!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDE2JzAyLjAiTiA5N8KwNDQnMzQuOCJX!5e0!3m2!1sen!2sus!4v1700000000000"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.4!2d-61.5281!3d10.6518!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c360e9b1234abcd%3A0x0!2zMTDCsDM5JzA2LjUiTiA2McKwMzEnNDEuMiJX!5e0!3m2!1sen!2stt!4v1700000000000"
                 width="100%"
                 height="220"
                 style={{ border: 0 }}

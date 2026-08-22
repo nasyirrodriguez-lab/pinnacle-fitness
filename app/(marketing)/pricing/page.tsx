@@ -77,7 +77,7 @@ export default async function PricingPage() {
                 </span>
                 <h2 className="font-serif text-3xl text-white mb-4">{displayName}</h2>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="font-serif text-3xl text-[#C85C2D]">${plan.price}</span>
+                  <span className="font-serif text-3xl text-[#C85C2D]">TT${plan.price}</span>
                   <span className="text-white/60 text-sm">/ month</span>
                 </div>
                 <p className="text-white/75 text-sm leading-relaxed my-8">{description}</p>
@@ -93,7 +93,7 @@ export default async function PricingPage() {
             <div key={plan.id} className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
               <h2 className="font-serif text-3xl text-[#1C1A17] mb-4">{displayName}</h2>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="font-serif text-3xl text-[#C85C2D]">${plan.price}</span>
+                <span className="font-serif text-3xl text-[#C85C2D]">TT${plan.price}</span>
                 <span className="text-[#6B6560] text-sm">/ month</span>
               </div>
               <p className="text-[#6B6560] text-sm leading-relaxed my-8">{description}</p>
