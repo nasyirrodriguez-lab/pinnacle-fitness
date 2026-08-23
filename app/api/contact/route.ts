@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   const { error } = await resend.emails.send({
     from: 'Pinnacle Fitness <onboarding@resend.dev>',
-    to: 'pinnaclefitness@gmail.com',
+    to: 'nasyirrodriguez@gmail.com',
     replyTo: email,
     subject: `New Contact Form Message: ${subject || 'General Inquiry'}`,
     html: `
