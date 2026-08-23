@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type Stripe from 'stripe'
 
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event
   try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET!)
+    event = getStripe().webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Webhook signature verification failed'
     console.error('[Webhook] Signature error:', msg)
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         const memberName: string = meta.member_name
 
         // Retrieve subscription + expand items so we can get current_period_end
-        const sub = await stripe.subscriptions.retrieve(session.subscription as string, {
+        const sub = await getStripe().subscriptions.retrieve(session.subscription as string, {
           expand: ['items', 'latest_invoice'],
         })
 
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
         const subId = getSubscriptionId(invoice)
         if (!subId) break
 
-        const sub = await stripe.subscriptions.retrieve(subId, { expand: ['items'] })
+        const sub = await getStripe().subscriptions.retrieve(subId, { expand: ['items'] })
 
         // Skip the initial subscription_create invoice (handled by checkout.session.completed)
         if (invoice.billing_reason === 'subscription_create') break
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
         const subId = getSubscriptionId(invoice)
         if (!subId) break
 
-        const sub = await stripe.subscriptions.retrieve(subId)
+        const sub = await getStripe().subscriptions.retrieve(subId)
         const memberId = sub.metadata?.member_id
         const planSlug = sub.metadata?.plan_slug
         const memberName = sub.metadata?.member_name
