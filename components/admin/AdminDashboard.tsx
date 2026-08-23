@@ -6,8 +6,20 @@ import OverviewSection from './OverviewSection'
 import MembersSection from './MembersSection'
 import CheckInsSection from './CheckInsSection'
 import RevenueSection from './RevenueSection'
+import FreeTrialSection from './FreeTrialSection'
 
-type Tab = 'overview' | 'members' | 'checkins' | 'revenue'
+interface FreeTrialBooking {
+  id: string
+  name: string
+  email: string
+  phone: string
+  class_name: string
+  class_day: string
+  class_time: string
+  created_at: string
+}
+
+type Tab = 'overview' | 'members' | 'checkins' | 'revenue' | 'freetrial'
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   {
@@ -46,6 +58,15 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
       </svg>
     ),
   },
+  {
+    id: 'freetrial',
+    label: 'Free Trials',
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+      </svg>
+    ),
+  },
 ]
 
 interface Props {
@@ -53,16 +74,15 @@ interface Props {
   members: Member[]
   checkIns: CheckIn[]
   payments: Payment[]
+  freeTrialBookings: FreeTrialBooking[]
 }
 
-export default function AdminDashboard({ stats, members, checkIns, payments }: Props) {
+export default function AdminDashboard({ stats, members, checkIns, payments, freeTrialBookings }: Props) {
   const [active, setActive] = useState<Tab>('overview')
 
   return (
     <div className="min-h-screen bg-zinc-950">
-      {/* Sidebar + content layout */}
       <div className="flex flex-col md:flex-row">
-        {/* Sidebar (desktop) / top nav (mobile) */}
         <aside className="md:w-52 md:min-h-screen md:border-r border-b md:border-b-0 border-zinc-800 bg-zinc-900/50 flex-shrink-0">
           <nav className="flex md:flex-col gap-1 p-3 overflow-x-auto md:overflow-x-visible md:pt-6">
             {tabs.map((t) => (
@@ -77,17 +97,22 @@ export default function AdminDashboard({ stats, members, checkIns, payments }: P
               >
                 {t.icon}
                 {t.label}
+                {t.id === 'freetrial' && freeTrialBookings.length > 0 && (
+                  <span className="ml-auto bg-orange-500/20 text-orange-400 text-xs px-1.5 py-0.5 rounded-full">
+                    {freeTrialBookings.length}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
         </aside>
 
-        {/* Main content */}
         <main className="flex-1 min-w-0 p-5 md:p-8">
           {active === 'overview' && <OverviewSection stats={stats} />}
           {active === 'members' && <MembersSection initialMembers={members} />}
           {active === 'checkins' && <CheckInsSection initialCheckIns={checkIns} />}
           {active === 'revenue' && <RevenueSection payments={payments} />}
+          {active === 'freetrial' && <FreeTrialSection bookings={freeTrialBookings} />}
         </main>
       </div>
     </div>

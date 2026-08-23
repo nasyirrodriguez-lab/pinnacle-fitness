@@ -24,7 +24,7 @@ export default async function AdminPage() {
   const today = new Date().toISOString().split('T')[0]
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
 
-  const [membersRes, checkInsRes, paymentsRes] = await Promise.all([
+  const [membersRes, checkInsRes, paymentsRes, freeTrialRes] = await Promise.all([
     supabase.from('members').select('*').order('created_at', { ascending: false }),
     supabase
       .from('check_ins')
@@ -35,11 +35,16 @@ export default async function AdminPage() {
       .from('payments')
       .select('*')
       .order('paid_at', { ascending: false }),
+    adminClient
+      .from('free_trial_bookings')
+      .select('*')
+      .order('created_at', { ascending: false }),
   ])
 
   const members = (membersRes.data ?? []) as Member[]
   const checkIns = (checkInsRes.data ?? []) as CheckIn[]
   const payments = (paymentsRes.data ?? []) as Payment[]
+  const freeTrialBookings = freeTrialRes.data ?? []
 
   // Revenue this month (paid only)
   const revenueThisMonth = payments
@@ -89,6 +94,7 @@ export default async function AdminPage() {
         members={members}
         checkIns={checkIns}
         payments={payments}
+        freeTrialBookings={freeTrialBookings}
       />
     </div>
   )
