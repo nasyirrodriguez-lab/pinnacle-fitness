@@ -30,24 +30,41 @@ export default function ContactForm() {
   }
 
   const inputClass =
-    'w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 transition'
+    'w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm'
+
+  const labelClass = 'block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5'
+
+  if (status === 'success') {
+    return (
+      <div className="text-center py-8">
+        <div className="w-12 h-12 rounded-full bg-[#1F3D2B]/10 flex items-center justify-center mx-auto mb-4">
+          <svg className="w-6 h-6 text-[#1F3D2B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="font-serif text-xl text-[#1C1A17] mb-2">Message sent!</h3>
+        <p className="text-[#6B6560] text-sm">We&apos;ll get back to you within 24 hours.</p>
+        <button
+          onClick={() => setStatus('idle')}
+          className="mt-6 text-xs text-[#6B6560] hover:text-[#1C1A17] transition"
+        >
+          Send another message
+        </button>
+      </div>
+    )
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {status === 'success' && (
-        <div className="rounded-lg bg-green-500/10 border border-green-500/30 px-4 py-3 text-sm text-green-400">
-          Message sent! We'll get back to you within 24 hours.
-        </div>
-      )}
       {status === 'error' && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
           Something went wrong. Please try again.
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1.5">Full Name</label>
+          <label className={labelClass}>Full Name</label>
           <input
             type="text"
             value={fields.name}
@@ -58,7 +75,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
+          <label className={labelClass}>Email</label>
           <input
             type="email"
             value={fields.email}
@@ -71,7 +88,7 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-zinc-400 mb-1.5">Subject</label>
+        <label className={labelClass}>Subject</label>
         <select value={fields.subject} onChange={set('subject')} className={inputClass}>
           <option value="">Select a topic</option>
           <option>Membership inquiry</option>
@@ -83,7 +100,7 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-zinc-400 mb-1.5">Message</label>
+        <label className={labelClass}>Message</label>
         <textarea
           value={fields.message}
           onChange={set('message')}
@@ -97,7 +114,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-400 disabled:opacity-60 transition-colors"
+        className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
       >
         {status === 'loading' ? 'Sending…' : 'Send Message'}
       </button>
