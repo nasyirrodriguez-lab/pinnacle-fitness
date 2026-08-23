@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
     name,
     email,
     phone,
-    class_id: classId,
     class_name: className,
     class_day: classDay,
     class_time: classTime,
