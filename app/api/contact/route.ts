@@ -42,8 +42,16 @@ export async function POST(req: NextRequest) {
   })
 
   if (error) {
-    console.error('[Contact Form] Resend error:', error)
-    return NextResponse.json({ error: 'Failed to send email.' }, { status: 500 })
+    console.error('[Contact Form] Resend error:', {
+      message: error.message,
+      statusCode: (error as { statusCode?: number }).statusCode,
+      full: error,
+    })
+    return NextResponse.json({
+      error: 'Failed to send email.',
+      detail: error.message,
+      statusCode: (error as { statusCode?: number }).statusCode,
+    }, { status: 500 })
   }
 
   return NextResponse.json({ success: true })
