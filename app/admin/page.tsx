@@ -24,8 +24,10 @@ export default async function AdminPage() {
   const today = new Date().toISOString().split('T')[0]
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
 
-  const [membersRes, checkInsRes, paymentsRes, freeTrialRes] = await Promise.all([
-    supabase.from('members').select('*').order('created_at', { ascending: false }),
+  const [membersRes, profilesRes, authUsersRes, checkInsRes, paymentsRes, freeTrialRes] = await Promise.all([
+    adminClient.from('members').select('*').order('created_at', { ascending: false }),
+    adminClient.from('profiles').select('id, full_name'),
+    adminClient.auth.admin.listUsers({ perPage: 1000 }),
     supabase
       .from('check_ins')
       .select('*')
@@ -41,7 +43,21 @@ export default async function AdminPage() {
       .order('created_at', { ascending: false }),
   ])
 
-  const members = (membersRes.data ?? []) as Member[]
+  // Build lookup maps to enrich member rows with name + email
+  const profileMap = Object.fromEntries(
+    (profilesRes.data ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name ?? ''])
+  )
+  const userEmailMap = Object.fromEntries(
+    (authUsersRes.data?.users ?? []).map((u) => [u.id, u.email ?? ''])
+  )
+
+  const members = ((membersRes.data ?? []) as Member[]).map((m) => ({
+    ...m,
+    name: profileMap[m.user_id] || 'Unknown',
+    email: userEmailMap[m.user_id] || '',
+    join_date: m.created_at,
+  })) as Member[]
+
   const checkIns = (checkInsRes.data ?? []) as CheckIn[]
   const payments = (paymentsRes.data ?? []) as Payment[]
   const freeTrialBookings = freeTrialRes.data ?? []

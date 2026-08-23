@@ -20,7 +20,7 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
   const filtered = useMemo(() => {
     const q = query.toLowerCase()
     return members.filter((m) => {
-      const matchQ = !q || m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.member_code.toLowerCase().includes(q)
+      const matchQ = !q || (m.name ?? '').toLowerCase().includes(q) || (m.email ?? '').toLowerCase().includes(q) || m.member_code.toLowerCase().includes(q)
       const matchPlan = filterPlan === 'all' || m.plan_type === filterPlan
       const matchStatus = filterStatus === 'all' || (m.status ?? 'active') === filterStatus
       return matchQ && matchPlan && matchStatus
@@ -95,13 +95,13 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
                       onClick={() => setSelected(m)}
                     >
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-white">{m.name}</p>
+                        <p className="font-semibold text-white">{m.name || 'Unknown'}</p>
                         <p className="text-xs text-orange-400 font-mono mt-0.5">{m.member_code}</p>
                       </td>
-                      <td className="px-5 py-4 text-zinc-400 text-xs">{m.email}</td>
+                      <td className="px-5 py-4 text-zinc-400 text-xs">{m.email || '—'}</td>
                       <td className="px-5 py-4">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${planBadge[m.plan_type]}`}>
-                          {m.plan_type}
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${planBadge[m.plan_type] ?? planBadge.basic}`}>
+                          {m.plan_type ?? 'basic'}
                         </span>
                       </td>
                       <td className="px-5 py-4">
@@ -111,7 +111,7 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
                         </span>
                       </td>
                       <td className="px-5 py-4 text-zinc-500 text-xs whitespace-nowrap">
-                        {new Date(m.join_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(m.join_date ?? m.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                       <td className="px-5 py-4">
                         <span className="text-xs text-zinc-600 hover:text-zinc-300 transition">Edit →</span>
