@@ -10,6 +10,7 @@ const links = [
   { href: '/coaches', label: 'Coaches' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/contact', label: 'Contact' },
+  { href: '/free-trial', label: 'Free Trial' },
 ]
 
 export default function Navbar() {
@@ -56,19 +57,33 @@ export default function Navbar() {
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-7">
-              {links.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`text-sm transition-colors ${
-                    transparent
-                      ? 'text-white/80 hover:text-white'
-                      : 'text-[#6B6560] hover:text-[#1C1A17]'
-                  }`}
-                >
-                  {label}
-                </Link>
-              ))}
+              {links.map(({ href, label }) =>
+                href === '/free-trial' ? (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`text-sm font-medium transition-colors ${
+                      transparent
+                        ? 'text-orange-300 hover:text-white'
+                        : 'text-[#C85C2D] hover:text-[#b34f26]'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ) : (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`text-sm transition-colors ${
+                      transparent
+                        ? 'text-white/80 hover:text-white'
+                        : 'text-[#6B6560] hover:text-[#1C1A17]'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                )
+              )}
               <Link
                 href="/auth"
                 className={`text-sm transition-colors ${
@@ -124,7 +139,11 @@ export default function Navbar() {
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="text-2xl font-serif text-white hover:text-white/70 transition-colors"
+                className={`text-2xl font-serif transition-colors ${
+                  href === '/free-trial'
+                    ? 'text-orange-300 hover:text-orange-200'
+                    : 'text-white hover:text-white/70'
+                }`}
               >
                 {label}
               </Link>
