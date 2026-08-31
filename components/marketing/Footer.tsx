@@ -54,10 +54,8 @@ export default function Footer() {
           <div>
             <p className="text-xs font-medium text-[#6B6560] uppercase tracking-[0.15em] mb-4">Hours</p>
             <ul className="space-y-1.5 text-sm text-[#6B6560]">
-              <li>Mon–Fri: 5am – 11pm</li>
-              <li>Sat: 6am – 10pm</li>
-              <li>Sun: 7am – 9pm</li>
-              <li className="text-[#C85C2D] text-xs mt-2 font-medium">Unlimited: 24/7 access</li>
+              <li>Mon–Fri: 5:30am – 7pm</li>
+              <li>Sat: 7am – 1pm</li>
             </ul>
           </div>
         </div>

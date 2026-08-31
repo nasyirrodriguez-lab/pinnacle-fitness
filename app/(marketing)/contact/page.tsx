@@ -32,9 +32,8 @@ const contactInfo = [
 ]
 
 const hours = [
-  { day: 'Monday – Friday', time: '5:00 AM – 11:00 PM' },
-  { day: 'Saturday', time: '6:00 AM – 10:00 PM' },
-  { day: 'Sunday', time: '7:00 AM – 9:00 PM' },
+  { day: 'Monday – Friday', time: '5:30 AM – 7:00 PM' },
+  { day: 'Saturday', time: '7:00 AM – 1:00 PM' },
 ]
 
 export default function ContactPage() {
@@ -78,25 +77,7 @@ export default function ContactPage() {
                     <span className="text-[#1C1A17] font-medium">{time}</span>
                   </li>
                 ))}
-                <li className="pt-2 border-t border-[#E8E3D9] flex justify-between text-sm">
-                  <span className="text-[#C85C2D] font-medium">Unlimited Members</span>
-                  <span className="text-[#C85C2D] font-medium">24/7</span>
-                </li>
               </ul>
-            </div>
-
-            {/* Map */}
-            <div className="rounded-2xl border border-[#E8E3D9] overflow-hidden">
-              <iframe
-                title="Pinnacle Fitness Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.4!2d-61.5281!3d10.6518!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c360e9b1234abcd%3A0x0!2zMTDCsDM5JzA2LjUiTiA2McKwMzEnNDEuMiJX!5e0!3m2!1sen!2stt!4v1700000000000"
-                width="100%"
-                height="220"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
             </div>
           </div>
 
