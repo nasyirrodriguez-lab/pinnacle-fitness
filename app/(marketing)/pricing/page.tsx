@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import type { Plan } from '@/lib/types'
 import CheckoutButton from '@/components/pricing/CheckoutButton'
 
@@ -47,10 +46,8 @@ const planDetails: Record<string, { name: string; description: string }> = {
   },
 }
 
-export default async function PricingPage() {
-  const supabase = await createClient()
-  const { data } = await supabase.from('plans').select('*').order('price')
-  const plans: Plan[] = data && data.length > 0 ? data : fallbackPlans
+export default function PricingPage() {
+  const plans: Plan[] = fallbackPlans
 
   return (
     <div className="bg-[#F5F0E8] min-h-screen pt-20">

@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import type { Coach } from '@/lib/types'
 
 const fallbackCoaches: Coach[] = [
@@ -28,10 +27,8 @@ const fallbackCoaches: Coach[] = [
   },
 ]
 
-export default async function CoachesPage() {
-  const supabase = await createClient()
-  const { data } = await supabase.from('coaches').select('*').order('order')
-  const coaches: Coach[] = (data && data.length > 0) ? data : fallbackCoaches
+export default function CoachesPage() {
+  const coaches: Coach[] = fallbackCoaches
 
   return (
     <div className="bg-[#F5F0E8] min-h-screen pt-20">
