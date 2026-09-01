@@ -90,7 +90,8 @@ export default async function AdminPage() {
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-500">
               <span className="text-xs font-black text-white">P</span>
             </div>
-            <span className="font-bold text-white tracking-tight hidden sm:block">Pinnacle Fitness</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 32, filter: 'brightness(0) invert(1)' }} className="hidden sm:block" />
             <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-medium">
               Admin
             </span>
