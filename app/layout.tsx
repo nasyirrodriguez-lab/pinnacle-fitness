@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   title: 'Pinnacle Fitness',
   description: 'Train hard. Find your rhythm. Build something together.',
   icons: {
-    icon: '/PHOTO-2026-08-25-06-14-47.jpg',
-    apple: '/PHOTO-2026-08-25-06-14-47.jpg',
+    icon: '/favicon.png',
+    apple: '/favicon.png',
   },
 }
 
