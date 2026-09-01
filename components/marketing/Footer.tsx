@@ -6,9 +6,11 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-6 sm:px-12 py-14">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-baseline gap-1.5 mb-3">
-              <span className="font-serif italic text-xl text-[#1C1A17]">Pinnacle</span>
-              <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
+            <div className="mb-3">
+              <a href="/">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 36 }} />
+              </a>
             </div>
             <p className="text-sm text-[#6B6560] leading-relaxed max-w-xs">
               An outdoor training community where progress is the goal and the people around you make it happen.

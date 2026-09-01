@@ -2,9 +2,9 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#E8E3D9]">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="/" className="flex items-baseline gap-1.5">
-          <span className="font-serif italic text-xl text-[#1C1A17]">Pinnacle</span>
-          <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
+        <a href="/" className="flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 40 }} />
         </a>
         <nav className="hidden md:flex items-center gap-8">
           <a href="/programs" className="text-sm text-[#6B6560] hover:text-[#1C1A17] transition">Programs</a>
