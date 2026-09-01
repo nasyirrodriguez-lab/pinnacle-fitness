@@ -60,9 +60,9 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#F5F0E8] px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <a href="/" className="inline-flex items-baseline gap-1.5 justify-center mb-2">
-            <span className="font-serif italic text-2xl text-[#1C1A17]">Pinnacle</span>
-            <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
+          <a href="/" className="inline-flex justify-center mb-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 50 }} />
           </a>
           <p className="text-[#6B6560] text-sm mt-2">
             {mode === 'signin' ? 'Welcome back' : 'Create your account'}
@@ -124,7 +124,7 @@ export default function AuthPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                placeholder="••••••••"
+                placeholder="········"
                 className={inputClass}
               />
               {mode === 'signin' && (
