@@ -17,14 +17,6 @@ const fallbackCoaches: Coach[] = [
     bio: 'Co-founder and head coach at Pinnacle. Matthew brings structure and precision to every program. His approach is methodical — he believes that consistency built on the right foundation is what produces lasting results.',
     order: 2,
   },
-  {
-    id: '3',
-    name: 'Stefan Kaufman',
-    photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Stefan',
-    specialties: ['Sport Specific Performance', 'Athletic Development'],
-    bio: '',
-    order: 3,
-  },
 ]
 
 export default function CoachesPage() {
