@@ -23,8 +23,18 @@ function formatTime(t: string) {
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
+const FALLBACK_CLASSES: GymClass[] = [
+  { id: 'f1', name: 'Morning HIIT', coach_name: 'Nasyir Rodriguez', day_of_week: 'Monday', start_time: '05:30:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+  { id: 'f2', name: 'Strength & Conditioning', coach_name: 'Matthew Sirjoo', day_of_week: 'Monday', start_time: '17:00:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+  { id: 'f3', name: 'Morning HIIT', coach_name: 'Nasyir Rodriguez', day_of_week: 'Wednesday', start_time: '05:30:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+  { id: 'f4', name: 'Strength & Conditioning', coach_name: 'Matthew Sirjoo', day_of_week: 'Wednesday', start_time: '17:00:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+  { id: 'f5', name: 'Morning HIIT', coach_name: 'Nasyir Rodriguez', day_of_week: 'Friday', start_time: '05:30:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+  { id: 'f6', name: 'Strength & Conditioning', coach_name: 'Matthew Sirjoo', day_of_week: 'Friday', start_time: '17:00:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+  { id: 'f7', name: 'Saturday Session', coach_name: 'Nasyir Rodriguez', day_of_week: 'Saturday', start_time: '07:00:00', duration_min: 60, location: 'Outdoor', max_spots: 20 },
+]
+
 export default function FreeTrialPage() {
-  const [classes, setClasses] = useState<GymClass[]>([])
+  const [classes, setClasses] = useState<GymClass[]>(FALLBACK_CLASSES)
   const [selectedClass, setSelectedClass] = useState<GymClass | null>(null)
   const [fields, setFields] = useState({ name: '', email: '', phone: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -33,7 +43,7 @@ export default function FreeTrialPage() {
   useEffect(() => {
     fetch('/api/classes/list')
       .then((r) => r.json())
-      .then((d) => setClasses(d.classes ?? []))
+      .then((d) => { if (d.classes?.length) setClasses(d.classes) })
       .catch(() => {})
   }, [])
 
@@ -112,7 +122,7 @@ export default function FreeTrialPage() {
           <div className="lg:col-span-3 space-y-6">
             <h2 className="font-serif text-2xl text-[#1C1A17]">Choose a class</h2>
             {Object.keys(grouped).length === 0 && (
-              <p className="text-[#6B6560] text-sm">Loading schedule…</p>
+              <p className="text-[#6B6560] text-sm">No classes available right now.</p>
             )}
             {Object.entries(grouped).map(([day, list]) => (
               <div key={day}>
