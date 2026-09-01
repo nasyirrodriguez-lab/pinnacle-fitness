@@ -1,4 +1,18 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
 export default function Navbar() {
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(!!data.session)
+    })
+  }, [])
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#E8E3D9]">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -14,7 +28,11 @@ export default function Navbar() {
         </nav>
         <div className="flex items-center gap-3">
           <a href="/free-trial" className="text-sm text-[#6B6560] hover:text-[#1C1A17] transition hidden md:block">Free Trial</a>
-          <a href="/auth" className="px-4 py-2 bg-[#C85C2D] text-white text-sm font-medium rounded-full hover:bg-[#b34f26] transition">Join Now</a>
+          {loggedIn ? (
+            <a href="/dashboard" className="px-4 py-2 bg-[#1F3D2B] text-white text-sm font-medium rounded-full hover:bg-[#163020] transition">My Dashboard</a>
+          ) : (
+            <a href="/auth" className="px-4 py-2 bg-[#C85C2D] text-white text-sm font-medium rounded-full hover:bg-[#b34f26] transition">Join Now</a>
+          )}
         </div>
       </div>
     </header>

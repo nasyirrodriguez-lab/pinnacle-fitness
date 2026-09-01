@@ -7,6 +7,12 @@ import RenewBanner from '@/components/dashboard/RenewBanner'
 import HomeLogoButton from '@/components/dashboard/HomeLogoButton'
 import type { Member } from '@/lib/types'
 
+const planNames: Record<string, string> = {
+  basic: '8 Sessions',
+  premium: '12 Sessions',
+  elite: 'Unlimited',
+}
+
 const planColors: Record<string, string> = {
   basic: 'bg-[#E8E3D9] text-[#6B6560]',
   premium: 'bg-[#1F3D2B]/10 text-[#1F3D2B] border border-[#1F3D2B]/20',
@@ -105,7 +111,7 @@ export default async function DashboardPage() {
                 <p className="text-[#6B6560] text-sm mt-0.5">{user.email}</p>
               </div>
               <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${planColors[member.plan_type ?? ''] ?? 'bg-[#E8E3D9] text-[#6B6560]'}`}>
-                {member.plan_type ?? '—'}
+                {member.plan_type ? (planNames[member.plan_type] ?? member.plan_type) : 'No plan selected'}
               </span>
             </div>
 
@@ -154,7 +160,7 @@ export default async function DashboardPage() {
             { label: 'Plan Status', value: planStatus, color: planStatusColor },
             {
               label: 'Plan Type',
-              value: member.plan_type ? member.plan_type.charAt(0).toUpperCase() + member.plan_type.slice(1) : '—',
+              value: member.plan_type ? (planNames[member.plan_type] ?? member.plan_type) : 'No plan selected',
               color: 'text-[#C85C2D]',
             },
             {
