@@ -4,7 +4,7 @@ import WhatsAppButton from '@/components/marketing/WhatsAppButton'
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F0E8]">
+    <div className="flex min-h-screen flex-col bg-[#D6D3CC]">
       <Navbar />
       <main className="flex-1 pt-0">{children}</main>
       <Footer />

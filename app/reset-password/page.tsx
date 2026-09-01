@@ -39,7 +39,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 shadow-sm">
+    <div className="bg-white border border-[#C4C1BA] rounded-2xl p-8 shadow-sm">
       <h2 className="font-serif text-xl text-[#1C1A17] mb-1">Create new password</h2>
       <p className="text-[#6B6560] text-sm mb-6">Choose a strong password for your account.</p>
 
@@ -59,7 +59,7 @@ function ResetPasswordForm() {
             required
             minLength={6}
             placeholder="········"
-            className="w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm"
+            className="w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm"
           />
         </div>
         <div>
@@ -71,13 +71,13 @@ function ResetPasswordForm() {
             required
             minLength={6}
             placeholder="········"
-            className="w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm"
+            className="w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
+          className="w-full py-3 bg-[#54504A] hover:bg-[#3d3a35] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
         >
           {loading ? 'Updating…' : 'Update Password'}
         </button>
@@ -88,7 +88,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F5F0E8] px-4 py-16">
+    <div className="min-h-screen flex items-center justify-center bg-[#D6D3CC] px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <a href="/" className="inline-flex items-baseline gap-1.5 justify-center mb-2">
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
           </a>
           <p className="text-[#6B6560] text-sm mt-2">Set a new password</p>
         </div>
-        <Suspense fallback={<div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 h-64 animate-pulse" />}>
+        <Suspense fallback={<div className="bg-white border border-[#C4C1BA] rounded-2xl p-8 h-64 animate-pulse" />}>
           <ResetPasswordForm />
         </Suspense>
       </div>

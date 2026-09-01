@@ -38,7 +38,7 @@ const hours = [
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#F5F0E8] min-h-screen pt-20">
+    <div className="bg-[#D6D3CC] min-h-screen pt-20">
       {/* Header */}
       <div className="py-20 px-6 sm:px-12 max-w-6xl mx-auto">
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Contact</p>
@@ -53,10 +53,10 @@ export default function ContactPage() {
           {/* Left column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Contact info */}
-            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-6 space-y-5">
+            <div className="bg-white rounded-2xl border border-[#C4C1BA] p-6 space-y-5">
               {contactInfo.map(({ icon, label, value }) => (
                 <div key={label} className="flex items-start gap-4">
-                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#F5F0E8] text-[#C85C2D]">
+                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#D6D3CC] text-[#54504A]">
                     {icon}
                   </div>
                   <div>
@@ -68,7 +68,7 @@ export default function ContactPage() {
             </div>
 
             {/* Hours */}
-            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-6">
+            <div className="bg-white rounded-2xl border border-[#C4C1BA] p-6">
               <h3 className="text-xs font-medium text-[#6B6560] uppercase tracking-[0.15em] mb-4">Opening Hours</h3>
               <ul className="space-y-2">
                 {hours.map(({ day, time }) => (
@@ -83,7 +83,7 @@ export default function ContactPage() {
 
           {/* Right column — form */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
+            <div className="bg-white rounded-2xl border border-[#C4C1BA] p-8">
               <h2 className="font-serif text-2xl text-[#1C1A17] mb-6">Send Us a Message</h2>
               <ContactForm />
             </div>

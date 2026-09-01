@@ -54,10 +54,10 @@ export default function AuthPage() {
   }
 
   const inputClass =
-    'w-full px-4 py-3 bg-white border border-[#E8E3D9] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C85C2D] focus:ring-1 focus:ring-[#C85C2D] transition text-sm'
+    'w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm'
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F5F0E8] px-4 py-16">
+    <div className="min-h-screen flex items-center justify-center bg-[#D6D3CC] px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <a href="/" className="inline-flex justify-center mb-2">
@@ -69,8 +69,8 @@ export default function AuthPage() {
           </p>
         </div>
 
-        <div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 shadow-sm">
-          <div className="flex rounded-xl bg-[#F5F0E8] p-1 mb-8">
+        <div className="bg-white border border-[#C4C1BA] rounded-2xl p-8 shadow-sm">
+          <div className="flex rounded-xl bg-[#D6D3CC] p-1 mb-8">
             {(['signin', 'signup'] as const).map((m) => (
               <button
                 key={m}
@@ -106,11 +106,11 @@ export default function AuthPage() {
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="········" className={inputClass} />
               {mode === 'signin' && (
                 <div className="mt-1.5 text-right">
-                  <Link href="/forgot-password" className="text-xs text-[#6B6560] hover:text-[#C85C2D] transition">Forgot password?</Link>
+                  <Link href="/forgot-password" className="text-xs text-[#6B6560] hover:text-[#54504A] transition">Forgot password?</Link>
                 </div>
               )}
             </div>
-            <button type="submit" disabled={loading} className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm">
+            <button type="submit" disabled={loading} className="w-full py-3 bg-[#54504A] hover:bg-[#3d3a35] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm">
               {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
             </button>
           </form>

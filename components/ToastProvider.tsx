@@ -11,7 +11,7 @@ export default function ToastProvider() {
         style: {
           background: '#FFFFFF',
           color: '#1C1A17',
-          border: '1px solid #E8E3D9',
+          border: '1px solid #C4C1BA',
           borderRadius: '9999px',
           fontSize: '13px',
           fontFamily: 'var(--font-inter), system-ui, sans-serif',

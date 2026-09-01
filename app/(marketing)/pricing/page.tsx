@@ -50,7 +50,7 @@ export default function PricingPage() {
   const plans: Plan[] = fallbackPlans
 
   return (
-    <div className="bg-[#F5F0E8] min-h-screen pt-20">
+    <div className="bg-[#D6D3CC] min-h-screen pt-20">
       {/* Header */}
       <div className="text-center py-20 px-6">
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Memberships</p>
@@ -69,12 +69,12 @@ export default function PricingPage() {
           if (plan.highlight) {
             return (
               <div key={plan.id} className="bg-[#1F3D2B] rounded-2xl p-8 relative">
-                <span className="absolute -top-3.5 left-6 bg-[#C85C2D] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">
+                <span className="absolute -top-3.5 left-6 bg-[#54504A] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">
                   Most Popular
                 </span>
                 <h2 className="font-serif text-3xl text-white mb-4">{displayName}</h2>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="font-serif text-3xl text-[#C85C2D]">TT${plan.price}</span>
+                  <span className="font-serif text-3xl text-[#54504A]">TT${plan.price}</span>
                   <span className="text-white/60 text-sm">/ month</span>
                 </div>
                 <p className="text-white/75 text-sm leading-relaxed my-8">{description}</p>
@@ -87,10 +87,10 @@ export default function PricingPage() {
             )
           }
           return (
-            <div key={plan.id} className="bg-white rounded-2xl border border-[#E8E3D9] p-8">
+            <div key={plan.id} className="bg-white rounded-2xl border border-[#C4C1BA] p-8">
               <h2 className="font-serif text-3xl text-[#1C1A17] mb-4">{displayName}</h2>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="font-serif text-3xl text-[#C85C2D]">TT${plan.price}</span>
+                <span className="font-serif text-3xl text-[#54504A]">TT${plan.price}</span>
                 <span className="text-[#6B6560] text-sm">/ month</span>
               </div>
               <p className="text-[#6B6560] text-sm leading-relaxed my-8">{description}</p>

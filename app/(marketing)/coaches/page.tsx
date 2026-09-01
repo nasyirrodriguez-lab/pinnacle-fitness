@@ -23,7 +23,7 @@ export default function CoachesPage() {
   const coaches: Coach[] = fallbackCoaches
 
   return (
-    <div className="bg-[#F5F0E8] min-h-screen pt-20">
+    <div className="bg-[#D6D3CC] min-h-screen pt-20">
       {/* Header */}
       <div className="py-20 px-6 sm:px-12 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
         <div>
@@ -43,10 +43,10 @@ export default function CoachesPage() {
           {coaches.map((coach) => (
             <div
               key={coach.id}
-              className="bg-white rounded-2xl border border-[#E8E3D9] p-8"
+              className="bg-white rounded-2xl border border-[#C4C1BA] p-8"
             >
               <h2 className="font-serif text-xl text-[#1C1A17] mb-1">{coach.name}</h2>
-              <p className="text-[#C85C2D] text-sm font-medium">
+              <p className="text-[#54504A] text-sm font-medium">
                 {coach.specialties[0]}
               </p>
               {coach.bio && (

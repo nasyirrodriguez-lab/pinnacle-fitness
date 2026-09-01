@@ -14,7 +14,7 @@ export default function Navbar() {
   }, [])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#E8E3D9]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#C4C1BA]">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -31,7 +31,7 @@ export default function Navbar() {
           {loggedIn ? (
             <a href="/dashboard" className="px-4 py-2 bg-[#1F3D2B] text-white text-sm font-medium rounded-full hover:bg-[#163020] transition">My Dashboard</a>
           ) : (
-            <a href="/auth" className="px-4 py-2 bg-[#C85C2D] text-white text-sm font-medium rounded-full hover:bg-[#b34f26] transition">Join Now</a>
+            <a href="/auth" className="px-4 py-2 bg-[#54504A] text-white text-sm font-medium rounded-full hover:bg-[#3d3a35] transition">Join Now</a>
           )}
         </div>
       </div>

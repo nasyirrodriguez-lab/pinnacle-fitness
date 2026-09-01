@@ -9,13 +9,13 @@ import type { Member, Payment } from '@/lib/types'
 const statusBadge: Record<string, string> = {
   paid: 'bg-green-50 text-green-700 border border-green-200',
   failed: 'bg-red-50 text-red-700 border border-red-200',
-  refunded: 'bg-[#E8E3D9] text-[#6B6560]',
+  refunded: 'bg-[#C4C1BA] text-[#6B6560]',
 }
 
 const planBadge: Record<string, string> = {
-  basic: 'bg-[#E8E3D9] text-[#6B6560]',
+  basic: 'bg-[#C4C1BA] text-[#6B6560]',
   premium: 'bg-[#1F3D2B]/10 text-[#1F3D2B] border border-[#1F3D2B]/20',
-  elite: 'bg-[#C85C2D]/10 text-[#C85C2D] border border-[#C85C2D]/20',
+  elite: 'bg-[#54504A]/10 text-[#54504A] border border-[#54504A]/20',
 }
 
 export default async function PaymentsPage({
@@ -49,9 +49,9 @@ export default async function PaymentsPage({
     .reduce((s, p) => s + p.amount, 0)
 
   return (
-    <div className="min-h-screen bg-[#F5F0E8]">
+    <div className="min-h-screen bg-[#D6D3CC]">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-[#E8E3D9] bg-[#F5F0E8]/95 backdrop-blur-md">
+      <header className="sticky top-0 z-10 border-b border-[#C4C1BA] bg-[#D6D3CC]/95 backdrop-blur-md">
         <div className="mx-auto max-w-4xl px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-baseline gap-1.5 group">
@@ -82,7 +82,7 @@ export default async function PaymentsPage({
           </div>
         )}
         {params.canceled && (
-          <div className="mb-6 rounded-xl border border-[#E8E3D9] bg-white px-5 py-4">
+          <div className="mb-6 rounded-xl border border-[#C4C1BA] bg-white px-5 py-4">
             <p className="text-sm text-[#6B6560]">Payment was canceled. Your plan has not changed.</p>
           </div>
         )}
@@ -107,12 +107,12 @@ export default async function PaymentsPage({
         </div>
 
         {/* Membership status card */}
-        <div className="mb-6 rounded-2xl border border-[#E8E3D9] bg-white p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div className="mb-6 rounded-2xl border border-[#C4C1BA] bg-white p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           {[
             {
               label: 'Current Plan',
               value: member.plan_type.charAt(0).toUpperCase() + member.plan_type.slice(1),
-              color: 'text-[#C85C2D]',
+              color: 'text-[#54504A]',
             },
             {
               label: 'Status',
@@ -140,8 +140,8 @@ export default async function PaymentsPage({
         </div>
 
         {/* Payments table */}
-        <div className="rounded-2xl border border-[#E8E3D9] bg-white overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#E8E3D9]">
+        <div className="rounded-2xl border border-[#C4C1BA] bg-white overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#C4C1BA]">
             <h2 className="text-sm font-medium text-[#1C1A17]">Transactions</h2>
           </div>
 
@@ -159,7 +159,7 @@ export default async function PaymentsPage({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#E8E3D9] bg-[#F5F0E8]/50">
+                  <tr className="border-b border-[#C4C1BA] bg-[#D6D3CC]/50">
                     {['Plan', 'Amount', 'Date', 'Status', 'Invoice'].map((h) => (
                       <th
                         key={h}
@@ -170,9 +170,9 @@ export default async function PaymentsPage({
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E8E3D9]">
+                <tbody className="divide-y divide-[#C4C1BA]">
                   {payments.map((p) => (
-                    <tr key={p.id} className="hover:bg-[#F5F0E8]/40 transition-colors">
+                    <tr key={p.id} className="hover:bg-[#D6D3CC]/40 transition-colors">
                       <td className="px-5 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${planBadge[p.plan_type]}`}>
                           {p.plan_type}
@@ -197,7 +197,7 @@ export default async function PaymentsPage({
                             href={p.invoice_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 text-xs text-[#C85C2D] hover:text-[#b34f26] transition-colors"
+                            className="flex items-center gap-1.5 text-xs text-[#54504A] hover:text-[#3d3a35] transition-colors"
                           >
                             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -205,7 +205,7 @@ export default async function PaymentsPage({
                             Download
                           </a>
                         ) : (
-                          <span className="text-xs text-[#E8E3D9]">—</span>
+                          <span className="text-xs text-[#C4C1BA]">—</span>
                         )}
                       </td>
                     </tr>

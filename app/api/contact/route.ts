@@ -21,16 +21,16 @@ export async function POST(req: NextRequest) {
         <h2 style="margin: 0 0 24px; font-size: 20px;">New message from ${name}</h2>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E8E3D9; color: #6B6560; width: 100px; vertical-align: top;">Name</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E8E3D9;">${name}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; width: 100px; vertical-align: top;">Name</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA;">${name}</td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E8E3D9; color: #6B6560; vertical-align: top;">Email</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E8E3D9;"><a href="mailto:${email}" style="color: #C85C2D;">${email}</a></td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; vertical-align: top;">Email</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA;"><a href="mailto:${email}" style="color: #54504A;">${email}</a></td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E8E3D9; color: #6B6560; vertical-align: top;">Subject</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E8E3D9;">${subject || '—'}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; vertical-align: top;">Subject</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA;">${subject || '—'}</td>
           </tr>
           <tr>
             <td style="padding: 16px 0 0; color: #6B6560; vertical-align: top;">Message</td>

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F5F0E8] border-t border-[#E8E3D9] mt-auto">
+    <footer className="bg-[#D6D3CC] border-t border-[#C4C1BA] mt-auto">
       <div className="mx-auto max-w-6xl px-6 sm:px-12 py-14">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           <div className="col-span-2 md:col-span-1">
@@ -62,7 +62,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-[#E8E3D9] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-12 pt-6 border-t border-[#C4C1BA] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-[#6B6560]">© {new Date().getFullYear()} Pinnacle Fitness. All rights reserved.</p>
         </div>
       </div>

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`h-full ${inter.variable} ${playfair.variable}`}>
-      <body className="min-h-full bg-[#F5F0E8] text-[#1C1A17] antialiased">
+      <body className="min-h-full bg-[#D6D3CC] text-[#1C1A17] antialiased">
         {children}
         <ToastProvider />
       </body>

@@ -21,7 +21,7 @@ export default function MemberQRCode({ memberCode }: { memberCode?: string | nul
   if (!memberCode) {
     return (
       <div className="flex flex-col items-center gap-3">
-        <div className="w-[180px] h-[180px] bg-[#F5F0E8] rounded-xl border border-[#E8E3D9] flex items-center justify-center">
+        <div className="w-[180px] h-[180px] bg-[#D6D3CC] rounded-xl border border-[#C4C1BA] flex items-center justify-center">
           <p className="text-xs text-[#6B6560] text-center px-4">Member code not assigned yet</p>
         </div>
       </div>
@@ -30,7 +30,7 @@ export default function MemberQRCode({ memberCode }: { memberCode?: string | nul
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="p-3 bg-white rounded-xl border border-[#E8E3D9]">
+      <div className="p-3 bg-white rounded-xl border border-[#C4C1BA]">
         <canvas ref={canvasRef} className="rounded-lg" />
       </div>
       <p className="text-xs text-[#6B6560] font-mono tracking-widest">{memberCode}</p>
