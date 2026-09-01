@@ -16,6 +16,10 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: 'Pinnacle Fitness',
   description: 'Train hard. Find your rhythm. Build something together.',
+  icons: {
+    icon: '/PHOTO-2026-08-25-06-14-47.jpg',
+    apple: '/PHOTO-2026-08-25-06-14-47.jpg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
