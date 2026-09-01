@@ -22,7 +22,7 @@ const fallbackCoaches: Coach[] = [
     name: 'Stefan Kaufman',
     photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Stefan',
     specialties: ['Sport Specific Performance', 'Athletic Development'],
-    bio: 'Head coach for Strength & Performance at Pinnacle. Stefan works exclusively with competitive athletes, identifying the precise physical gaps that limit performance and building targeted programs to close them.',
+    bio: '',
     order: 3,
   },
 ]
