@@ -7,7 +7,7 @@ export default function HomeLogoButton() {
   return (
     <button onClick={() => router.push('/')} className="cursor-pointer">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 40 }} />
+      <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 40 }} />
     </button>
   )
 }

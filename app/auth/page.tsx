@@ -62,7 +62,7 @@ export default function AuthPage() {
         <div className="text-center mb-10">
           <a href="/" className="inline-flex justify-center mb-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 50 }} />
+            <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 50 }} />
           </a>
           <p className="text-[#6B6560] text-sm mt-2">
             {mode === 'signin' ? 'Welcome back' : 'Create your account'}
@@ -70,7 +70,6 @@ export default function AuthPage() {
         </div>
 
         <div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 shadow-sm">
-          {/* Tab toggle */}
           <div className="flex rounded-xl bg-[#F5F0E8] p-1 mb-8">
             {(['signin', 'signup'] as const).map((m) => (
               <button
@@ -95,51 +94,23 @@ export default function AuthPage() {
             {mode === 'signup' && (
               <div>
                 <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Full Name</label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  placeholder="Your full name"
-                  className={inputClass}
-                />
+                <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className={inputClass} />
               </div>
             )}
             <div>
               <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="you@example.com"
-                className={inputClass}
-              />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className={inputClass} />
             </div>
             <div>
               <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                placeholder="········"
-                className={inputClass}
-              />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="········" className={inputClass} />
               {mode === 'signin' && (
                 <div className="mt-1.5 text-right">
-                  <Link href="/forgot-password" className="text-xs text-[#6B6560] hover:text-[#C85C2D] transition">
-                    Forgot password?
-                  </Link>
+                  <Link href="/forgot-password" className="text-xs text-[#6B6560] hover:text-[#C85C2D] transition">Forgot password?</Link>
                 </div>
               )}
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
-            >
+            <button type="submit" disabled={loading} className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm">
               {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
             </button>
           </form>

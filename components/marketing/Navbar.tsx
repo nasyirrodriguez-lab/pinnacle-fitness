@@ -4,7 +4,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 40 }} />
+          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 40 }} />
         </a>
         <nav className="hidden md:flex items-center gap-8">
           <a href="/programs" className="text-sm text-[#6B6560] hover:text-[#1C1A17] transition">Programs</a>

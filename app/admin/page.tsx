@@ -10,17 +10,10 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth')
 
-  // Use service-role client so RLS cannot block the role check
   const adminClient = createAdminClient()
-  const { data: caller } = await adminClient
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
+  const { data: caller } = await adminClient.from('profiles').select('role').eq('id', user.id).single()
   if (!caller || caller.role !== 'admin') redirect('/dashboard')
 
-  // --- Parallel data fetches ---
   const today = new Date().toISOString().split('T')[0]
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
 
@@ -28,22 +21,11 @@ export default async function AdminPage() {
     adminClient.from('members').select('*').order('created_at', { ascending: false }),
     adminClient.from('profiles').select('id, full_name'),
     adminClient.auth.admin.listUsers({ perPage: 1000 }),
-    supabase
-      .from('check_ins')
-      .select('*')
-      .gte('checked_in_at', `${today}T00:00:00`)
-      .order('checked_in_at', { ascending: false }),
-    supabase
-      .from('payments')
-      .select('*')
-      .order('paid_at', { ascending: false }),
-    adminClient
-      .from('free_trial_bookings')
-      .select('*')
-      .order('created_at', { ascending: false }),
+    supabase.from('check_ins').select('*').gte('checked_in_at', `${today}T00:00:00`).order('checked_in_at', { ascending: false }),
+    supabase.from('payments').select('*').order('paid_at', { ascending: false }),
+    adminClient.from('free_trial_bookings').select('*').order('created_at', { ascending: false }),
   ])
 
-  // Build lookup maps to enrich member rows with name + email
   const profileMap = Object.fromEntries(
     (profilesRes.data ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name ?? ''])
   )
@@ -62,7 +44,6 @@ export default async function AdminPage() {
   const payments = (paymentsRes.data ?? []) as Payment[]
   const freeTrialBookings = freeTrialRes.data ?? []
 
-  // Revenue this month (paid only)
   const revenueThisMonth = payments
     .filter((p) => p.status === 'paid' && p.paid_at >= monthStart)
     .reduce((sum, p) => sum + p.amount, 0)
@@ -83,7 +64,6 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950">
-      {/* Top header */}
       <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
         <div className="flex h-14 items-center justify-between px-5 md:px-8">
           <div className="flex items-center gap-3">
@@ -91,16 +71,12 @@ export default async function AdminPage() {
               <span className="text-xs font-black text-white">P</span>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/pinnacle-logo.svg" alt="Pinnacle Fitness" style={{ height: 32, filter: 'brightness(0) invert(1)' }} className="hidden sm:block" />
-            <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-medium">
-              Admin
-            </span>
+            <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 32, filter: 'brightness(0) invert(1)' }} className="hidden sm:block" />
+            <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-medium">Admin</span>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-xs text-zinc-600 hidden sm:block">Signed in as {user.email}</span>
-            <a href="/dashboard" className="text-xs text-zinc-500 hover:text-zinc-300 transition">
-              My Dashboard
-            </a>
+            <a href="/dashboard" className="text-xs text-zinc-500 hover:text-zinc-300 transition">My Dashboard</a>
             <LogoutButton />
           </div>
         </div>
