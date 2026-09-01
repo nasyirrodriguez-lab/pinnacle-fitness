@@ -1,53 +1,13 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import LogoutButton from '@/components/LogoutButton'
 import HomeLogoButton from '@/components/dashboard/HomeLogoButton'
-import ClassSchedule from '@/components/classes/ClassSchedule'
-import type { GymClass, Booking } from '@/lib/types'
 
 export default async function ClassesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth')
-
-  const { data: member } = await supabase
-    .from('members')
-    .select('id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!member) redirect('/dashboard')
-
-  // Use admin client for classes (bypasses any RLS issues on public data)
-  const admin = createAdminClient()
-
-  const [classesRes, bookingsRes, countsRes] = await Promise.all([
-    admin.from('classes').select('*').order('day_of_week').order('start_time'),
-    supabase.from('bookings').select('*').eq('member_id', member.id),
-    admin.from('bookings').select('class_id').eq('status', 'confirmed'),
-  ])
-
-  if (classesRes.error) console.error('[classes] fetch error:', classesRes.error.message)
-  if (bookingsRes.error) console.error('[bookings] fetch error:', bookingsRes.error.message)
-
-  const allClasses = (classesRes.data ?? []) as GymClass[]
-  const myBookings = (bookingsRes.data ?? []) as Booking[]
-
-  const bookedClassIds = new Set(
-    myBookings.filter((b) => b.status === 'confirmed').map((b) => b.class_id)
-  )
-  const bookingIdByClassId: Record<string, string> = {}
-  for (const b of myBookings) {
-    if (b.status === 'confirmed') bookingIdByClassId[b.class_id] = b.id
-  }
-
-  // Count confirmed bookings per class
-  const spotsByClassId: Record<string, number> = {}
-  for (const row of (countsRes.data ?? []) as { class_id: string }[]) {
-    spotsByClassId[row.class_id] = (spotsByClassId[row.class_id] ?? 0) + 1
-  }
 
   return (
     <div className="min-h-screen bg-[#F5F0E8]">
@@ -68,20 +28,21 @@ export default async function ClassesPage() {
 
       <main className="max-w-5xl mx-auto px-6 py-10">
         <div className="mb-10">
-          <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-2">
-            Pinnacle GYM
-          </p>
+          <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-2">Pinnacle Fitness</p>
           <h1 className="font-serif text-4xl text-[#1C1A17]">Class Schedule</h1>
-          <p className="text-[#6B6560] mt-2">Book your weekly classes. Cancel anytime before the session.</p>
         </div>
 
-        <ClassSchedule
-          classes={allClasses}
-          bookings={myBookings}
-          bookedClassIds={bookedClassIds}
-          bookingIdByClassId={bookingIdByClassId}
-          spotsByClassId={spotsByClassId}
-        />
+        <div className="bg-white rounded-2xl border border-[#E8E3D9] p-16 flex flex-col items-center justify-center text-center">
+          <div className="w-14 h-14 rounded-full bg-[#C85C2D]/10 flex items-center justify-center mb-5">
+            <svg className="w-7 h-7 text-[#C85C2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <h2 className="font-serif text-2xl text-[#1C1A17] mb-2">Coming Soon</h2>
+          <p className="text-[#6B6560] text-sm max-w-xs">
+            Online class booking is on the way. In the meantime, speak to a coach to reserve your spot.
+          </p>
+        </div>
       </main>
     </div>
   )
