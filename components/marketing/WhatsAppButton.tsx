@@ -3,8 +3,8 @@
 import { useState } from 'react'
 
 const numbers = [
-  { label: '688-6887', href: 'https://wa.me/18686886887' },
-  { label: '724-5734', href: 'https://wa.me/18687245734' },
+  { label: 'Nasyir: 688-6887', href: 'https://wa.me/18686886887' },
+  { label: 'Matthew: 724-5734', href: 'https://wa.me/18687245734' },
 ]
 
 export default function WhatsAppButton() {

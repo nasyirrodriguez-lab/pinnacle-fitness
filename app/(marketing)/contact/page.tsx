@@ -18,7 +18,7 @@ const contactInfo = [
       </svg>
     ),
     label: 'Phone',
-    value: '688-6887 / 724-5734',
+    value: 'Nasyir: 688-6887\nMatthew: 724-5734',
   },
   {
     icon: (
