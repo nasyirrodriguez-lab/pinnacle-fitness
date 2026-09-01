@@ -10,8 +10,8 @@ export default function ToastProvider() {
         duration: 3500,
         style: {
           background: '#FFFFFF',
-          color: '#1C1A17',
-          border: '1px solid #C4C1BA',
+          color: '#3A3733',
+          border: '1px solid #CCC8C0',
           borderRadius: '9999px',
           fontSize: '13px',
           fontFamily: 'var(--font-inter), system-ui, sans-serif',

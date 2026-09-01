@@ -30,7 +30,7 @@ export default function ContactForm() {
   }
 
   const inputClass =
-    'w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm'
+    'w-full px-4 py-3 bg-white border border-[#CCC8C0] rounded-xl text-[#3A3733] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#3A3733] focus:ring-1 focus:ring-[#3A3733] transition text-sm'
 
   const labelClass = 'block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5'
 
@@ -42,11 +42,11 @@ export default function ContactForm() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="font-serif text-xl text-[#1C1A17] mb-2">Message sent!</h3>
+        <h3 className="font-serif text-xl text-[#3A3733] mb-2">Message sent!</h3>
         <p className="text-[#6B6560] text-sm">We&apos;ll get back to you within 24 hours.</p>
         <button
           onClick={() => setStatus('idle')}
-          className="mt-6 text-xs text-[#6B6560] hover:text-[#1C1A17] transition"
+          className="mt-6 text-xs text-[#6B6560] hover:text-[#3A3733] transition"
         >
           Send another message
         </button>
@@ -114,7 +114,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full py-3 bg-[#54504A] hover:bg-[#3d3a35] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
+        className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
       >
         {status === 'loading' ? 'Sending…' : 'Send Message'}
       </button>

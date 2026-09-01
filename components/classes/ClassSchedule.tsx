@@ -82,7 +82,7 @@ export default function ClassSchedule({
       )
       toast('Booking cancelled.', {
         icon: '○',
-        style: { borderColor: '#54504A30', color: '#54504A' },
+        style: { borderColor: '#3A373330', color: '#3A3733' },
       })
     } else {
       const { error: msg } = await res.json()
@@ -108,19 +108,19 @@ export default function ClassSchedule({
       <section>
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">My Upcoming Classes</p>
         {myBookingClasses.length === 0 ? (
-          <div className="bg-white border border-[#C4C1BA] rounded-2xl p-6 text-center text-[#6B6560] text-sm">
+          <div className="bg-white border border-[#CCC8C0] rounded-2xl p-6 text-center text-[#6B6560] text-sm">
             No classes booked yet. Browse the schedule below.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {myBookingClasses.map((c) => (
-              <div key={c.id} className="bg-white border border-[#54504A]/30 rounded-2xl p-5">
+              <div key={c.id} className="bg-white border border-[#3A3733]/30 rounded-2xl p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="font-medium text-[#1C1A17]">{c.name}</p>
+                    <p className="font-medium text-[#3A3733]">{c.name}</p>
                     <p className="text-xs text-[#6B6560] mt-0.5">{c.coach_name}</p>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-[#54504A]/10 text-[#54504A] rounded-full font-medium">
+                  <span className="text-xs px-2 py-1 bg-[#3A3733]/10 text-[#3A3733] rounded-full font-medium">
                     {DAY_SHORT[c.day_of_week] ?? c.day_of_week}
                   </span>
                 </div>
@@ -134,7 +134,7 @@ export default function ClassSchedule({
                 <button
                   onClick={() => handleCancel(c.id)}
                   disabled={loading === c.id}
-                  className="w-full py-2 text-xs font-medium text-[#6B6560] border border-[#C4C1BA] rounded-full hover:border-red-300 hover:text-red-500 transition disabled:opacity-50"
+                  className="w-full py-2 text-xs font-medium text-[#6B6560] border border-[#CCC8C0] rounded-full hover:border-red-300 hover:text-red-500 transition disabled:opacity-50"
                 >
                   {loading === c.id ? 'Cancelling…' : 'Cancel Booking'}
                 </button>
@@ -155,11 +155,11 @@ export default function ClassSchedule({
             return (
               <div key={dayName}>
                 <div className="flex items-center gap-3 mb-3">
-                  <h2 className={`font-serif text-lg ${isToday ? 'text-[#54504A]' : 'text-[#1C1A17]'}`}>
+                  <h2 className={`font-serif text-lg ${isToday ? 'text-[#3A3733]' : 'text-[#3A3733]'}`}>
                     {dayName}
                   </h2>
                   {isToday && (
-                    <span className="text-xs px-2 py-0.5 bg-[#54504A]/10 text-[#54504A] rounded-full font-medium">
+                    <span className="text-xs px-2 py-0.5 bg-[#3A3733]/10 text-[#3A3733] rounded-full font-medium">
                       Today
                     </span>
                   )}
@@ -174,12 +174,12 @@ export default function ClassSchedule({
                       <div
                         key={c.id}
                         className={`bg-white border rounded-2xl p-5 flex flex-col gap-4 ${
-                          isBooked ? 'border-[#1F3D2B]/30' : 'border-[#C4C1BA]'
+                          isBooked ? 'border-[#1F3D2B]/30' : 'border-[#CCC8C0]'
                         }`}
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="font-medium text-[#1C1A17]">{c.name}</p>
+                            <p className="font-medium text-[#3A3733]">{c.name}</p>
                             <p className="text-xs text-[#6B6560] mt-0.5">{c.coach_name}</p>
                           </div>
                           {isBooked && (
@@ -192,19 +192,19 @@ export default function ClassSchedule({
                         <div className="grid grid-cols-2 gap-2 text-xs text-[#6B6560]">
                           <div>
                             <p className="uppercase tracking-[0.1em] text-[10px] mb-0.5">Time</p>
-                            <p className="text-[#1C1A17] font-medium">{formatTime(c.start_time)}</p>
+                            <p className="text-[#3A3733] font-medium">{formatTime(c.start_time)}</p>
                           </div>
                           <div>
                             <p className="uppercase tracking-[0.1em] text-[10px] mb-0.5">Duration</p>
-                            <p className="text-[#1C1A17] font-medium">{c.duration_min} min</p>
+                            <p className="text-[#3A3733] font-medium">{c.duration_min} min</p>
                           </div>
                           <div>
                             <p className="uppercase tracking-[0.1em] text-[10px] mb-0.5">Location</p>
-                            <p className="text-[#1C1A17] font-medium">{c.location}</p>
+                            <p className="text-[#3A3733] font-medium">{c.location}</p>
                           </div>
                           <div>
                             <p className="uppercase tracking-[0.1em] text-[10px] mb-0.5">Spots Left</p>
-                            <p className={`font-medium ${spotsLeft <= 3 ? 'text-[#54504A]' : 'text-[#1C1A17]'}`}>
+                            <p className={`font-medium ${spotsLeft <= 3 ? 'text-[#3A3733]' : 'text-[#3A3733]'}`}>
                               {full ? 'Full' : `${spotsLeft} / ${c.max_spots}`}
                             </p>
                           </div>
@@ -214,7 +214,7 @@ export default function ClassSchedule({
                           <button
                             onClick={() => handleCancel(c.id)}
                             disabled={loading === c.id}
-                            className="mt-auto py-2.5 text-xs font-medium text-[#6B6560] border border-[#C4C1BA] rounded-full hover:border-red-300 hover:text-red-500 transition disabled:opacity-50"
+                            className="mt-auto py-2.5 text-xs font-medium text-[#6B6560] border border-[#CCC8C0] rounded-full hover:border-red-300 hover:text-red-500 transition disabled:opacity-50"
                           >
                             {loading === c.id ? 'Cancelling…' : 'Cancel'}
                           </button>
@@ -222,7 +222,7 @@ export default function ClassSchedule({
                           <button
                             onClick={() => handleBook(c.id)}
                             disabled={loading === c.id || full}
-                            className="mt-auto py-2.5 text-xs font-medium bg-[#54504A] text-white rounded-full hover:bg-[#3d3a35] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="mt-auto py-2.5 text-xs font-medium bg-[#3A3733] text-white rounded-full hover:bg-[#2a2825] transition disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {loading === c.id ? 'Booking…' : full ? 'Class Full' : 'Book Class'}
                           </button>

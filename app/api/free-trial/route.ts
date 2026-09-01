@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY)
 
   const confirmationHtml = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1C1A17;">
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #3A3733;">
       <h2 style="margin: 0 0 8px; font-size: 24px;">You're booked, ${name}!</h2>
       <p style="color: #6B6560; margin: 0 0 24px;">Here are your free class details.</p>
-      <div style="background: #D6D3CC; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+      <div style="background: #E8E4DC; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
         <p style="margin: 0 0 8px;"><strong>Day:</strong> ${classDay}</p>
         <p style="margin: 0;"><strong>Time:</strong> ${classTime}</p>
       </div>
@@ -41,13 +41,13 @@ export async function POST(req: NextRequest) {
   `
 
   const adminHtml = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1C1A17;">
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #3A3733;">
       <h2 style="margin: 0 0 24px; font-size: 20px;">New Free Trial Booking</h2>
       <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; width: 100px;">Name</td><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA;">${name}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560;">Email</td><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA;"><a href="mailto:${email}">${email}</a></td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560;">Phone</td><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA;">${phone}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560;">Day</td><td style="padding: 8px 0; border-bottom: 1px solid #C4C1BA;">${classDay}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560; width: 100px;">Name</td><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0;">${name}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560;">Email</td><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0;"><a href="mailto:${email}">${email}</a></td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560;">Phone</td><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0;">${phone}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560;">Day</td><td style="padding: 8px 0; border-bottom: 1px solid #CCC8C0;">${classDay}</td></tr>
         <tr><td style="padding: 8px 0; color: #6B6560;">Time</td><td style="padding: 8px 0;">${classTime}</td></tr>
       </table>
     </div>

@@ -17,20 +17,20 @@ export async function POST(req: NextRequest) {
     replyTo: email,
     subject: `New Contact Form Message: ${subject || 'General Inquiry'}`,
     html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1C1A17;">
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #3A3733;">
         <h2 style="margin: 0 0 24px; font-size: 20px;">New message from ${name}</h2>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; width: 100px; vertical-align: top;">Name</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA;">${name}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560; width: 100px; vertical-align: top;">Name</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #CCC8C0;">${name}</td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; vertical-align: top;">Email</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA;"><a href="mailto:${email}" style="color: #54504A;">${email}</a></td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560; vertical-align: top;">Email</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #CCC8C0;"><a href="mailto:${email}" style="color: #3A3733;">${email}</a></td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA; color: #6B6560; vertical-align: top;">Subject</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #C4C1BA;">${subject || '—'}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #CCC8C0; color: #6B6560; vertical-align: top;">Subject</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #CCC8C0;">${subject || '—'}</td>
           </tr>
           <tr>
             <td style="padding: 16px 0 0; color: #6B6560; vertical-align: top;">Message</td>

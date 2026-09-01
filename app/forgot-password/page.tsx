@@ -26,17 +26,17 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#D6D3CC] px-4 py-16">
+    <div className="min-h-screen flex items-center justify-center bg-[#E8E4DC] px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <a href="/" className="inline-flex items-baseline gap-1.5 justify-center mb-2">
-            <span className="font-serif italic text-2xl text-[#1C1A17]">Pinnacle</span>
+            <span className="font-serif italic text-2xl text-[#3A3733]">Pinnacle</span>
             <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
           </a>
           <p className="text-[#6B6560] text-sm mt-2">Reset your password</p>
         </div>
 
-        <div className="bg-white border border-[#C4C1BA] rounded-2xl p-8 shadow-sm">
+        <div className="bg-white border border-[#CCC8C0] rounded-2xl p-8 shadow-sm">
           {sent ? (
             <div className="text-center py-4">
               <div className="w-12 h-12 rounded-full bg-[#1F3D2B]/10 flex items-center justify-center mx-auto mb-4">
@@ -44,17 +44,17 @@ export default function ForgotPasswordPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="font-serif text-xl text-[#1C1A17] mb-2">Check your email</h2>
+              <h2 className="font-serif text-xl text-[#3A3733] mb-2">Check your email</h2>
               <p className="text-[#6B6560] text-sm">
                 We sent a reset link to <strong>{email}</strong>. Click the link to set a new password.
               </p>
-              <a href="/auth" className="inline-block mt-6 text-xs text-[#6B6560] hover:text-[#1C1A17] transition">
+              <a href="/auth" className="inline-block mt-6 text-xs text-[#6B6560] hover:text-[#3A3733] transition">
                 ← Back to sign in
               </a>
             </div>
           ) : (
             <>
-              <h2 className="font-serif text-xl text-[#1C1A17] mb-1">Forgot your password?</h2>
+              <h2 className="font-serif text-xl text-[#3A3733] mb-1">Forgot your password?</h2>
               <p className="text-[#6B6560] text-sm mb-6">Enter your email and we&apos;ll send you a reset link.</p>
 
               {error && (
@@ -72,20 +72,20 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="you@example.com"
-                    className="w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm"
+                    className="w-full px-4 py-3 bg-white border border-[#CCC8C0] rounded-xl text-[#3A3733] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#3A3733] focus:ring-1 focus:ring-[#3A3733] transition text-sm"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-[#54504A] hover:bg-[#3d3a35] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
+                  className="w-full py-3 bg-[#3A3733] hover:bg-[#2a2825] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
                 >
                   {loading ? 'Sending…' : 'Send Reset Link'}
                 </button>
               </form>
 
               <div className="mt-5 text-center">
-                <a href="/auth" className="text-xs text-[#6B6560] hover:text-[#1C1A17] transition">
+                <a href="/auth" className="text-xs text-[#6B6560] hover:text-[#3A3733] transition">
                   ← Back to sign in
                 </a>
               </div>

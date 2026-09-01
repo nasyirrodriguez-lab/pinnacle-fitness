@@ -51,7 +51,7 @@ export default function CheckoutButton({ planSlug, planName, highlight }: Props)
         disabled={loading}
         className={`block w-full rounded-full py-3.5 text-center text-sm font-medium transition-colors disabled:opacity-60 ${
           highlight
-            ? 'bg-[#54504A] text-white hover:bg-[#3d3a35]'
+            ? 'bg-[#C85C2D] text-white hover:bg-[#b34f26]'
             : 'bg-[#1F3D2B] text-white hover:bg-[#172e1f]'
         }`}
       >

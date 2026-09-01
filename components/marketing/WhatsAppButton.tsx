@@ -14,7 +14,7 @@ export default function WhatsAppButton() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
       {/* Popup */}
       {open && (
-        <div className="mb-1 rounded-2xl bg-[#1C1A17] p-3 shadow-xl">
+        <div className="mb-1 rounded-2xl bg-[#3A3733] p-3 shadow-xl">
           <p className="mb-2 px-1 text-xs font-medium text-white/60 uppercase tracking-wider">Chat with us</p>
           <div className="flex flex-col gap-1.5">
             {numbers.map(({ label, href }) => (

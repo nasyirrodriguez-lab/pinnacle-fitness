@@ -38,11 +38,11 @@ const hours = [
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#D6D3CC] min-h-screen pt-20">
+    <div className="bg-[#E8E4DC] min-h-screen pt-20">
       {/* Header */}
       <div className="py-20 px-6 sm:px-12 max-w-6xl mx-auto">
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Contact</p>
-        <h1 className="font-serif text-4xl sm:text-5xl text-[#1C1A17] mb-4">Get in touch.</h1>
+        <h1 className="font-serif text-4xl sm:text-5xl text-[#3A3733] mb-4">Get in touch.</h1>
         <p className="text-[#6B6560] text-lg max-w-md">
           Questions about membership, classes, or anything else? We&apos;re here for you.
         </p>
@@ -53,28 +53,28 @@ export default function ContactPage() {
           {/* Left column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Contact info */}
-            <div className="bg-white rounded-2xl border border-[#C4C1BA] p-6 space-y-5">
+            <div className="bg-white rounded-2xl border border-[#CCC8C0] p-6 space-y-5">
               {contactInfo.map(({ icon, label, value }) => (
                 <div key={label} className="flex items-start gap-4">
-                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#D6D3CC] text-[#54504A]">
+                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#E8E4DC] text-[#3A3733]">
                     {icon}
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[#6B6560] uppercase tracking-[0.15em] mb-0.5">{label}</p>
-                    <p className="text-sm text-[#1C1A17] whitespace-pre-line">{value}</p>
+                    <p className="text-sm text-[#3A3733] whitespace-pre-line">{value}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Hours */}
-            <div className="bg-white rounded-2xl border border-[#C4C1BA] p-6">
+            <div className="bg-white rounded-2xl border border-[#CCC8C0] p-6">
               <h3 className="text-xs font-medium text-[#6B6560] uppercase tracking-[0.15em] mb-4">Opening Hours</h3>
               <ul className="space-y-2">
                 {hours.map(({ day, time }) => (
                   <li key={day} className="flex justify-between text-sm">
                     <span className="text-[#6B6560]">{day}</span>
-                    <span className="text-[#1C1A17] font-medium">{time}</span>
+                    <span className="text-[#3A3733] font-medium">{time}</span>
                   </li>
                 ))}
               </ul>
@@ -83,8 +83,8 @@ export default function ContactPage() {
 
           {/* Right column — form */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl border border-[#C4C1BA] p-8">
-              <h2 className="font-serif text-2xl text-[#1C1A17] mb-6">Send Us a Message</h2>
+            <div className="bg-white rounded-2xl border border-[#CCC8C0] p-8">
+              <h2 className="font-serif text-2xl text-[#3A3733] mb-6">Send Us a Message</h2>
               <ContactForm />
             </div>
           </div>

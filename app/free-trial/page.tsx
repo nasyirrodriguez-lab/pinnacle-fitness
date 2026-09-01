@@ -46,24 +46,24 @@ export default function FreeTrialPage() {
     }
   }
 
-  const inputClass = 'w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm'
+  const inputClass = 'w-full px-4 py-3 bg-white border border-[#CCC8C0] rounded-xl text-[#3A3733] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#3A3733] focus:ring-1 focus:ring-[#3A3733] transition text-sm'
   const labelClass = 'block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5'
   const selectClass = `${inputClass} cursor-pointer appearance-none`
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-[#D6D3CC] flex items-center justify-center px-4 py-16">
+      <div className="min-h-screen bg-[#E8E4DC] flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md text-center">
           <div className="w-16 h-16 rounded-full bg-[#1F3D2B]/10 flex items-center justify-center mx-auto mb-6">
             <svg className="w-8 h-8 text-[#1F3D2B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="font-serif text-3xl text-[#1C1A17] mb-3">You&apos;re booked!</h1>
+          <h1 className="font-serif text-3xl text-[#3A3733] mb-3">You&apos;re booked!</h1>
           <p className="text-[#6B6560] mb-8">
             We&apos;ll see you on <strong>{fields.day}</strong> at <strong>{fields.time}</strong>.
           </p>
-          <Link href="/" className="inline-block bg-[#54504A] text-white rounded-full px-7 py-3 text-sm font-medium hover:bg-[#3d3a35] transition-colors">
+          <Link href="/" className="inline-block bg-[#C85C2D] text-white rounded-full px-7 py-3 text-sm font-medium hover:bg-[#b34f26] transition-colors">
             Back to home
           </Link>
         </div>
@@ -72,7 +72,7 @@ export default function FreeTrialPage() {
   }
 
   return (
-    <div className="bg-[#D6D3CC] min-h-screen">
+    <div className="bg-[#E8E4DC] min-h-screen">
       <div className="px-6 sm:px-12 pt-8 max-w-xl mx-auto">
         <a href="/">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -81,14 +81,14 @@ export default function FreeTrialPage() {
       </div>
       <div className="py-10 px-6 sm:px-12 max-w-xl mx-auto">
         <div className="mb-2">
-          <span className="inline-block bg-[#54504A] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">Free — No card required</span>
+          <span className="inline-block bg-[#3A3733] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">Free — No card required</span>
         </div>
-        <h1 className="font-serif text-4xl sm:text-5xl text-[#1C1A17] mt-4 mb-3">Book your free class.</h1>
+        <h1 className="font-serif text-4xl sm:text-5xl text-[#3A3733] mt-4 mb-3">Book your free class.</h1>
         <p className="text-[#6B6560] text-lg mb-10">
           Pick a day and time, fill in your details, and we&apos;ll see you on the floor. No membership needed.
         </p>
 
-        <div className="bg-white rounded-2xl border border-[#C4C1BA] p-8">
+        <div className="bg-white rounded-2xl border border-[#CCC8C0] p-8">
           {status === 'error' && (
             <div className="mb-5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">{errorMsg}</div>
           )}
@@ -123,7 +123,7 @@ export default function FreeTrialPage() {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="w-full py-3 bg-[#54504A] hover:bg-[#3d3a35] disabled:opacity-50 text-white font-medium rounded-full transition-colors text-sm mt-2"
+              className="w-full py-3 bg-[#C85C2D] hover:bg-[#b34f26] disabled:opacity-50 text-white font-medium rounded-full transition-colors text-sm mt-2"
             >
               {status === 'loading' ? 'Booking…' : 'Book Free Class'}
             </button>

@@ -50,11 +50,11 @@ export default function PricingPage() {
   const plans: Plan[] = fallbackPlans
 
   return (
-    <div className="bg-[#D6D3CC] min-h-screen pt-20">
+    <div className="bg-[#E8E4DC] min-h-screen pt-20">
       {/* Header */}
       <div className="text-center py-20 px-6">
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#6B6560] mb-4">Memberships</p>
-        <h1 className="font-serif text-5xl sm:text-7xl text-[#1C1A17]">Pick your plan.</h1>
+        <h1 className="font-serif text-5xl sm:text-7xl text-[#3A3733]">Pick your plan.</h1>
         <p className="text-[#6B6560] text-lg max-w-xl mx-auto mt-4 leading-relaxed">
           Flexible plans built for every type of athlete — whether you train twice a week or every single day.
         </p>
@@ -69,12 +69,12 @@ export default function PricingPage() {
           if (plan.highlight) {
             return (
               <div key={plan.id} className="bg-[#1F3D2B] rounded-2xl p-8 relative">
-                <span className="absolute -top-3.5 left-6 bg-[#54504A] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">
+                <span className="absolute -top-3.5 left-6 bg-[#3A3733] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">
                   Most Popular
                 </span>
                 <h2 className="font-serif text-3xl text-white mb-4">{displayName}</h2>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="font-serif text-3xl text-[#54504A]">TT${plan.price}</span>
+                  <span className="font-serif text-3xl text-[#3A3733]">TT${plan.price}</span>
                   <span className="text-white/60 text-sm">/ month</span>
                 </div>
                 <p className="text-white/75 text-sm leading-relaxed my-8">{description}</p>
@@ -87,10 +87,10 @@ export default function PricingPage() {
             )
           }
           return (
-            <div key={plan.id} className="bg-white rounded-2xl border border-[#C4C1BA] p-8">
-              <h2 className="font-serif text-3xl text-[#1C1A17] mb-4">{displayName}</h2>
+            <div key={plan.id} className="bg-white rounded-2xl border border-[#CCC8C0] p-8">
+              <h2 className="font-serif text-3xl text-[#3A3733] mb-4">{displayName}</h2>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="font-serif text-3xl text-[#54504A]">TT${plan.price}</span>
+                <span className="font-serif text-3xl text-[#3A3733]">TT${plan.price}</span>
                 <span className="text-[#6B6560] text-sm">/ month</span>
               </div>
               <p className="text-[#6B6560] text-sm leading-relaxed my-8">{description}</p>

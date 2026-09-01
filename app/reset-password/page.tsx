@@ -39,8 +39,8 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="bg-white border border-[#C4C1BA] rounded-2xl p-8 shadow-sm">
-      <h2 className="font-serif text-xl text-[#1C1A17] mb-1">Create new password</h2>
+    <div className="bg-white border border-[#CCC8C0] rounded-2xl p-8 shadow-sm">
+      <h2 className="font-serif text-xl text-[#3A3733] mb-1">Create new password</h2>
       <p className="text-[#6B6560] text-sm mb-6">Choose a strong password for your account.</p>
 
       {error && (
@@ -59,7 +59,7 @@ function ResetPasswordForm() {
             required
             minLength={6}
             placeholder="········"
-            className="w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm"
+            className="w-full px-4 py-3 bg-white border border-[#CCC8C0] rounded-xl text-[#3A3733] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#3A3733] focus:ring-1 focus:ring-[#3A3733] transition text-sm"
           />
         </div>
         <div>
@@ -71,13 +71,13 @@ function ResetPasswordForm() {
             required
             minLength={6}
             placeholder="········"
-            className="w-full px-4 py-3 bg-white border border-[#C4C1BA] rounded-xl text-[#1C1A17] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#54504A] focus:ring-1 focus:ring-[#54504A] transition text-sm"
+            className="w-full px-4 py-3 bg-white border border-[#CCC8C0] rounded-xl text-[#3A3733] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#3A3733] focus:ring-1 focus:ring-[#3A3733] transition text-sm"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-[#54504A] hover:bg-[#3d3a35] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
+          className="w-full py-3 bg-[#3A3733] hover:bg-[#2a2825] disabled:opacity-60 text-white font-medium rounded-full transition-colors text-sm"
         >
           {loading ? 'Updating…' : 'Update Password'}
         </button>
@@ -88,16 +88,16 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#D6D3CC] px-4 py-16">
+    <div className="min-h-screen flex items-center justify-center bg-[#E8E4DC] px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <a href="/" className="inline-flex items-baseline gap-1.5 justify-center mb-2">
-            <span className="font-serif italic text-2xl text-[#1C1A17]">Pinnacle</span>
+            <span className="font-serif italic text-2xl text-[#3A3733]">Pinnacle</span>
             <span className="text-xs tracking-[0.15em] uppercase font-medium text-[#6B6560]">GYM</span>
           </a>
           <p className="text-[#6B6560] text-sm mt-2">Set a new password</p>
         </div>
-        <Suspense fallback={<div className="bg-white border border-[#C4C1BA] rounded-2xl p-8 h-64 animate-pulse" />}>
+        <Suspense fallback={<div className="bg-white border border-[#CCC8C0] rounded-2xl p-8 h-64 animate-pulse" />}>
           <ResetPasswordForm />
         </Suspense>
       </div>
