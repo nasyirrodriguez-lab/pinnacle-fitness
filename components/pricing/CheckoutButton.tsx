@@ -27,7 +27,7 @@ export default function CheckoutButton({ planSlug, planName, highlight }: Props)
       return
     }
 
-    const res = await fetch('/api/stripe/checkout', {
+    const res = await fetch('/api/wam/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ planSlug }),
