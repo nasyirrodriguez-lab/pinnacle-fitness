@@ -72,8 +72,14 @@ export default function FreeTrialPage() {
   }
 
   return (
-    <div className="bg-[#F5F0E8] min-h-screen pt-20">
-      <div className="py-16 px-6 sm:px-12 max-w-xl mx-auto">
+    <div className="bg-[#F5F0E8] min-h-screen">
+      <div className="px-6 sm:px-12 pt-8 max-w-xl mx-auto">
+        <a href="/">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 40 }} />
+        </a>
+      </div>
+      <div className="py-10 px-6 sm:px-12 max-w-xl mx-auto">
         <div className="mb-2">
           <span className="inline-block bg-[#C85C2D] text-white text-xs font-semibold tracking-[0.1em] uppercase px-4 py-1.5 rounded-full">Free — No card required</span>
         </div>
