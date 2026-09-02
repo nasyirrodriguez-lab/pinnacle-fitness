@@ -167,6 +167,7 @@ export async function gymCheckIn(
         kind: 'pt',
         device_id: args.deviceId,
         reason: `pt · ${openNow.coachName}`,
+        booking_id: openNow.id,
       })
       .select('id')
       .single()
