@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import TermsContent from '@/components/terms/terms-content'
 
 export const metadata: Metadata = {
-  title: 'Terms and Conditions — The Worx',
+  title: 'Terms and Conditions — Pinnacle Fitness',
   description:
-    'Membership terms and conditions for The Worx coworking space in Port of Spain.',
+    'Membership terms and conditions for Pinnacle Fitness at The Playground, Port of Spain.',
   alternates: { canonical: '/terms' },
 }
 

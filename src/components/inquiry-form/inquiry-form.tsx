@@ -3,10 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { AiFillCheckCircle } from 'react-icons/ai'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -17,10 +13,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { SERVICES } from '@/constants/constants'
+import { cn } from '@/lib/utils'
 import { inquirySchema, type InquiryFormData } from '@/lib/schemas/inquiry'
 
-const INTEREST_OPTIONS = SERVICES.map((s) => s.name)
+const TOPICS = ['Membership', 'Personal training', 'Open gym', 'Something else']
 
 type State = 'idle' | 'submitting' | 'error' | 'success'
 
@@ -59,107 +55,31 @@ export default function InquiryForm({ defaultInterests }: InquiryFormProps) {
 
   if (state === 'success') {
     return (
-      <div className="flex flex-col items-center gap-4 py-8">
-        <AiFillCheckCircle className="block w-20 h-20 text-turquoise-500" />
-        <h3 className="text-xl">Thanks for reaching out!</h3>
-        <p className="text-center">
-          We&apos;ve received your inquiry and will get back to you soon.
+      <div className="py-6">
+        <p className="font-heading font-bold uppercase text-xl mb-2">
+          Got it.
+        </p>
+        <p className="text-muted-foreground">
+          One of the coaches will get back to you. If it&apos;s urgent,
+          WhatsApp is faster.
         </p>
       </div>
     )
   }
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Your name"
-                      disabled={state === 'submitting'}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Your email address"
-                      disabled={state === 'submitting'}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" noValidate>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <FormField
             control={form.control}
-            name="interests"
-            render={() => (
-              <FormItem>
-                <FormLabel>What are you interested in?</FormLabel>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                  {INTEREST_OPTIONS.map((option) => (
-                    <FormField
-                      key={option}
-                      control={form.control}
-                      name="interests"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(option)}
-                              disabled={state === 'submitting'}
-                              onCheckedChange={(checked) => {
-                                const current = field.value ?? []
-                                field.onChange(
-                                  checked
-                                    ? [...current, option]
-                                    : current.filter((v) => v !== option)
-                                )
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal cursor-pointer">
-                            {option}
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="message"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tell us a little more</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Anything else you'd like us to know?"
-                    rows={4}
+                  <Input
+                    placeholder="Your name"
                     disabled={state === 'submitting'}
                     {...field}
                   />
@@ -168,22 +88,97 @@ export default function InquiryForm({ defaultInterests }: InquiryFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={state === 'submitting'}>
-            {state === 'submitting' ? 'Sending…' : 'Send Inquiry'}
-          </Button>
-        </form>
-      </Form>
-      {state === 'error' && (
-        <Alert variant="destructive" className="mt-6">
-          <AlertDescription>
-            Something went wrong. Please try again or contact us at{' '}
-            <a href="mailto:team@theworx.io" className="underline">
-              team@theworx.io
-            </a>
-            .
-          </AlertDescription>
-        </Alert>
-      )}
-    </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    disabled={state === 'submitting'}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <FormField
+          control={form.control}
+          name="interests"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>What&apos;s it about?</FormLabel>
+              <FormControl>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {TOPICS.map((topic) => {
+                    const on = field.value?.includes(topic)
+                    return (
+                      <button
+                        key={topic}
+                        type="button"
+                        disabled={state === 'submitting'}
+                        aria-pressed={on}
+                        onClick={() => {
+                          const current = field.value ?? []
+                          field.onChange(
+                            on
+                              ? current.filter((v) => v !== topic)
+                              : [...current, topic]
+                          )
+                        }}
+                        className={cn(
+                          'rounded-full px-4 py-2 text-sm font-semibold border transition-colors',
+                          on
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border text-foreground hover:border-foreground'
+                        )}
+                      >
+                        {topic}
+                      </button>
+                    )
+                  })}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Message</FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={4}
+                  placeholder="What can we help with?"
+                  disabled={state === 'submitting'}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {state === 'error' && (
+          <p className="text-sm text-destructive">
+            That didn&apos;t send. Try again, or WhatsApp us.
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={state === 'submitting'}
+          className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-7 py-3 text-sm font-semibold hover:brightness-110 disabled:opacity-60"
+        >
+          {state === 'submitting' ? 'Sending…' : 'Send'}
+        </button>
+      </form>
+    </Form>
   )
 }
