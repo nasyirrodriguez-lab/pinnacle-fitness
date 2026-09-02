@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     const { error } = await resend.emails.send({
       from: getEmailFrom(),
-      to: 'team@theworx.io',
+      to: 'hello@pinnaclefitness.app',
       replyTo: data.email,
       subject: `New Inquiry from ${data.name}`,
       html: buildEmailHtml(data),
