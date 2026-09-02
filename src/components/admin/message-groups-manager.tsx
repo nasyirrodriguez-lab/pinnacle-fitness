@@ -64,7 +64,7 @@ export default function MessageGroupsManager({ groups }: Props) {
           className="flex items-center gap-2"
         >
           <Input
-            placeholder="New group, e.g. Virtual Office members"
+            placeholder="New group, e.g. 6am crew"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             disabled={isPending}

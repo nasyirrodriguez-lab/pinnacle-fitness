@@ -9,7 +9,7 @@ import DesignationManager, {
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Designations — Admin',
+  title: 'Team — Admin',
 }
 
 async function loadRolesWithMembers(): Promise<RoleWithMembers[]> {
@@ -56,11 +56,11 @@ export default async function AdminDesignationsPage() {
       </Link>
 
       <div className="mb-6">
-        <h1 className="font-heading text-3xl mb-1">Designations</h1>
+        <h1 className="font-heading text-3xl mb-1">Team</h1>
         <p className="text-neutral-600 max-w-xl">
-          Staff, investors, associates, office renters — anyone holding a
-          designation checks in free. Create roles, rename them, and manage who
-          holds each one. Someone not listed yet? Create their account via{' '}
+          Coaches, front desk and owners. Anyone on the team scans in free and
+          never counts against the floor cap. Someone not listed yet? Create
+          their account via{' '}
           <Link
             href="/admin/members/new"
             className="text-darkBlue-900 underline"

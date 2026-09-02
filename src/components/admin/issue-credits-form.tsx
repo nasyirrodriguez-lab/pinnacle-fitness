@@ -146,7 +146,7 @@ export default function IssueCreditsForm({
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
           placeholder={`# email, amount in TTD, optional note
-mark@example.com, 2765, Virtual Office + bundled bookings (WRX-0513)
+mark@example.com, 2765, 12 Sessions + PT packs (PIN-0513)
 nikolai@example.com, 2500, 6 Person Office 10 days lost`}
           className="font-mono text-sm"
           disabled={isPending}
@@ -245,7 +245,7 @@ nikolai@example.com, 2500, 6 Person Office 10 days lost`}
           {result.perRow.some((r) => r.outcome === 'unclaimed') && (
             <p className="mt-4 text-xs text-neutral-700 bg-neutral-50 border border-neutral-200 rounded px-3 py-2">
               Unclaimed rows are held by email. They&apos;ll auto-attach when
-              the recipient signs up at theworx.io with that email.
+              the recipient signs up at pinnaclefitness.app with that email.
             </p>
           )}
         </div>

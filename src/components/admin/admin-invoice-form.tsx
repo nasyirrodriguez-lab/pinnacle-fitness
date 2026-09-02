@@ -25,10 +25,7 @@ interface Line {
 }
 
 const KINDS = [
-  ['virtual_office', 'Virtual Office'],
-  ['office_rental', 'Office Rental'],
   ['membership', 'Membership'],
-  ['booking', 'Booking'],
   ['other', 'Other'],
 ] as const
 

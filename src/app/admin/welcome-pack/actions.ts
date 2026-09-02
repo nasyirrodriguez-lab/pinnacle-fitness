@@ -215,7 +215,7 @@ export async function sendWelcomePack(
     .join('')
   const bodyHtml = [
     eyebrow('Welcome pack'),
-    display('Welcome to The Worx'),
+    display('Welcome to Pinnacle'),
     data.intro?.trim()
       ? paragraph(escapeHtml(data.intro.trim()).replace(/\n/g, '<br/>'))
       : paragraph(
@@ -230,7 +230,7 @@ export async function sendWelcomePack(
   const result = await sendBroadcast({
     admin,
     input: {
-      subject: 'Your Worx welcome pack',
+      subject: 'Your Pinnacle welcome pack',
       bodyMarkdown: '',
       bodyHtml,
       recipients,
@@ -242,7 +242,7 @@ export async function sendWelcomePack(
     await sendMemberNotification(admin, {
       userId: recipients[0].userId,
       title: 'Your welcome pack is in your inbox',
-      body: 'We emailed you the Worx welcome pack — download links are valid for 7 days.',
+      body: 'We emailed you the Pinnacle welcome pack — download links are valid for 7 days.',
       createdBy: auth.adminId,
     })
   }

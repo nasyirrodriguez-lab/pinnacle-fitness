@@ -25,10 +25,9 @@ interface InvoiceRow {
 }
 
 const KIND_LABEL: Record<string, string> = {
-  virtual_office: 'Virtual Office',
-  office_rental: 'Office Rental',
   membership: 'Membership',
-  booking: 'Booking',
+  pack: 'Pack',
+  shop: 'Shop',
   other: 'Other',
 }
 
@@ -82,9 +81,9 @@ export default async function AdminInvoicesPage() {
       <div className="mb-6">
         <h1 className="font-heading text-3xl mb-1">Invoices</h1>
         <p className="text-neutral-600 max-w-2xl">
-          Official Worx invoices — numbered, emailed with a Wam pay link, and
-          marked paid automatically the moment the money confirms. Office
-          renters and virtual-office members are invoiced automatically on the
+          Official Pinnacle invoices — numbered, emailed with a Wam pay link, and
+          marked paid automatically the moment the money confirms. Monthly
+          members are invoiced automatically on the
           1st of each month.
         </p>
       </div>

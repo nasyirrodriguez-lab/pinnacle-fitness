@@ -603,7 +603,7 @@ export async function adminIssueCreditDirect(
 }
 
 // =====================================================================
-// Add-ons — recurring extras (locker, signage, extra desk…) attached to
+// Add-ons — recurring extras (locker, towel service, shake tab…) attached to
 // a specific member and charged alongside their plan.
 // =====================================================================
 
@@ -814,14 +814,14 @@ export async function adminRequestPayment(
   const paymentId = (paymentRow as { id: string }).id
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
   let intent
   try {
     intent = await getWam().createPaymentIntent({
       amountCents,
       currency: product.currency,
       orderReference: `request-${paymentId}`,
-      description: `${product.name} — requested by The Worx`,
+      description: `${product.name} — requested by Pinnacle`,
       returnUrl: `${siteUrl}/checkout/complete?paymentId=${paymentId}`,
       metadata: {
         paymentId,
@@ -851,7 +851,7 @@ export async function adminRequestPayment(
   await sendMemberNotification(admin, {
     userId: data.userId,
     title: `Payment requested — ${product.name}`,
-    body: `The Worx team set you up with ${product.name} (TTD $${(amountCents / 100).toFixed(0)}${addonsCents > 0 ? ', add-ons included' : ''}). It activates as soon as you pay — check your email for the payment link.`,
+    body: `the Pinnacle team set you up with ${product.name} (TTD $${(amountCents / 100).toFixed(0)}${addonsCents > 0 ? ', add-ons included' : ''}). It activates as soon as you pay — check your email for the payment link.`,
     createdBy: auth.adminId,
   })
 
@@ -964,14 +964,14 @@ export async function adminEditPaymentRequest(
         : 'your membership'
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
   let intent
   try {
     intent = await getWam().createPaymentIntent({
       amountCents: data.amountCents,
       currency: payment.currency || 'TTD',
       orderReference: `request-${payment.id}-${Date.now()}`,
-      description: `Updated payment request — The Worx`,
+      description: `Updated payment request — Pinnacle`,
       returnUrl: `${siteUrl}/checkout/complete?paymentId=${payment.id}`,
       metadata: {
         paymentId: payment.id,
@@ -1008,7 +1008,7 @@ export async function adminEditPaymentRequest(
   await sendMemberNotification(admin, {
     userId: payment.user_id,
     title: `Payment request updated — TTD $${(data.amountCents / 100).toFixed(0)}`,
-    body: `The Worx team updated your payment request. The new amount is TTD $${(data.amountCents / 100).toFixed(0)} — use the fresh payment link in your email.`,
+    body: `the Pinnacle team updated your payment request. The new amount is TTD $${(data.amountCents / 100).toFixed(0)} — use the fresh payment link in your email.`,
     createdBy: auth.adminId,
   })
   await admin.from('admin_notes').insert({

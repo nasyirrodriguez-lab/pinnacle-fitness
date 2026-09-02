@@ -6,6 +6,10 @@ import { z } from 'zod'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import {
+  grantPassFromMetadata,
+  grantSubscriptionFromMetadata,
+} from '@/lib/payments/provision'
 import { isOwner } from '@/lib/auth/roles'
 import {
   applyCreditToPayment,
@@ -199,7 +203,6 @@ export async function recordManualPayment(
   // conflict fails BEFORE the payment row is written. Recording money
   // and then erroring is how duplicate payments get created.
   let passInfo: { usesTotal: number; validityDays: number } | null = null
-  let subGrant: SubscriptionGrant | null = null
   if (data.product.kind === 'pass') {
     const { data: pass } = await admin
       .from('passes')
@@ -212,12 +215,14 @@ export async function recordManualPayment(
     const p = pass as { uses_total: number; validity_days: number }
     passInfo = { usesTotal: p.uses_total, validityDays: p.validity_days }
   } else if (data.product.kind === 'subscription') {
-    const resolved = await resolveSubscriptionGrant(admin, {
-      userId: data.userId,
-      planId: data.product.planId,
-    })
-    if (!resolved.ok) return { ok: false, error: resolved.error }
-    subGrant = resolved.grant
+    const { data: plan } = await admin
+      .from('plans')
+      .select('id')
+      .eq('id', data.product.planId)
+      .maybeSingle()
+    if (!plan) {
+      return { ok: false, error: `Plan "${data.product.planId}" not found` }
+    }
   }
 
   // Build the metadata blob with everything useful for an audit later.
@@ -283,16 +288,14 @@ export async function recordManualPayment(
     }
   }
 
-  // Auto-provision the product, mirroring the Wam webhook behavior.
-  // Track the just-granted pass id so we can deduct one use if we
-  // also check the member in (walk-in flow).
+  // Provision through the shared path so an admin-recorded payment
+  // writes the session ledger exactly like a Wam-confirmed one.
   let grantedPassPurchaseId: string | null = null
   if (data.product.kind === 'pass' && passInfo) {
-    const grant = await grantPass(admin, {
+    const grant = await grantPassFromMetadata(admin, {
       userId: data.userId,
       passId: data.product.passId,
-      usesTotal: passInfo.usesTotal,
-      validityDays: passInfo.validityDays,
+      paymentId,
     })
     if (!grant.ok) {
       console.error('[admin/payments/new] pass grant failed:', grant.error)
@@ -302,17 +305,13 @@ export async function recordManualPayment(
       }
     }
     grantedPassPurchaseId = grant.passPurchaseId ?? null
-  } else if (data.product.kind === 'subscription' && subGrant) {
-    const sub = await applySubscriptionGrant(admin, {
+  } else if (data.product.kind === 'subscription') {
+    const sub = await grantSubscriptionFromMetadata(admin, {
       userId: data.userId,
       planId: data.product.planId,
-      grant: subGrant,
     })
     if (!sub.ok) {
-      console.error(
-        '[admin/payments/new] subscription grant failed:',
-        sub.error
-      )
+      console.error('[admin/payments/new] subscription grant failed:', sub.error)
       return {
         ok: false,
         error: `Payment recorded but subscription grant failed: ${sub.error}`,
@@ -370,181 +369,4 @@ export async function recordManualPayment(
   revalidatePath('/admin')
   revalidatePath('/admin/checkin/visits')
   redirect(`/admin/payments?recorded=${paymentId}`)
-}
-
-// =====================================================================
-// Provision helpers — match the shape used by /api/payments/wam-webhook.
-// =====================================================================
-
-interface GrantResult {
-  ok: boolean
-  error?: string
-  passPurchaseId?: string
-}
-
-async function grantPass(
-  admin: ReturnType<typeof createAdminClient>,
-  args: {
-    userId: string
-    passId: string
-    usesTotal: number
-    validityDays: number
-  }
-): Promise<GrantResult> {
-  const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + args.validityDays)
-
-  const { data: row, error } = await admin
-    .from('pass_purchases')
-    .insert({
-      user_id: args.userId,
-      pass_id: args.passId,
-      uses_total: args.usesTotal,
-      uses_remaining: args.usesTotal,
-      expires_at: expiresAt.toISOString(),
-    })
-    .select('id')
-    .single()
-  if (error || !row) {
-    return { ok: false, error: error?.message ?? 'pass_purchase insert failed' }
-  }
-  return { ok: true, passPurchaseId: (row as { id: string }).id }
-}
-
-// Recording a payment against the plan a member already holds is a
-// renewal, not a double-book — the common front-desk case is a monthly
-// member paying cash for their next month. Only a *different* plan is a
-// conflict, and that's rejected before the payment row is written.
-type SubscriptionGrant =
-  | { mode: 'new' }
-  | { mode: 'renew'; subscriptionId: string; currentPeriodEnd: string }
-
-async function resolveSubscriptionGrant(
-  admin: ReturnType<typeof createAdminClient>,
-  args: { userId: string; planId: string }
-): Promise<
-  { ok: true; grant: SubscriptionGrant } | { ok: false; error: string }
-> {
-  const { data: plan } = await admin
-    .from('plans')
-    .select('id')
-    .eq('id', args.planId)
-    .maybeSingle()
-  if (!plan) return { ok: false, error: `Plan "${args.planId}" not found` }
-
-  const { data: existingRows } = await admin
-    .from('subscriptions')
-    .select('id, plan_id, current_period_end')
-    .eq('user_id', args.userId)
-    .in('status', ['active', 'past_due', 'paused'])
-    .order('created_at', { ascending: false })
-    .limit(1)
-  const existing = (
-    existingRows as
-      | { id: string; plan_id: string; current_period_end: string }[]
-      | null
-  )?.[0]
-
-  if (!existing) return { ok: true, grant: { mode: 'new' } }
-  if (existing.plan_id === args.planId) {
-    return {
-      ok: true,
-      grant: {
-        mode: 'renew',
-        subscriptionId: existing.id,
-        currentPeriodEnd: existing.current_period_end,
-      },
-    }
-  }
-  return {
-    ok: false,
-    error: `This member already has an active "${existing.plan_id}" subscription. Pick that plan to record a renewal, or cancel it first to switch plans.`,
-  }
-}
-
-async function applySubscriptionGrant(
-  admin: ReturnType<typeof createAdminClient>,
-  args: { userId: string; planId: string; grant: SubscriptionGrant }
-): Promise<GrantResult> {
-  const now = new Date()
-
-  if (args.grant.mode === 'renew') {
-    // The new paid period starts when the old one ends — or now, if it
-    // already lapsed. Extending the existing row keeps one subscription
-    // per member instead of stacking duplicates.
-    const oldEnd = new Date(args.grant.currentPeriodEnd)
-    const base = oldEnd.getTime() > now.getTime() ? oldEnd : now
-    const periodEnd = new Date(base)
-    periodEnd.setMonth(periodEnd.getMonth() + 1)
-
-    const { error } = await admin
-      .from('subscriptions')
-      .update({
-        status: 'active',
-        current_period_start: base.toISOString(),
-        current_period_end: periodEnd.toISOString(),
-      })
-      .eq('id', args.grant.subscriptionId)
-    if (error) return { ok: false, error: error.message }
-
-    await activateVirtualOffice(
-      admin,
-      args.userId,
-      args.planId,
-      args.grant.subscriptionId
-    )
-    return { ok: true }
-  }
-
-  const periodEnd = new Date(now)
-  // Self-serve plans we sell are monthly; bump a month even when the
-  // billing_period column technically reads 'month'.
-  periodEnd.setMonth(periodEnd.getMonth() + 1)
-
-  const { data: row, error } = await admin
-    .from('subscriptions')
-    .insert({
-      user_id: args.userId,
-      plan_id: args.planId,
-      status: 'active',
-      started_at: now.toISOString(),
-      current_period_start: now.toISOString(),
-      current_period_end: periodEnd.toISOString(),
-    })
-    .select('id')
-    .single()
-  if (error || !row) {
-    return { ok: false, error: error?.message ?? 'subscription insert failed' }
-  }
-
-  await activateVirtualOffice(
-    admin,
-    args.userId,
-    args.planId,
-    (row as { id: string }).id
-  )
-  return { ok: true }
-}
-
-// Mirrors the Wam-webhook provision path: a VO plan grant flips the
-// member's virtual_office_subscriptions row active and links it. No row
-// yet is fine — the admin can create one from the member page.
-async function activateVirtualOffice(
-  admin: ReturnType<typeof createAdminClient>,
-  userId: string,
-  planId: string,
-  subscriptionId: string
-): Promise<void> {
-  if (planId !== 'virtual-office-monthly') return
-  const { error } = await admin
-    .from('virtual_office_subscriptions')
-    .update({ is_active: true, subscription_id: subscriptionId })
-    .eq('user_id', userId)
-  if (error) {
-    console.error(
-      '[admin/payments/new] virtual office activation failed:',
-      userId,
-      error
-    )
-  }
 }

@@ -50,7 +50,7 @@ interface Props {
 // Mute state persists across reloads. We expose it via a tiny
 // useSyncExternalStore so the component reads localStorage without
 // needing a setState-in-effect call on mount.
-const MUTE_KEY = 'worx_admin_live_muted'
+const MUTE_KEY = 'pinnacle_admin_live_muted'
 const muteSubscribers = new Set<() => void>()
 
 function isMutedFromStorage(): boolean {

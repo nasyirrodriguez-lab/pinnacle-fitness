@@ -11,18 +11,17 @@ export const dynamic = 'force-dynamic'
 
 // =====================================================================
 // Filter + sort vocab. URL-driven, so this page is shareable and the
-// admin can bookmark a view (e.g. "lapsed members on the Hot Desk plan").
+// admin can bookmark a view (e.g. "lapsed members on the 12 Sessions plan").
 // =====================================================================
 
 const PLAN_OPTIONS = [
   { value: '', label: 'All plans' },
-  { value: 'hot-desk-monthly', label: 'Hot Desk' },
-  { value: 'dedicated-desk-monthly', label: 'Dedicated Desk' },
-  { value: 'private-office-monthly', label: 'Private Office' },
-  { value: 'corner-office-monthly', label: 'Corner Office' },
-  { value: 'virtual-office-monthly', label: 'Virtual Office' },
-  { value: 'passes-only', label: 'Day passes only' },
-  { value: 'none', label: 'No plan or passes' },
+  { value: 'pt-8', label: '8 Sessions' },
+  { value: 'pt-12', label: '12 Sessions' },
+  { value: 'unlimited', label: 'Unlimited' },
+  { value: 'open-gym-unlimited', label: 'Open gym unlimited' },
+  { value: 'passes-only', label: 'Packs only' },
+  { value: 'none', label: 'No plan or packs' },
 ] as const
 
 const ONBOARDING_OPTIONS = [
@@ -78,6 +77,7 @@ interface MemberRow {
   planId: string | null
   planName: string | null
   passUsesRemaining: number
+  ptLeft: number
   lastVisitAt: string | null
   totalVisits: number
   lastSignInAt: string | null
@@ -147,6 +147,7 @@ async function loadMembers(
     { data: passesData },
     { data: visitsData },
     { data: plansData },
+    { data: ledgerData },
   ] = await Promise.all([
     admin
       .from('subscriptions')
@@ -164,7 +165,17 @@ async function loadMembers(
       .in('user_id', ids)
       .order('checked_in_at', { ascending: false }),
     admin.from('plans').select('id, name'),
+    admin
+      .from('session_ledger')
+      .select('user_id, delta')
+      .eq('kind', 'pt')
+      .in('user_id', ids),
   ])
+
+  const ptLeftByUser = new Map<string, number>()
+  for (const row of (ledgerData as Array<{ user_id: string; delta: number }> | null) ?? []) {
+    ptLeftByUser.set(row.user_id, (ptLeftByUser.get(row.user_id) ?? 0) + row.delta)
+  }
 
   const planNameById = new Map<string, string>(
     ((plansData as Array<{ id: string; name: string }> | null) ?? []).map(
@@ -245,6 +256,7 @@ async function loadMembers(
       planId: sub?.planId ?? null,
       planName: sub ? (planNameById.get(sub.planId) ?? sub.planId) : null,
       passUsesRemaining: passUses,
+      ptLeft: ptLeftByUser.get(id) ?? 0,
       lastVisitAt: lastVisitByUser.get(id) ?? null,
       totalVisits: totalVisitsByUser.get(id) ?? 0,
       lastSignInAt: null,
@@ -435,7 +447,7 @@ export default async function AdminMembersPage({ searchParams }: PageProps) {
             href="/admin/members/designations"
             className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium border border-neutral-200 text-neutral-700 rounded-md hover:border-neutral-400 hover:text-neutral-900"
           >
-            Designations
+            Team
           </Link>
           <Link
             href="/admin/members/new"
@@ -536,9 +548,9 @@ export default async function AdminMembersPage({ searchParams }: PageProps) {
                 <tr className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wide">
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Email</th>
-                  <th className="px-4 py-3">Plan / passes</th>
+                  <th className="px-4 py-3">Plan</th>
+                  <th className="px-4 py-3 text-right">PT left</th>
                   <th className="px-4 py-3">Last visit</th>
-                  <th className="px-4 py-3">Last sign-in</th>
                   <th className="px-4 py-3">Joined</th>
                   <th className="px-4 py-3 w-12"></th>
                 </tr>
@@ -604,14 +616,16 @@ export default async function AdminMembersPage({ searchParams }: PageProps) {
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-turquoise-100 text-turquoise-800">
                           {m.planName}
                         </span>
-                      ) : m.passUsesRemaining > 0 ? (
+                      ) : m.ptLeft > 0 ? (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700">
-                          {m.passUsesRemaining} pass
-                          {m.passUsesRemaining === 1 ? '' : 'es'}
+                          Pack
                         </span>
                       ) : (
                         <span className="text-xs text-neutral-400">—</span>
                       )}
+                    </td>
+                    <td className="px-4 py-3 text-right font-stat text-lg">
+                      {m.ptLeft}
                     </td>
                     <td className="px-4 py-3 text-sm text-neutral-600">
                       {relTime(m.lastVisitAt, nowMs)}
@@ -620,9 +634,6 @@ export default async function AdminMembersPage({ searchParams }: PageProps) {
                           ({m.totalVisits})
                         </span>
                       )}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-neutral-600">
-                      {relTime(m.lastSignInAt, nowMs)}
                     </td>
                     <td className="px-4 py-3 text-sm text-neutral-600">
                       {fmtDate(m.registeredAt ?? m.createdAt)}

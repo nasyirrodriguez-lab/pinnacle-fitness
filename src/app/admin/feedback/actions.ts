@@ -143,7 +143,7 @@ export async function adminSendFeedbackForm(input: {
   if (recipients.length === 0) return { ok: false, error: 'No members found' }
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
   const formUrl = `${siteUrl}/dashboard/feedback/${form.id}`
   const bodyHtml = [
     eyebrow('We want your feedback'),
@@ -151,10 +151,10 @@ export async function adminSendFeedbackForm(input: {
     paragraph(
       form.intro
         ? escapeHtml(form.intro).replace(/\n/g, '<br/>')
-        : 'A few quick questions to help us make The Worx better for you. It takes about two minutes.'
+        : 'A few quick questions to help us make Pinnacle better for you. It takes about two minutes.'
     ),
     ctaButton(formUrl, 'Share your feedback'),
-    paragraph('Thanks for helping shape the space — The Worx team.'),
+    paragraph('Thanks for helping shape the space — the Pinnacle team.'),
   ].join('')
 
   const result = await sendBroadcast({

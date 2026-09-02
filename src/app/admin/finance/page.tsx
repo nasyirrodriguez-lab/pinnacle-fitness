@@ -1,415 +1,185 @@
 import Link from 'next/link'
-import {
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
-  TrendingDown,
-} from 'lucide-react'
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react'
 import { createAdminClient } from '@/utils/supabase/admin'
-import ExpenseManager, {
-  type ExpenseRow,
-} from '@/components/admin/expense-manager'
+import { loadGymSettings } from '@/lib/gym/settings'
+import { astMonthBounds, astMonthKey, coachDelivery, fmtTtd, shiftMonthKey } from '@/lib/members/earnings'
+import ExpenseManager, { type ExpenseRow } from '@/components/admin/expense-manager'
 
 export const dynamic = 'force-dynamic'
+export const metadata = { title: 'Finance — Admin' }
 
-export const metadata = {
-  title: 'Finance — Admin',
-}
-
-interface PageProps {
-  searchParams: Promise<{ month?: string }>
-}
-
-function astMonthKey(d = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Port_of_Spain',
-    year: 'numeric',
-    month: '2-digit',
-  })
-    .format(d)
-    .slice(0, 7)
-}
+interface PageProps { searchParams: Promise<{ month?: string }> }
 
 function monthLabel(key: string): string {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Port_of_Spain',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(`${key}-15T12:00:00-04:00`))
+  return new Intl.DateTimeFormat('en-US', { timeZone: 'America/Port_of_Spain', month: 'long', year: 'numeric' }).format(new Date(`${key}-15T12:00:00-04:00`))
 }
 
-function shiftMonth(key: string, delta: number): string {
-  const [y, m] = key.split('-').map(Number)
-  const d = new Date(Date.UTC(y, m - 1 + delta, 1))
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
-}
-
-function fmtTtd(cents: number): string {
-  const sign = cents < 0 ? '-' : ''
-  return `${sign}TTD $${(Math.abs(cents) / 100).toLocaleString('en-US', {
-    maximumFractionDigits: 0,
-  })}`
-}
-
-interface MonthData {
-  revenueCents: number
-  revenueByKind: Map<string, { count: number; cents: number }>
-  productSales: { label: string; count: number; cents: number }[]
-  expenseTotalCents: number
-  expenses: ExpenseRow[]
-  newMembers: number
-  monthlyActive: number
-  quarterlyActive: number
-  yearlyActive: number
-  activeMembers: {
-    name: string
-    visitCount: number
-    planName: string | null
-    passLabels: string[]
-  }[]
-  activePlans: { planName: string; count: number }[]
-}
-
-async function loadMonth(monthKey: string): Promise<MonthData> {
+async function loadMonth(monthKey: string) {
   const admin = createAdminClient()
-  const monthStart = new Date(`${monthKey}-01T00:00:00-04:00`)
-  const nextMonthKey = shiftMonth(monthKey, 1)
-  const monthEnd = new Date(`${nextMonthKey}-01T00:00:00-04:00`)
-  const quarterStart = new Date(`${shiftMonth(monthKey, -2)}-01T00:00:00-04:00`)
-  const yearStart = new Date(`${shiftMonth(monthKey, -11)}-01T00:00:00-04:00`)
-  const monthEndDate = `${nextMonthKey}-01`
+  const { fromIso, toIso } = astMonthBounds(monthKey)
+  const nextKey = shiftMonthKey(monthKey, 1)
+  const quarterFrom = astMonthBounds(shiftMonthKey(monthKey, -2)).fromIso
+  const yearFrom = astMonthBounds(shiftMonthKey(monthKey, -11)).fromIso
 
   const [
-    { data: payments },
-    { data: oneOffExpenses },
-    { data: recurringExpenses },
-    { count: newMembers },
-    { data: monthVisits },
-    { data: quarterVisits },
-    { data: yearVisits },
-    { data: subs },
+    settings, { data: payments }, nasyir, matthew, { data: sales }, { data: pool },
+    { data: oneOff }, { data: recurring }, { count: newMembers }, { data: subs },
+    { data: monthVisits }, { data: quarterVisits }, { data: yearVisits }, { data: members },
   ] = await Promise.all([
-    admin
-      .from('payments')
-      .select('amount_cents, kind, metadata, user_id')
-      .eq('status', 'succeeded')
-      .gte('paid_at', monthStart.toISOString())
-      .lt('paid_at', monthEnd.toISOString())
-      .limit(5000),
-    admin
-      .from('expenses')
-      .select('*')
-      .eq('is_recurring', false)
-      .gte('incurred_on', `${monthKey}-01`)
-      .lt('incurred_on', monthEndDate),
-    admin
-      .from('expenses')
-      .select('*')
-      .eq('is_recurring', true)
-      .lt('starts_on', monthEndDate)
-      .or(`ends_on.is.null,ends_on.gte.${monthKey}-01`),
-    admin
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .gte('created_at', monthStart.toISOString())
-      .lt('created_at', monthEnd.toISOString()),
-    admin
-      .from('visits')
-      .select('user_id')
-      .not('user_id', 'is', null)
-      .gte('checked_in_at', monthStart.toISOString())
-      .lt('checked_in_at', monthEnd.toISOString())
-      .limit(10000),
-    admin
-      .from('visits')
-      .select('user_id')
-      .not('user_id', 'is', null)
-      .gte('checked_in_at', quarterStart.toISOString())
-      .lt('checked_in_at', monthEnd.toISOString())
-      .limit(10000),
-    admin
-      .from('visits')
-      .select('user_id')
-      .not('user_id', 'is', null)
-      .gte('checked_in_at', yearStart.toISOString())
-      .lt('checked_in_at', monthEnd.toISOString())
-      .limit(10000),
-    admin
-      .from('subscriptions')
-      .select('user_id, plan_id, plans(name)')
-      .in('status', ['active', 'past_due', 'paused'])
-      .lte('started_at', monthEnd.toISOString())
-      .gte('current_period_end', monthStart.toISOString()),
+    loadGymSettings(admin),
+    admin.from('payments').select('amount_cents, kind, metadata, user_id, paid_at').eq('status', 'succeeded').gte('paid_at', fromIso).lt('paid_at', toIso).limit(5000),
+    coachDelivery(admin, { resourceId: 'pt-nasyir', fromIso, toIso }),
+    coachDelivery(admin, { resourceId: 'pt-matthew', fromIso, toIso }),
+    admin.from('sales').select('total_cents').gte('created_at', fromIso).lt('created_at', toIso),
+    admin.from('pool_contributions').select('amount_cents, coach_id, coaches(display_name)').eq('month', `${monthKey}-01`),
+    admin.from('expenses').select('*').eq('is_recurring', false).gte('incurred_on', `${monthKey}-01`).lt('incurred_on', `${nextKey}-01`),
+    admin.from('expenses').select('*').eq('is_recurring', true).lt('starts_on', `${nextKey}-01`).or(`ends_on.is.null,ends_on.gte.${monthKey}-01`),
+    admin.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'member').gte('created_at', fromIso).lt('created_at', toIso),
+    admin.from('subscriptions').select('user_id, status, current_period_end, plans(name)').in('status', ['active', 'past_due', 'paused']).lte('started_at', toIso).gte('current_period_end', fromIso),
+    admin.from('visits').select('user_id, checked_in_at').not('user_id', 'is', null).in('kind', ['pt', 'open_gym', 'member']).gte('checked_in_at', fromIso).lt('checked_in_at', toIso).limit(10000),
+    admin.from('visits').select('user_id').not('user_id', 'is', null).gte('checked_in_at', quarterFrom).lt('checked_in_at', toIso).limit(10000),
+    admin.from('visits').select('user_id').not('user_id', 'is', null).gte('checked_in_at', yearFrom).lt('checked_in_at', toIso).limit(10000),
+    admin.from('profiles').select('id').eq('role', 'member').eq('archived', false),
   ])
 
-  // Revenue + what sold.
-  type PaymentRow = {
-    amount_cents: number
-    kind: string
-    metadata: Record<string, unknown> | null
-    user_id: string | null
+  type Pay = { amount_cents: number; kind: string; metadata: Record<string, unknown> | null; user_id: string | null }
+  const pays = (payments as Pay[] | null) ?? []
+  const collected = pays.reduce((s, p) => s + p.amount_cents, 0)
+  const isOpenGym = (p: Pay) => {
+    const m = p.metadata ?? {}
+    return (typeof m.passId === 'string' && m.passId.startsWith('og-')) || (typeof m.planId === 'string' && m.planId.startsWith('open-gym'))
   }
-  let revenueCents = 0
-  const revenueByKind = new Map<string, { count: number; cents: number }>()
-  const productMap = new Map<string, { count: number; cents: number }>()
-  for (const p of (payments as PaymentRow[] | null) ?? []) {
-    revenueCents += p.amount_cents
-    const kindEntry = revenueByKind.get(p.kind) ?? { count: 0, cents: 0 }
-    kindEntry.count += 1
-    kindEntry.cents += p.amount_cents
-    revenueByKind.set(p.kind, kindEntry)
-
-    const metadata = p.metadata ?? {}
-    const productLabel =
-      (typeof metadata.planId === 'string' && `Plan: ${metadata.planId}`) ||
-      (typeof metadata.passId === 'string' && `Pass: ${metadata.passId}`) ||
-      (typeof metadata.resourceId === 'string' &&
-        `Booking: ${metadata.resourceId}`) ||
-      (p.kind === 'booking' && 'Booking: room') ||
-      `Other: ${p.kind}`
-    const prodEntry = productMap.get(productLabel) ?? { count: 0, cents: 0 }
-    prodEntry.count += 1
-    prodEntry.cents += p.amount_cents
-    productMap.set(productLabel, prodEntry)
+  const openGymCents = pays.filter(isOpenGym).reduce((s, p) => s + p.amount_cents, 0)
+  const byProduct = new Map<string, { count: number; cents: number }>()
+  for (const p of pays) {
+    const m = p.metadata ?? {}
+    const label = typeof m.planId === 'string' ? `Plan · ${m.planId}` : typeof m.passId === 'string' ? `Pack · ${m.passId}` : m.shop === true ? 'Shop' : `Other · ${p.kind}`
+    const e = byProduct.get(label) ?? { count: 0, cents: 0 }
+    e.count++; e.cents += p.amount_cents; byProduct.set(label, e)
   }
-  const productSales = [...productMap.entries()]
-    .map(([label, v]) => ({ label, ...v }))
-    .sort((a, b) => b.count - a.count)
+  const shopCents = ((sales as { total_cents: number }[] | null) ?? []).reduce((s, x) => s + x.total_cents, 0)
+  const poolRows = ((pool as { amount_cents: number; coach_id: string; coaches: { display_name?: string } | { display_name?: string }[] | null }[] | null) ?? [])
+  const poolByCoach = new Map<string, number>()
+  for (const r of poolRows) {
+    const c = Array.isArray(r.coaches) ? (r.coaches[0] ?? null) : r.coaches
+    const name = c?.display_name ?? 'Coach'
+    poolByCoach.set(name, (poolByCoach.get(name) ?? 0) + r.amount_cents)
+  }
+  const poolContrib = poolRows.reduce((s, r) => s + r.amount_cents, 0)
+  const poolTotal = openGymCents + shopCents + poolContrib
 
-  // Expenses.
   const mapExpense = (r: Record<string, unknown>): ExpenseRow => ({
-    id: r.id as string,
-    label: r.label as string,
-    category: r.category as string,
-    amountCents: r.amount_cents as number,
-    isRecurring: (r.is_recurring as boolean) ?? false,
-    incurredOn: (r.incurred_on as string | null) ?? null,
-    startsOn: (r.starts_on as string | null) ?? null,
-    endsOn: (r.ends_on as string | null) ?? null,
+    id: r.id as string, label: r.label as string, category: r.category as string, amountCents: r.amount_cents as number,
+    isRecurring: (r.is_recurring as boolean) ?? false, incurredOn: (r.incurred_on as string | null) ?? null, startsOn: (r.starts_on as string | null) ?? null, endsOn: (r.ends_on as string | null) ?? null,
   })
-  const expenses = [
-    ...((recurringExpenses as Record<string, unknown>[] | null) ?? []).map(
-      mapExpense
-    ),
-    ...((oneOffExpenses as Record<string, unknown>[] | null) ?? []).map(
-      mapExpense
-    ),
-  ]
-  const expenseTotalCents = expenses.reduce((s, e) => s + e.amountCents, 0)
+  const expenses = [...((recurring as Record<string, unknown>[] | null) ?? []).map(mapExpense), ...((oneOff as Record<string, unknown>[] | null) ?? []).map(mapExpense)]
+  const expenseTotal = expenses.reduce((s, e) => s + e.amountCents, 0)
 
-  // Actives.
-  const distinct = (rows: { user_id: string | null }[] | null) =>
-    new Set(((rows ?? []) as { user_id: string }[]).map((r) => r.user_id))
-  const monthActiveSet = distinct(monthVisits as { user_id: string }[] | null)
-  const visitCounts = new Map<string, number>()
-  for (const v of (monthVisits ?? []) as { user_id: string }[]) {
-    visitCounts.set(v.user_id, (visitCounts.get(v.user_id) ?? 0) + 1)
-  }
-
-  // Plans + passes for the active member list.
-  type SubRow = {
-    user_id: string
-    plan_id: string
-    plans: { name?: string } | { name?: string }[] | null
-  }
-  const planByUser = new Map<string, string>()
+  // Members
+  type Sub = { user_id: string; status: string; current_period_end: string; plans: { name?: string } | { name?: string }[] | null }
   const planCounts = new Map<string, number>()
-  for (const s of (subs as SubRow[] | null) ?? []) {
-    const planRaw = s.plans
-    const plan = Array.isArray(planRaw) ? (planRaw[0] ?? null) : planRaw
-    const name = plan?.name ?? s.plan_id
-    planByUser.set(s.user_id, name)
+  let lapsed = 0
+  const graceMs = settings.lapseGraceDays * 24 * 60 * 60 * 1000
+  for (const s of (subs as Sub[] | null) ?? []) {
+    const p = Array.isArray(s.plans) ? (s.plans[0] ?? null) : s.plans
+    const name = p?.name ?? 'Plan'
     planCounts.set(name, (planCounts.get(name) ?? 0) + 1)
+    if (Date.now() - new Date(s.current_period_end).getTime() > graceMs) lapsed++
   }
-
-  const passByUser = new Map<string, string[]>()
-  for (const p of (payments as PaymentRow[] | null) ?? []) {
-    const passId = p.metadata?.passId
-    if (p.user_id && typeof passId === 'string') {
-      const list = passByUser.get(p.user_id) ?? []
-      list.push(passId)
-      passByUser.set(p.user_id, list)
-    }
+  const distinct = (rows: { user_id: string | null }[] | null) => new Set(((rows ?? []) as { user_id: string }[]).map((r) => r.user_id))
+  const monthActive = distinct(monthVisits as { user_id: string }[] | null)
+  const lastVisit = new Map<string, number>()
+  for (const v of ((monthVisits ?? []) as { user_id: string; checked_in_at: string }[])) {
+    const t = new Date(v.checked_in_at).getTime()
+    if ((lastVisit.get(v.user_id) ?? 0) < t) lastVisit.set(v.user_id, t)
   }
+  const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000
+  const memberIds = ((members as { id: string }[] | null) ?? []).map((m) => m.id)
+  const atRisk = monthKey === astMonthKey() ? memberIds.filter((id) => (lastVisit.get(id) ?? 0) < cutoff).length : null
 
-  const topActiveIds = [...monthActiveSet]
-    .sort((a, b) => (visitCounts.get(b) ?? 0) - (visitCounts.get(a) ?? 0))
-    .slice(0, 50)
-  let activeMembers: MonthData['activeMembers'] = []
-  if (topActiveIds.length > 0) {
-    const { data: profiles } = await admin
-      .from('profiles')
-      .select('id, full_name, email')
-      .in('id', topActiveIds)
-    const nameById = new Map(
-      (
-        (profiles as
-          | { id: string; full_name: string | null; email: string }[]
-          | null) ?? []
-      ).map((p) => [p.id, p.full_name?.trim() || p.email])
-    )
-    activeMembers = topActiveIds.map((id) => ({
-      name: nameById.get(id) ?? 'Member',
-      visitCount: visitCounts.get(id) ?? 0,
-      planName: planByUser.get(id) ?? null,
-      passLabels: passByUser.get(id) ?? [],
-    }))
+  // Floor: check-ins by hour + hours the cap was hit
+  const byHour = new Array<number>(24).fill(0)
+  for (const v of ((monthVisits ?? []) as { checked_in_at: string }[])) {
+    const h = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Port_of_Spain', hour: 'numeric', hour12: false }).format(new Date(v.checked_in_at)))
+    if (h >= 0 && h < 24) byHour[h]++
   }
 
   return {
-    revenueCents,
-    revenueByKind,
-    productSales,
-    expenseTotalCents,
-    expenses,
-    newMembers: newMembers ?? 0,
-    monthlyActive: monthActiveSet.size,
-    quarterlyActive: distinct(quarterVisits as { user_id: string }[] | null)
-      .size,
-    yearlyActive: distinct(yearVisits as { user_id: string }[] | null).size,
-    activeMembers,
-    activePlans: [...planCounts.entries()]
-      .map(([planName, count]) => ({ planName, count }))
-      .sort((a, b) => b.count - a.count),
+    collected, delivered: nasyir.totalCents + matthew.totalCents, nasyir, matthew, openGymCents, shopCents, poolContrib, poolTotal, poolByCoach,
+    rentTarget: settings.rentTargetCents, expenses, expenseTotal, byProduct: [...byProduct.entries()].map(([label, v]) => ({ label, ...v })).sort((a, b) => b.cents - a.cents),
+    newMembers: newMembers ?? 0, planCounts: [...planCounts.entries()].sort((a, b) => b[1] - a[1]), lapsed, atRisk,
+    monthActive: monthActive.size, quarterActive: distinct(quarterVisits as { user_id: string }[] | null).size, yearActive: distinct(yearVisits as { user_id: string }[] | null).size,
+    byHour, floorCap: settings.floorCap,
   }
 }
 
-const KIND_LABEL: Record<string, string> = {
-  pass: 'Passes',
-  subscription: 'Memberships',
-  booking: 'Bookings',
-  one_time: 'One-off',
+function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: 'turf' | 'warn' | 'bad' }) {
+  const cls = tone === 'turf' ? 'bg-turquoise-500 text-black' : tone === 'warn' ? 'bg-orange-50 border border-orange-200' : tone === 'bad' ? 'bg-red-50 border border-red-200' : 'bg-white border border-neutral-200'
+  return (
+    <div className={`${cls} rounded-lg p-5`}>
+      <p className="text-xs uppercase tracking-wide opacity-70 mb-1">{label}</p>
+      <p className="font-stat text-3xl">{value}</p>
+      {sub && <p className="text-xs opacity-70 mt-1">{sub}</p>}
+    </div>
+  )
 }
 
 export default async function AdminFinancePage({ searchParams }: PageProps) {
   const { month } = await searchParams
-  const currentKey = astMonthKey()
-  const monthKey = /^\d{4}-\d{2}$/.test(month ?? '') ? month! : currentKey
-  const data = await loadMonth(monthKey)
-  const profitCents = data.revenueCents - data.expenseTotalCents
-
-  const prev = shiftMonth(monthKey, -1)
-  const next = shiftMonth(monthKey, 1)
+  const current = astMonthKey()
+  const monthKey = /^\d{4}-\d{2}$/.test(month ?? '') ? month! : current
+  const d = await loadMonth(monthKey)
+  const profit = d.collected - d.expenseTotal
+  const poolShort = d.rentTarget > 0 ? d.rentTarget - d.poolTotal : null
+  const maxHour = Math.max(1, ...d.byHour)
 
   return (
     <div>
       <div className="mb-6 flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className="font-heading text-3xl mb-1">Finance</h1>
-          <p className="text-neutral-600 max-w-2xl">
-            Revenue, expenses, and profit for any month — plus member growth,
-            what sold, and who was active.
-          </p>
-        </div>
+        <div><h1 className="font-heading text-3xl mb-1">Finance</h1><p className="text-neutral-600 max-w-2xl">Collected, delivered, pooled, spent — and who was in. Any month.</p></div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/admin/finance?month=${prev}`}
-            className="p-2 border border-neutral-300 rounded-md hover:bg-neutral-50"
-            aria-label="Previous month"
-          >
-            <ChevronLeft size={16} />
-          </Link>
-          <span className="font-heading text-lg min-w-40 text-center">
-            {monthLabel(monthKey)}
-          </span>
-          {monthKey < currentKey ? (
-            <Link
-              href={`/admin/finance?month=${next}`}
-              className="p-2 border border-neutral-300 rounded-md hover:bg-neutral-50"
-              aria-label="Next month"
-            >
-              <ChevronRight size={16} />
-            </Link>
-          ) : (
-            <span className="p-2 border border-neutral-200 rounded-md text-neutral-300">
-              <ChevronRight size={16} />
-            </span>
-          )}
+          <Link href={`/admin/finance?month=${shiftMonthKey(monthKey, -1)}`} className="p-2 border border-neutral-300 rounded-full"><ChevronLeft size={16} /></Link>
+          <span className="font-heading text-lg min-w-40 text-center">{monthLabel(monthKey)}</span>
+          {monthKey < current ? <Link href={`/admin/finance?month=${shiftMonthKey(monthKey, 1)}`} className="p-2 border border-neutral-300 rounded-full"><ChevronRight size={16} /></Link> : <span className="p-2 border border-neutral-200 rounded-full text-neutral-300"><ChevronRight size={16} /></span>}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Revenue" value={fmtTtd(data.revenueCents)} />
-        <StatCard label="Expenses" value={fmtTtd(data.expenseTotalCents)} />
-        <div
-          className={
-            profitCents >= 0
-              ? 'bg-lime-50 border border-lime-200 rounded-lg p-5'
-              : 'bg-red-50 border border-red-200 rounded-lg p-5'
-          }
-        >
-          <p className="text-xs uppercase tracking-wide text-neutral-500 mb-1 flex items-center gap-1">
-            {profitCents >= 0 ? (
-              <TrendingUp size={13} />
-            ) : (
-              <TrendingDown size={13} />
-            )}
-            Profit
-          </p>
-          <p className="font-heading text-2xl">{fmtTtd(profitCents)}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <Stat label="Collected" value={fmtTtd(d.collected)} sub="Wam + cash, everything" tone="turf" />
+        <Stat label="Expenses" value={fmtTtd(d.expenseTotal)} />
+        <div className={profit >= 0 ? 'bg-lime-100 rounded-lg p-5' : 'bg-red-50 border border-red-200 rounded-lg p-5'}>
+          <p className="text-xs uppercase tracking-wide opacity-70 mb-1 flex items-center gap-1">{profit >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />} Profit</p>
+          <p className="font-stat text-3xl">{fmtTtd(profit)}</p>
         </div>
-        <StatCard label="New members" value={String(data.newMembers)} />
+        <Stat label="New members" value={String(d.newMembers)} />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Stat label="Delivered · Nasyir" value={fmtTtd(d.nasyir.totalCents)} sub={`${d.nasyir.count} sessions`} />
+        <Stat label="Delivered · Matthew" value={fmtTtd(d.matthew.totalCents)} sub={`${d.matthew.count} sessions`} />
+        <Stat label="Open gym + shop" value={fmtTtd(d.openGymCents + d.shopCents)} sub={`open gym ${fmtTtd(d.openGymCents)} · shop ${fmtTtd(d.shopCents)}`} />
+        <Stat label="Rent pool" value={fmtTtd(d.poolTotal)} sub={poolShort === null ? 'no target set' : poolShort <= 0 ? `covered · target ${fmtTtd(d.rentTarget)}` : `short by ${fmtTtd(poolShort)} of ${fmtTtd(d.rentTarget)}`} tone={poolShort === null ? undefined : poolShort <= 0 ? 'turf' : 'warn'} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start mb-6">
         <section className="bg-white border border-neutral-200 rounded-lg p-6">
           <h2 className="font-heading text-lg mb-1">Expenses</h2>
-          <p className="text-xs text-neutral-500 mb-4">
-            One-off costs land in the month you pick; fixed monthly expenses
-            count in every month they run.
-          </p>
-          <ExpenseManager expenses={data.expenses} monthKey={monthKey} />
+          <p className="text-xs text-neutral-500 mb-4">One-offs land in the month you pick; fixed monthly costs count every month they run.</p>
+          <ExpenseManager expenses={d.expenses} monthKey={monthKey} />
         </section>
-
         <div className="space-y-6">
           <section className="bg-white border border-neutral-200 rounded-lg p-6">
-            <h2 className="font-heading text-lg mb-3">Revenue breakdown</h2>
-            {data.revenueByKind.size === 0 ? (
-              <p className="text-sm text-neutral-500">
-                No paid revenue this month.
-              </p>
-            ) : (
-              <ul className="space-y-1.5 text-sm">
-                {[...data.revenueByKind.entries()]
-                  .sort((a, b) => b[1].cents - a[1].cents)
-                  .map(([kind, v]) => (
-                    <li
-                      key={kind}
-                      className="flex items-center justify-between"
-                    >
-                      <span>
-                        {KIND_LABEL[kind] ?? kind}
-                        <span className="text-neutral-500"> × {v.count}</span>
-                      </span>
-                      <span className="font-medium">{fmtTtd(v.cents)}</span>
-                    </li>
-                  ))}
-              </ul>
-            )}
+            <h2 className="font-heading text-lg mb-3">Pool, by source</h2>
+            <ul className="space-y-1.5 text-sm">
+              <li className="flex justify-between"><span>Open gym</span><span className="font-stat">{fmtTtd(d.openGymCents)}</span></li>
+              <li className="flex justify-between"><span>Shop</span><span className="font-stat">{fmtTtd(d.shopCents)}</span></li>
+              {[...d.poolByCoach.entries()].map(([name, cents]) => <li key={name} className="flex justify-between"><span>{name} put in</span><span className="font-stat">{fmtTtd(cents)}</span></li>)}
+              <li className="flex justify-between border-t border-neutral-100 pt-1.5 font-medium"><span>Total</span><span className="font-stat">{fmtTtd(d.poolTotal)}</span></li>
+            </ul>
           </section>
-
           <section className="bg-white border border-neutral-200 rounded-lg p-6">
             <h2 className="font-heading text-lg mb-1">What sold</h2>
-            <p className="text-xs text-neutral-500 mb-3">
-              Most to least purchased this month.
-            </p>
-            {data.productSales.length === 0 ? (
-              <p className="text-sm text-neutral-500">No purchases.</p>
-            ) : (
-              <ul className="space-y-1.5 text-sm">
-                {data.productSales.map((p) => (
-                  <li
-                    key={p.label}
-                    className="flex items-center justify-between"
-                  >
-                    <span>
-                      {p.label}
-                      <span className="text-neutral-500"> × {p.count}</span>
-                    </span>
-                    <span className="font-medium">{fmtTtd(p.cents)}</span>
-                  </li>
-                ))}
-              </ul>
+            {d.byProduct.length === 0 ? <p className="text-sm text-neutral-500">No paid revenue.</p> : (
+              <ul className="space-y-1.5 text-sm">{d.byProduct.map((p) => <li key={p.label} className="flex justify-between"><span>{p.label} <span className="text-neutral-500">× {p.count}</span></span><span className="font-stat">{fmtTtd(p.cents)}</span></li>)}</ul>
             )}
           </section>
         </div>
@@ -417,90 +187,32 @@ export default async function AdminFinancePage({ searchParams }: PageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <section className="bg-white border border-neutral-200 rounded-lg p-6">
-          <h2 className="font-heading text-lg mb-1">Active members</h2>
-          <p className="text-xs text-neutral-500 mb-4">
-            Members who checked in at least once, ending {monthLabel(monthKey)}.
-          </p>
+          <h2 className="font-heading text-lg mb-3">Members</h2>
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <MiniStat label="This month" value={data.monthlyActive} />
-            <MiniStat label="Last 3 months" value={data.quarterlyActive} />
-            <MiniStat label="Last 12 months" value={data.yearlyActive} />
+            <Stat label="Active this month" value={String(d.monthActive)} />
+            <Stat label="Last 3 months" value={String(d.quarterActive)} />
+            <Stat label="Last 12 months" value={String(d.yearActive)} />
           </div>
-          {data.activePlans.length > 0 && (
-            <>
-              <p className="text-xs uppercase tracking-wide text-neutral-500 mb-2">
-                Live memberships in this month
-              </p>
-              <ul className="space-y-1 text-sm mb-4">
-                {data.activePlans.map((p) => (
-                  <li
-                    key={p.planName}
-                    className="flex items-center justify-between"
-                  >
-                    <span>{p.planName}</span>
-                    <span className="font-medium">{p.count}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <Stat label="Lapsed" value={String(d.lapsed)} sub="past renewal + grace" tone={d.lapsed > 0 ? 'bad' : undefined} />
+            <Stat label="At risk" value={d.atRisk === null ? '—' : String(d.atRisk)} sub="no visit in 14 days" tone={d.atRisk && d.atRisk > 0 ? 'warn' : undefined} />
+          </div>
+          <p className="text-xs uppercase tracking-wide text-neutral-500 mb-2">Live memberships</p>
+          <ul className="space-y-1 text-sm">{d.planCounts.map(([name, n]) => <li key={name} className="flex justify-between"><span>{name}</span><span className="font-stat">{n}</span></li>)}</ul>
         </section>
-
-        <section className="bg-white border border-neutral-200 rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h2 className="font-heading text-lg">Who was in</h2>
-            <p className="text-xs text-neutral-500">
-              Check-ins this month, with their plan and any passes bought.
-            </p>
+        <section className="bg-white border border-neutral-200 rounded-lg p-6">
+          <h2 className="font-heading text-lg mb-1">Floor by hour</h2>
+          <p className="text-xs text-neutral-500 mb-4">Check-ins per hour of day this month. Cap is {d.floorCap}.</p>
+          <div className="flex items-end gap-1 h-32">
+            {d.byHour.map((n, h) => (
+              <div key={h} className="flex-1 flex flex-col items-center gap-1" title={`${h}:00 · ${n}`}>
+                <div className="w-full bg-turquoise-500 rounded-t" style={{ height: `${Math.round((n / maxHour) * 100)}%`, minHeight: n > 0 ? 3 : 0 }} />
+              </div>
+            ))}
           </div>
-          {data.activeMembers.length === 0 ? (
-            <p className="p-6 text-sm text-neutral-500">
-              No member check-ins this month.
-            </p>
-          ) : (
-            <ul className="divide-y divide-neutral-100 max-h-96 overflow-y-auto">
-              {data.activeMembers.map((m, i) => (
-                <li
-                  key={i}
-                  className="px-6 py-2.5 flex items-center justify-between gap-3 text-sm"
-                >
-                  <span className="min-w-0">
-                    <span className="block font-medium truncate">{m.name}</span>
-                    <span className="block text-xs text-neutral-500 truncate">
-                      {m.planName ?? 'No plan'}
-                      {m.passLabels.length > 0 &&
-                        ` · bought: ${m.passLabels.join(', ')}`}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-neutral-600">
-                    {m.visitCount} visit{m.visitCount === 1 ? '' : 's'}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="flex justify-between text-[10px] text-neutral-500 mt-1"><span>5 AM</span><span>noon</span><span>7 PM</span></div>
         </section>
       </div>
-    </div>
-  )
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-white border border-neutral-200 rounded-lg p-5">
-      <p className="text-xs uppercase tracking-wide text-neutral-500 mb-1">
-        {label}
-      </p>
-      <p className="font-heading text-2xl">{value}</p>
-    </div>
-  )
-}
-
-function MiniStat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-neutral-50 border border-neutral-200 rounded px-3 py-2">
-      <p className="text-xs text-neutral-500">{label}</p>
-      <p className="font-heading text-xl">{value}</p>
     </div>
   )
 }

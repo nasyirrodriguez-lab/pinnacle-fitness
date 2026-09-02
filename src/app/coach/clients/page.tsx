@@ -24,7 +24,7 @@ export default async function CoachClientsPage() {
   const resourceId = `pt-${(coachRow as { slug: string } | null)?.slug ?? ''}`
 
   // Anyone who booked me recently, or who picked me as their coach.
-  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
+  const since = new Date(new Date().getTime() - 90 * 24 * 60 * 60 * 1000).toISOString()
   const [{ data: recent }, { data: preferred }] = await Promise.all([
     admin
       .from('bookings')

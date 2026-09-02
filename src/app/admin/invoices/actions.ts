@@ -33,8 +33,6 @@ async function assertAdmin(): Promise<{ adminId: string } | { error: string }> {
 const createSchema = z.object({
   email: z.string().email('Enter the member email'),
   kind: z.enum([
-    'virtual_office',
-    'office_rental',
     'membership',
     'booking',
     'other',

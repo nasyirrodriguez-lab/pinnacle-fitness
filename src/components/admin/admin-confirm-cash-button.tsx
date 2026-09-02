@@ -57,7 +57,7 @@ export default function AdminConfirmCashButton({
           className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-900 hover:bg-green-200"
         >
           <Banknote size={12} />
-          Cash at desk — confirm
+          Cash at the desk — confirm
         </button>
       )}
       {error && (

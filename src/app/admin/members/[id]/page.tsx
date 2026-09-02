@@ -1008,10 +1008,6 @@ export default async function AdminMemberDetailPage({ params }: PageProps) {
           </section>
 
           <section className="bg-white border border-neutral-200 rounded-lg p-6">
-            <h2 className="font-heading text-lg mb-4">Virtual office</h2>
-          </section>
-
-          <section className="bg-white border border-neutral-200 rounded-lg p-6">
             <h2 className="font-heading text-lg mb-3">Internal notes</h2>
             <AdminNoteForm userId={member.id} />
             {notes.length === 0 ? (

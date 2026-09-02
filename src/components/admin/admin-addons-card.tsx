@@ -22,7 +22,7 @@ interface Props {
   addons: AddonRow[]
 }
 
-// Per-member recurring extras — locker, signage, extra desk. Charged
+// Per-member recurring extras — locker, towel service, shake tab. Charged
 // with the plan when requesting payment; shown so renewals include them.
 export default function AdminAddonsCard({ userId, addons }: Props) {
   const router = useRouter()

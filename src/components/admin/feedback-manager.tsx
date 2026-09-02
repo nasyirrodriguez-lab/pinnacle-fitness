@@ -37,7 +37,7 @@ export default function FeedbackManager({
   const [intro, setIntro] = useState('')
   const [questions, setQuestions] = useState<Question[]>([
     {
-      prompt: 'How has your experience at The Worx been this quarter?',
+      prompt: 'How has your experience at Pinnacle been this quarter?',
       type: 'rating',
     },
     { prompt: 'What could we do better?', type: 'text' },
