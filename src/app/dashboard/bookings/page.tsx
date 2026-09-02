@@ -1,20 +1,20 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
-import { Calendar, ArrowRight, Clock } from 'lucide-react'
+import { ArrowRight, Calendar } from 'lucide-react'
 import { getCurrentUser } from '@/lib/auth/current-user'
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
+import { memberAccess } from '@/lib/gym/entitlement'
+import { loadGymSettings } from '@/lib/gym/settings'
+import { cancelOutcome } from '@/lib/gym/rules'
 import { parseTstzRange } from '@/lib/booking/slots'
-import { cn } from '@/lib/utils'
-import { fmtAstWeekdayDate, fmtAstTime, astDateKey } from '@/lib/time/ast'
-import ManageBooking from '@/components/booking/manage-booking'
-
-const CANCEL_CUTOFF_MS = 60 * 60 * 1000
+import { PT_RESOURCE_IDS, reservedPtCount } from '@/lib/booking/pt'
+import { fmtAstDate, fmtAstTime, fmtAstWeekdayDate } from '@/lib/time/ast'
+import BookingActions from '@/components/booking/booking-actions'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Bookings — The Worx',
+  title: 'Bookings — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -24,262 +24,221 @@ interface PageProps {
 
 interface BookingRow {
   id: string
-  ids: string[]
-  slotEnds: string[]
+  resourceId: string
+  coachName: string
   startIso: string
   endIso: string
   status: string
-  priceCents: number
-  resourceId: string
-  resourceName: string
-  resourceKind: string
-  bookingGroupId: string | null
-  cancellable: boolean
+  checkedIn: boolean
+  countdown: string
 }
 
+// Splits into upcoming / past here (not in render) so the clock read
+// happens once, in data loading.
 async function loadBookings(
-  userId: string,
-  tab: 'upcoming' | 'past'
-): Promise<BookingRow[]> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  // Order by start time. RLS lets the user see only their own.
-  const { data, error } = await supabase
-    .from('bookings')
-    .select(
-      'id, during, status, price_cents, resource_id, booking_group_id, resources(name, kind)'
-    )
-    .eq('user_id', userId)
-    .in('status', ['confirmed', 'held', 'completed', 'cancelled'])
-    .order('during', { ascending: tab === 'upcoming' })
-
-  if (error || !data) return []
-
+  userId: string
+): Promise<{ upcoming: BookingRow[]; past: BookingRow[] }> {
   const now = Date.now()
-  const rows: BookingRow[] = []
-  for (const raw of data as Record<string, unknown>[]) {
-    const range = parseTstzRange(raw.during as string)
-    if (!range) continue
-    const startMs = new Date(range.during_lower).getTime()
-    const isUpcoming = startMs >= now
-    if (tab === 'upcoming' && !isUpcoming) continue
-    if (tab === 'past' && isUpcoming) continue
-
-    const resourceRaw = raw.resources as
-      | { name?: string; kind?: string }
-      | { name?: string; kind?: string }[]
-      | null
-    const resource = Array.isArray(resourceRaw) ? resourceRaw[0] : resourceRaw
-
-    const status = raw.status as string
-    const cancellable =
-      (status === 'confirmed' || status === 'held') &&
-      startMs - now >= CANCEL_CUTOFF_MS
-    rows.push({
-      id: raw.id as string,
-      ids: [raw.id as string],
-      slotEnds: [range.during_upper],
-      startIso: range.during_lower,
-      endIso: range.during_upper,
-      status,
-      priceCents: (raw.price_cents as number) ?? 0,
-      resourceId: (raw.resource_id as string) ?? '',
-      resourceName: resource?.name ?? 'Booking',
-      resourceKind: resource?.kind ?? '',
-      bookingGroupId: (raw.booking_group_id as string | null) ?? null,
-      cancellable,
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('bookings')
+    .select('id, resource_id, during, status, checked_in_at, resources(name)')
+    .eq('user_id', userId)
+    .in('resource_id', [...PT_RESOURCE_IDS])
+    .in('status', ['confirmed', 'completed', 'cancelled', 'no_show'])
+    .order('during', { ascending: false })
+    .limit(200)
+  const rows = ((data as Record<string, unknown>[] | null) ?? [])
+    .map((raw) => {
+      const range = parseTstzRange(raw.during as string)
+      if (!range) return null
+      const resRaw = raw.resources as { name?: string } | { name?: string }[] | null
+      const res = Array.isArray(resRaw) ? (resRaw[0] ?? null) : resRaw
+      return {
+        id: raw.id as string,
+        resourceId: raw.resource_id as string,
+        coachName: res?.name ?? 'PT',
+        startIso: range.during_lower,
+        endIso: range.during_upper,
+        status: raw.status as string,
+        checkedIn: Boolean(raw.checked_in_at),
+        countdown: countdown(range.during_lower, now),
+      }
     })
-  }
-
-  // Merge back-to-back slots from the same checkout into one booking
-  // row — members see one meeting with its full time, not six 30-minute
-  // fragments.
-  const sorted = [...rows].sort(
-    (a, b) => new Date(a.startIso).getTime() - new Date(b.startIso).getTime()
-  )
-  const merged: BookingRow[] = []
-  for (const row of sorted) {
-    const prev = merged[merged.length - 1]
-    if (
-      prev &&
-      prev.bookingGroupId !== null &&
-      prev.bookingGroupId === row.bookingGroupId &&
-      prev.status === row.status &&
-      prev.endIso === row.startIso
-    ) {
-      prev.ids.push(row.id)
-      prev.slotEnds.push(row.endIso)
-      prev.endIso = row.endIso
-      prev.priceCents += row.priceCents
-      prev.cancellable = prev.cancellable && row.cancellable
-    } else {
-      merged.push(row)
-    }
-  }
-  if (tab === 'past') {
-    merged.sort(
-      (a, b) => new Date(b.startIso).getTime() - new Date(a.startIso).getTime()
+    .filter((b): b is BookingRow => b !== null)
+  const upcoming = rows
+    .filter(
+      (b) =>
+        b.status === 'confirmed' &&
+        new Date(b.endIso).getTime() > now &&
+        !b.checkedIn
     )
-  }
-  return merged
+    .sort((a, b) => a.startIso.localeCompare(b.startIso))
+  const past = rows.filter((b) => !upcoming.includes(b))
+  return { upcoming, past }
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    confirmed: 'bg-green-100 text-green-900',
-    held: 'bg-orange-100 text-orange-900',
-    completed: 'bg-neutral-100 text-neutral-700',
-    cancelled: 'bg-neutral-200 text-neutral-600',
-  }
-  const label: Record<string, string> = {
-    confirmed: 'Confirmed',
-    held: 'Awaiting payment',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-  }
+function countdown(startIso: string, now: number): string {
+  const ms = new Date(startIso).getTime() - now
+  if (ms <= 0) return 'now'
+  const h = Math.floor(ms / (60 * 60 * 1000))
+  if (h < 1) return `in ${Math.max(1, Math.round(ms / 60000))} min`
+  if (h < 24) return `in ${h}h`
+  const d = Math.round(h / 24)
+  return `in ${d} day${d === 1 ? '' : 's'}`
+}
+
+function Badge({ status, checkedIn }: { status: string; checkedIn: boolean }) {
+  const label =
+    status === 'cancelled'
+      ? 'Cancelled'
+      : status === 'no_show'
+        ? 'No-show'
+        : checkedIn || status === 'completed'
+          ? 'Checked in'
+          : 'Missed'
+  const cls =
+    label === 'Checked in'
+      ? 'bg-primary text-primary-foreground'
+      : label === 'No-show'
+        ? 'bg-destructive text-background'
+        : 'bg-background border border-border text-muted-foreground'
   return (
-    <span
-      className={cn(
-        'inline-flex items-center px-2 py-0.5 text-xs font-medium rounded',
-        styles[status] ?? 'bg-neutral-100 text-neutral-700'
-      )}
-    >
-      {label[status] ?? status}
-    </span>
-  )
-}
-
-function fmtRange(startIso: string, endIso: string): string {
-  return `${fmtAstWeekdayDate(startIso)} · ${fmtAstTime(startIso)} – ${fmtAstTime(endIso)}`
-}
-
-function fmtPrice(cents: number): string {
-  return `TTD $${(cents / 100).toFixed(0)}`
-}
-
-function Tab({
-  href,
-  label,
-  active,
-}: {
-  href: string
-  label: string
-  active: boolean
-}) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        'px-3 py-1 text-sm font-medium rounded transition',
-        active
-          ? 'bg-white text-neutral-900 shadow-sm'
-          : 'text-neutral-600 hover:text-neutral-900'
-      )}
-    >
+    <span className={`inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full ${cls}`}>
       {label}
-    </Link>
+    </span>
   )
 }
 
 export default async function BookingsPage({ searchParams }: PageProps) {
   const user = await getCurrentUser()
   if (!user) redirect('/sign-in')
-
   const { tab = 'upcoming' } = await searchParams
-  const rows = await loadBookings(user.id, tab)
+
+  const admin = createAdminClient()
+  const [{ upcoming, past }, access, reserved, settings] = await Promise.all([
+    loadBookings(user.id),
+    memberAccess(admin, user.id),
+    reservedPtCount(admin, user.id),
+    loadGymSettings(admin),
+  ])
+  const list = tab === 'past' ? past : upcoming
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-        <div>
-          <h1 className="font-heading text-3xl mb-1">Bookings</h1>
-          <p className="text-neutral-600">
-            Your meeting room and conference room reservations.
+      <div className="mb-6">
+        <h1 className="font-heading text-3xl mb-1">Bookings</h1>
+        <p className="text-muted-foreground">Your PT sessions, past and upcoming.</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="bg-card border border-border rounded-[22px] p-4">
+          <p className="font-stat text-4xl text-primary">
+            {access.ptUnlimited ? '∞' : access.ptBalance}
+          </p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mt-1">
+            PT left
           </p>
         </div>
-        <div className="inline-flex gap-1 p-1 bg-neutral-100 rounded-md">
-          <Tab
-            href="/dashboard/bookings"
-            label="Upcoming"
-            active={tab === 'upcoming'}
-          />
-          <Tab
-            href="/dashboard/bookings?tab=past"
-            label="Past"
-            active={tab === 'past'}
-          />
+        <div className="bg-card border border-border rounded-[22px] p-4">
+          <p className="font-stat text-4xl">{reserved}</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mt-1">
+            Reserved
+          </p>
+        </div>
+        <div className="bg-card border border-border rounded-[22px] p-4">
+          <p className="font-stat text-2xl leading-tight pt-1">
+            {access.periodEnd ? fmtAstDate(access.periodEnd) : '—'}
+          </p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mt-1">
+            {access.subscriptionStatus === 'lapsed' ? 'Lapsed' : 'Renews'}
+          </p>
         </div>
       </div>
 
-      {rows.length === 0 ? (
-        <div className="bg-white border border-neutral-200 rounded-lg p-12 text-center">
-          <Calendar size={32} className="mx-auto mb-3 text-neutral-400" />
-          <p className="font-medium mb-1">
-            {tab === 'upcoming' ? 'No upcoming bookings' : 'No past bookings'}
-          </p>
-          <p className="text-sm text-neutral-500 mb-6">
-            {tab === 'upcoming'
-              ? 'Reserve a room — meeting room or conference room, by the hour.'
-              : 'Your booking history will appear here.'}
+      <div className="inline-flex gap-1 p-1 bg-card border border-border rounded-full mb-4">
+        {(['upcoming', 'past'] as const).map((t) => (
+          <Link
+            key={t}
+            href={t === 'upcoming' ? '/dashboard/bookings' : '/dashboard/bookings?tab=past'}
+            className={
+              tab === t
+                ? 'px-4 py-1.5 rounded-full bg-foreground text-background text-sm font-semibold'
+                : 'px-4 py-1.5 rounded-full text-sm font-semibold text-muted-foreground'
+            }
+          >
+            {t === 'upcoming' ? 'Upcoming' : 'Past'}
+          </Link>
+        ))}
+      </div>
+
+      {list.length === 0 ? (
+        <div className="bg-card border border-border rounded-[22px] p-12 text-center">
+          <Calendar size={32} className="mx-auto mb-3 text-muted-foreground" />
+          <p className="font-semibold mb-1">
+            {tab === 'upcoming' ? 'Nothing booked' : 'No past sessions yet'}
           </p>
           {tab === 'upcoming' && (
             <Link
               href="/book"
-              className="inline-flex items-center gap-1 text-sm font-medium text-turquoise-700 hover:text-turquoise-900"
+              className="inline-flex items-center gap-1 mt-3 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold"
             >
-              Book a room
+              Book a session
               <ArrowRight size={14} />
             </Link>
           )}
         </div>
       ) : (
         <ul className="space-y-2">
-          {rows.map((b) => {
-            return (
-              <li
-                key={b.id}
-                className="bg-white border border-neutral-200 rounded-lg p-4 flex items-center justify-between gap-4 flex-wrap"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium truncate">{b.resourceName}</p>
-                    <StatusBadge status={b.status} />
-                  </div>
-                  <p className="text-sm text-neutral-600 flex items-center gap-1">
-                    <Clock size={14} />
-                    {fmtRange(b.startIso, b.endIso)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 whitespace-nowrap">
-                  <p className="text-sm font-medium">
-                    {fmtPrice(b.priceCents)}
-                  </p>
-                </div>
-                {b.cancellable && b.status === 'confirmed' && (
-                  <ManageBooking
-                    bookingIds={b.ids}
-                    resourceId={b.resourceId}
-                    resourceName={b.resourceName}
-                    dateKey={astDateKey(new Date(b.startIso))}
-                    slotEnds={b.slotEnds}
-                  />
-                )}
-              </li>
-            )
-          })}
+          {list.map((b) => (
+            <li
+              key={b.id}
+              className="bg-card border border-border rounded-[22px] p-4 flex items-center justify-between gap-4 flex-wrap"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">
+                  {b.coachName}
+                  {tab === 'upcoming' && (
+                    <span className="ml-2 text-xs font-normal text-primary">
+                      {b.countdown}
+                    </span>
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {fmtAstWeekdayDate(b.startIso)} ·{' '}
+                  <span className="font-stat text-base text-foreground">
+                    {fmtAstTime(b.startIso)}
+                  </span>{' '}
+                  – {fmtAstTime(b.endIso)}
+                </p>
+              </div>
+              {tab === 'upcoming' ? (
+                <BookingActions
+                  bookingId={b.id}
+                  resourceId={b.resourceId}
+                  label={`${b.coachName} ${fmtAstTime(b.startIso)}`}
+                  outcome={cancelOutcome(b.startIso, settings)}
+                  cancelHours={settings.ptCancelHours}
+                />
+              ) : (
+                <Badge status={b.status} checkedIn={b.checkedIn} />
+              )}
+            </li>
+          ))}
         </ul>
       )}
 
-      <div className="mt-6">
-        <Link
-          href="/book"
-          className="inline-flex items-center gap-1 text-sm font-medium text-turquoise-700 hover:text-turquoise-900"
-        >
-          Book another room
-          <ArrowRight size={14} />
-        </Link>
-      </div>
+      {tab === 'upcoming' && list.length > 0 && (
+        <div className="mt-6">
+          <Link
+            href="/book"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-primary"
+          >
+            Book another
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
