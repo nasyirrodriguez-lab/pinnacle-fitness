@@ -16,9 +16,9 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#3A3733] border-b border-[#2a2825]">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="/" className="flex items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 40, filter: 'brightness(0) invert(1)' }} />
+        <a href="/" className="flex items-center gap-1.5 select-none">
+          <span className="font-serif italic text-xl text-[#E8E4DC] leading-none">Pinnacle</span>
+          <span className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-[#E8E4DC]/40 leading-none self-end mb-0.5">GYM</span>
         </a>
         <nav className="hidden md:flex items-center gap-8">
           <a href="/programs" className="text-sm text-[#E8E4DC]/70 hover:text-[#E8E4DC] transition">Programs</a>

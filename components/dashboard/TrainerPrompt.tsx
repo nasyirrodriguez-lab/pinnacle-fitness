@@ -34,9 +34,9 @@ export default function TrainerPrompt() {
     <div className="fixed inset-0 z-50 bg-[#E8E4DC] flex items-center justify-center px-6">
       <div className="w-full max-w-md text-center">
         {/* Logo */}
-        <a href="/" className="inline-block mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 48 }} className="mx-auto" />
+        <a href="/" className="inline-flex items-center gap-1.5 select-none mb-8">
+          <span className="font-serif italic text-2xl text-[#3A3733] leading-none">Pinnacle</span>
+          <span className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-[#3A3733]/40 leading-none self-end mb-0.5">GYM</span>
         </a>
 
         <h1 className="font-serif text-2xl text-[#3A3733] mb-2">Choose your trainer</h1>

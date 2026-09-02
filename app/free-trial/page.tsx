@@ -74,9 +74,9 @@ export default function FreeTrialPage() {
   return (
     <div className="bg-[#E8E4DC] min-h-screen">
       <div className="px-6 sm:px-12 pt-8 max-w-xl mx-auto">
-        <a href="/">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 40 }} />
+        <a href="/" className="inline-flex items-center gap-1.5 select-none">
+          <span className="font-serif italic text-xl text-[#3A3733] leading-none">Pinnacle</span>
+          <span className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-[#3A3733]/40 leading-none self-end mb-0.5">GYM</span>
         </a>
       </div>
       <div className="py-10 px-6 sm:px-12 max-w-xl mx-auto">
