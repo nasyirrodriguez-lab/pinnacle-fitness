@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { isOwner } from '@/lib/auth/roles'
 import { sendRenewalReminder } from '@/lib/email/payment-reminder'
 import { sendMemberNotification } from '@/lib/notifications/notify'
 import { issueCreditGrant } from '@/lib/credits/balance'
@@ -25,8 +26,8 @@ async function assertAdmin(): Promise<{ adminId: string } | { error: string }> {
     .select('role')
     .eq('id', user.id)
     .maybeSingle()
-  if (!profile || (profile as { role?: string }).role !== 'admin') {
-    return { error: 'Admin only' }
+  if (!profile || !isOwner((profile as { role?: string }).role)) {
+    return { error: 'Owners only' }
   }
   return { adminId: user.id }
 }
@@ -36,7 +37,7 @@ const updateMemberSchema = z.object({
   fullName: z.string().min(1).max(120),
   phone: z.string().max(40).optional().nullable(),
   company: z.string().max(120).optional().nullable(),
-  role: z.enum(['member', 'admin']),
+  role: z.enum(['member', 'coach', 'owner', 'staff', 'admin']),
   designation: z.string().min(1).max(60).nullable(),
   archived: z.boolean(),
 })
@@ -60,11 +61,11 @@ export async function adminUpdateMember(
     return { ok: false, error: msg }
   }
 
-  // Safety rail: admin can't demote themselves to member (would lock them out).
-  if (data.userId === auth.adminId && data.role !== 'admin') {
+  // Safety rail: an owner can't demote themselves (would lock them out).
+  if (data.userId === auth.adminId && !isOwner(data.role)) {
     return {
       ok: false,
-      error: 'You cannot remove admin from your own account.',
+      error: 'You cannot remove owner access from your own account.',
     }
   }
 

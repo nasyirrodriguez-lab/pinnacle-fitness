@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ROLE_LABEL, type Role } from '@/lib/auth/roles'
 import Image from 'next/image'
 import { Search, ArrowRight, AlertCircle, User } from 'lucide-react'
 import { createAdminClient } from '@/utils/supabase/admin'
@@ -69,7 +70,7 @@ interface MemberRow {
   fullName: string | null
   phone: string | null
   company: string | null
-  role: 'member' | 'admin'
+  role: string
   archived: boolean
   createdAt: string
   registeredAt: string | null
@@ -236,7 +237,7 @@ async function loadMembers(
       fullName: (r.full_name as string | null) ?? null,
       phone: (r.phone as string | null) ?? null,
       company: (r.company as string | null) ?? null,
-      role: ((r.role as string) ?? 'member') as 'member' | 'admin',
+      role: ((r.role as string) ?? 'member') as string,
       archived: (r.archived as boolean) ?? false,
       createdAt: r.created_at as string,
       registeredAt: (r.registered_at as string | null) ?? null,
@@ -565,9 +566,9 @@ export default async function AdminMembersPage({ searchParams }: PageProps) {
                             {m.fullName ?? '—'}
                           </Link>
                           <div className="flex flex-wrap items-center gap-1 mt-0.5">
-                            {m.role === 'admin' && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded bg-darkBlue-900 text-white">
-                                ADMIN
+                            {m.role !== 'member' && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded bg-darkBlue-900 text-white uppercase">
+                                {ROLE_LABEL[m.role as Role] ?? m.role}
                               </span>
                             )}
                             {m.designation && (

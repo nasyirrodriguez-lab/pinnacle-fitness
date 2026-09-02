@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { isOwner } from '@/lib/auth/roles'
 import {
   buildDayGrid,
   parseTstzRange,
@@ -29,8 +30,8 @@ export async function GET(request: NextRequest) {
     .select('role')
     .eq('id', user.id)
     .maybeSingle()
-  if (!profile || (profile as { role?: string }).role !== 'admin') {
-    return NextResponse.json({ error: 'admin_only' }, { status: 403 })
+  if (!profile || !isOwner((profile as { role?: string }).role)) {
+    return NextResponse.json({ error: 'owners_only' }, { status: 403 })
   }
 
   const resourceId = request.nextUrl.searchParams.get('resourceId')

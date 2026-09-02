@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ROLE_LABEL, type Role } from '@/lib/auth/roles'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ChevronLeft, Coins, User } from 'lucide-react'
@@ -51,7 +52,7 @@ interface MemberDetail {
   address: string | null
   city: string | null
   pincode: string | null
-  role: 'member' | 'admin'
+  role: string
   designation: Designation | null
   archived: boolean
   createdAt: string
@@ -331,7 +332,7 @@ async function loadMember(id: string) {
     address: (m.address as string | null) ?? null,
     city: (m.city as string | null) ?? null,
     pincode: (m.pincode as string | null) ?? null,
-    role: ((m.role as string) ?? 'member') as 'member' | 'admin',
+    role: ((m.role as string) ?? 'member') as string,
     designation: ((m.designation as string | null) ??
       null) as MemberDetail['designation'],
     archived: (m.archived as boolean) ?? false,
@@ -631,9 +632,9 @@ export default async function AdminMemberDetailPage({ params }: PageProps) {
             </h1>
             <p className="text-neutral-600">{member.email}</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {member.role === 'admin' && (
+              {member.role !== 'member' && (
                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded bg-darkBlue-900 text-white">
-                  Admin
+                  {ROLE_LABEL[member.role as Role] ?? member.role}
                 </span>
               )}
               {member.designation && (

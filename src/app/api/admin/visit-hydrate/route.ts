@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { isOwner } from '@/lib/auth/roles'
 import { signedVisitorPhotoUrl } from '@/lib/photos/upload'
 
 // Admin-only: hydrate a single visit row with the joined profile's
@@ -41,8 +42,8 @@ export async function POST(request: NextRequest) {
     .select('role')
     .eq('id', user.id)
     .maybeSingle()
-  if (!profile || (profile as { role?: string }).role !== 'admin') {
-    return NextResponse.json({ error: 'admin_only' }, { status: 403 })
+  if (!profile || !isOwner((profile as { role?: string }).role)) {
+    return NextResponse.json({ error: 'owners_only' }, { status: 403 })
   }
 
   let body

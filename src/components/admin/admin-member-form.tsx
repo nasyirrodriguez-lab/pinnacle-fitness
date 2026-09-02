@@ -31,7 +31,7 @@ const schema = z.object({
   fullName: z.string().min(1, 'Required').max(120),
   phone: z.string().max(40).optional(),
   company: z.string().max(120).optional(),
-  role: z.enum(['member', 'admin']),
+  role: z.enum(['member', 'coach', 'owner', 'staff', 'admin']),
   // 'none' is the UI sentinel for null — shadcn Select can't hold ''.
   designation: z.string().min(1).max(60),
   archived: z.boolean(),
@@ -46,7 +46,7 @@ interface Props {
     fullName: string
     phone: string
     company: string
-    role: 'member' | 'admin'
+    role: 'member' | 'coach' | 'owner' | 'staff' | 'admin'
     designation: string
     archived: boolean
   }
@@ -163,7 +163,10 @@ export default function AdminMemberForm({
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="member">Member</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="staff">Front desk</SelectItem>
+                    <SelectItem value="coach">Coach</SelectItem>
+                    <SelectItem value="owner">Owner</SelectItem>
+                    <SelectItem value="admin">Admin (legacy)</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

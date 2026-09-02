@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { isOwner } from '@/lib/auth/roles'
 import { createInvoice } from '@/lib/invoices/create'
 import {
   invoiceMonthlyRenters,
@@ -23,8 +24,8 @@ async function assertAdmin(): Promise<{ adminId: string } | { error: string }> {
     .select('role')
     .eq('id', user.id)
     .maybeSingle()
-  if (!profile || (profile as { role?: string }).role !== 'admin') {
-    return { error: 'Admin only' }
+  if (!profile || !isOwner((profile as { role?: string }).role)) {
+    return { error: 'Owners only' }
   }
   return { adminId: user.id }
 }

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
+import { isOwner } from '@/lib/auth/roles'
 import {
   reconcilePendingWamBatch,
   type ReconcileBatchResult,
@@ -31,8 +32,8 @@ async function assertAdmin(): Promise<
     .select('role')
     .eq('id', user.id)
     .maybeSingle()
-  if (!profile || (profile as { role?: string }).role !== 'admin') {
-    return { ok: false, error: 'Admin only' }
+  if (!profile || !isOwner((profile as { role?: string }).role)) {
+    return { ok: false, error: 'Owners only' }
   }
   return { ok: true }
 }
