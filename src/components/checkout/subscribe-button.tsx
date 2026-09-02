@@ -59,7 +59,7 @@ export default function SubscribeButton({
       <div
         className={`bg-lime-50 border border-lime-200 rounded-md p-3 text-sm text-lime-900 ${fullWidth ? 'w-full' : ''}`}
       >
-        Reserved! Pay cash at the front desk and the team will activate your
+        Reserved! Pay cash at the desk and a coach will activate your
         membership on the spot.
       </div>
     )
@@ -99,7 +99,7 @@ export default function SubscribeButton({
         disabled={pending}
         className="block mx-auto text-xs text-neutral-600 hover:text-neutral-900 underline mt-2"
       >
-        Or pay cash at the front desk
+        Or pay cash at the desk
       </button>
       {error && (
         <p className="text-xs text-red-700 mt-2 text-center">{error}</p>

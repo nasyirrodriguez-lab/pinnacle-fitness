@@ -3,7 +3,7 @@ import Link from 'next/link'
 import SignInForm from '@/components/sign-in-form/sign-in-form'
 
 export const metadata: Metadata = {
-  title: 'Sign in — The Worx',
+  title: 'Sign in — Pinnacle Fitness',
   description: 'Sign in to your member dashboard.',
   robots: { index: false, follow: false },
 }
@@ -33,9 +33,10 @@ export default async function SignInPage({ searchParams }: PageProps) {
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-heading text-3xl mb-2">Welcome back</h1>
+          <h1 className="heading-display text-4xl mb-2">Welcome back</h1>
           <p className="text-neutral-600">
-            Sign in to manage your bookings, plan, and invoices.
+            Your QR, your bookings, your sessions. We&apos;ll email you a
+            one-time link or a 6-digit code — no password.
           </p>
         </div>
         {errorMessage && (
@@ -48,16 +49,9 @@ export default async function SignInPage({ searchParams }: PageProps) {
         </div>
 
         <p className="text-sm text-neutral-600 text-center mt-6">
-          New to The Worx?{' '}
-          <Link
-            href={
-              safeNext
-                ? `/sign-up?next=${encodeURIComponent(safeNext)}`
-                : '/sign-up'
-            }
-            className="text-turquoise-700 underline font-medium"
-          >
-            Create an account
+          Not a member yet?{' '}
+          <Link href="/apply" className="text-turquoise-700 underline font-medium">
+            Apply to join
           </Link>
         </p>
       </div>

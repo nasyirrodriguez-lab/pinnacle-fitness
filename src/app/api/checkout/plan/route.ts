@@ -26,13 +26,6 @@ function getSiteUrl(): string {
   )
 }
 
-// Plans that are self-serve via Wam. Anything else (private office, virtual
-// office) goes through a different flow.
-const SELF_SERVE_PLAN_IDS = new Set([
-  'hot-desk-monthly',
-  'dedicated-desk-monthly',
-])
-
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
@@ -55,13 +48,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
-  if (!SELF_SERVE_PLAN_IDS.has(planId)) {
-    return NextResponse.json(
-      { error: 'This plan is not available for self-serve checkout' },
-      { status: 400 }
-    )
-  }
-
   const admin = createAdminClient()
 
   // Refuse if the user already has an active subscription. We'll add an
@@ -76,7 +62,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'You already have an active membership. Email team@theworx.io to change plans.',
+          'You already have an active membership. Ask a coach or email hello@pinnaclefitness.app to change plans.',
       },
       { status: 409 }
     )

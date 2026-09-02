@@ -19,7 +19,7 @@ export default function TermsContent({ scrollable = false, className }: Props) {
   return (
     <div className={`${container} ${className ?? ''}`}>
       <h2 className="font-heading text-2xl mb-1">
-        The Worx — Terms and Conditions
+        Pinnacle Fitness — Member Code &amp; Terms
       </h2>
       <p className="whitespace-pre-line text-xs text-neutral-500 mb-6">
         {TERMS_INTRO}

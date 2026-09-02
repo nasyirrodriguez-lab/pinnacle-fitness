@@ -1,7 +1,6 @@
 import { Resend } from 'resend'
 import { getEmailFrom } from './sender'
 import {
-  BRAND,
   ctaButton,
   display,
   emailLayout,
@@ -11,79 +10,63 @@ import {
   paragraph,
 } from './layout'
 
+// The approval email: sent by the applications flow the moment a coach
+// approves someone. "You're in" + the three things to do first.
+
 interface SendWelcomeArgs {
   email: string
   firstName: string
-  explorePassExpiresAt?: Date
-}
-
-function formatDate(d: Date): string {
-  return d.toLocaleDateString('en-US', {
-    timeZone: 'America/Port_of_Spain',
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  })
+  planName?: string | null
+  payUrl?: string | null
 }
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+  'https://pinnaclefitness.app'
 
-function buildHtml({
-  firstName,
-  explorePassExpiresAt,
-}: {
-  firstName: string
-  explorePassExpiresAt?: Date
-}) {
-  const greetingName = firstName ? escapeHtml(firstName) : 'there'
-
-  const explorePassBlock = explorePassExpiresAt
-    ? infoBlock({
-        eyebrow: 'On us · explore pass',
-        title: 'A free day to come try us out.',
-        body: `We&rsquo;ve put one free day at a hot desk on your account &mdash; redeem any time before <strong>${escapeHtml(formatDate(explorePassExpiresAt))}</strong>. Just walk in and the front desk will sort you out.`,
-        background: 'cornbird',
-      })
-    : ''
-
+function buildHtml(args: SendWelcomeArgs) {
+  const name = args.firstName ? escapeHtml(args.firstName) : 'there'
+  const payBlock =
+    args.payUrl && args.planName
+      ? infoBlock({
+          eyebrow: 'Step 0 · activate',
+          title: `Pay for ${escapeHtml(args.planName)} to switch everything on.`,
+          body: `Your membership goes live the moment the payment confirms. Cash at the desk works too &mdash; just tell a coach.`,
+          background: 'cornbird',
+        }) + ctaButton(args.payUrl, 'Pay and activate')
+      : ''
   const body = `
-    ${eyebrow('A note · for you')}
-    ${display(`Welcome,<br>${greetingName}.`)}
+    ${eyebrow('Welcome to Pinnacle')}
+    ${display(`You&rsquo;re in,<br>${name}.`)}
     ${paragraph(
-      `You&rsquo;re in. The Worx isn&rsquo;t just a coworking space &mdash; it&rsquo;s where the people moving Trinidad &amp; Tobago forward come to build. Glad to have you with us.`
+      `Nasyir and Matthew have approved your application. Pinnacle runs on showing up &mdash; here&rsquo;s how to make your first week count.`
     )}
-    ${explorePassBlock}
+    ${payBlock}
     ${infoBlock({
-      eyebrow: 'Wi-Fi · drop in and connect',
-      title: 'Network: The Worx',
-      body: `Password: <strong style="font-family:'Sen',monospace,Helvetica,Arial,sans-serif;letter-spacing:0.04em;">dobeTTer</strong>. The same network covers every floor &mdash; if it ever drops, give it a minute and reconnect, or grab someone at the desk.`,
+      eyebrow: 'Step 1 · install',
+      title: 'Put the app on your home screen.',
+      body: `Open <a href="${SITE_URL}/sign-in" style="color:inherit;text-decoration:underline;">pinnaclefitness.app</a> on your phone, sign in with this email, then <strong>Share &rarr; Add to Home Screen</strong>. Your check-in QR is then one tap away at the door.`,
       background: 'navy',
     })}
     ${infoBlock({
-      eyebrow: 'House rules · in short',
-      title: 'A few things that keep the space great.',
-      body: `&bull;&nbsp; Calls and meetings: use the phone booths or book a meeting room &mdash; the floor stays head-down.<br>&bull;&nbsp; Clean as you go &mdash; bring your mug back, leave the desk how you&rsquo;d like to find it.<br>&bull;&nbsp; Be kind to the team and to each other. Guests are welcome with a heads-up.<br>&bull;&nbsp; Member-only spaces (dedicated desks, lockers) belong to whoever&rsquo;s name is on them.`,
-      background: 'cornbird',
-    })}
-    ${paragraph(
-      `Your member dashboard is where the practical stuff lives: book a room, manage your plan, see your billing. It takes about thirty seconds to look around.`
-    )}
-    ${ctaButton(`${SITE_URL}/dashboard`, 'Open my dashboard')}
-    ${infoBlock({
-      eyebrow: 'A few things worth knowing',
-      title: 'Reply to this email any time.',
-      body: `It goes straight to the team. We host events, workshops, and casual hangs &mdash; follow on <a href="https://www.instagram.com/wearetheworx" style="color:${BRAND.navy};text-decoration:underline;">Instagram</a> or <a href="https://www.linkedin.com/company/wearetheworx" style="color:${BRAND.navy};text-decoration:underline;">LinkedIn</a> to keep up.`,
+      eyebrow: 'Step 2 · set up',
+      title: 'Thirty seconds of setup.',
+      body: `Your goal, anything your coach should know, which coach you want first, and a 4-digit PIN (your back-up if your phone dies at the door).`,
       background: 'sulphur',
     })}
+    ${infoBlock({
+      eyebrow: 'Step 3 · book',
+      title: 'Book your first session.',
+      body: `Pick Nasyir or Matthew, pick an hour. Sessions are small groups; open gym is scan-in whenever the floor has room. Cancel free up to 4 hours before.`,
+      background: 'cornbird',
+    })}
+    ${ctaButton(`${SITE_URL}/sign-in`, 'Sign in and get started')}
     ${paragraph(
-      `Wishing you good work, good people, and a few small wins this week. See you in the space.<br><span style="color:${BRAND.navy};font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;">&mdash;&nbsp;The&nbsp;Worx&nbsp;team</span>`
+      `Reply to this email any time &mdash; it goes straight to the coaches. See you on the turf.`
     )}
   `
   return emailLayout({
-    preheader: explorePassExpiresAt
-      ? "You're in. Free day on us — come try The Worx."
-      : "You're in. Here's how to get going.",
+    preheader: "You're in. Install the app, set your PIN, book your first session.",
     body,
   })
 }
@@ -91,17 +74,13 @@ function buildHtml({
 export async function sendWelcomeEmail(args: SendWelcomeArgs): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return
-
   try {
     const resend = new Resend(apiKey)
     await resend.emails.send({
       from: getEmailFrom(),
       to: args.email,
-      subject: 'Welcome to The Worx',
-      html: buildHtml({
-        firstName: args.firstName,
-        explorePassExpiresAt: args.explorePassExpiresAt,
-      }),
+      subject: "You're in — welcome to Pinnacle",
+      html: buildHtml(args),
     })
   } catch (err) {
     console.warn('[welcome-email] send failed:', err)

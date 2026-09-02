@@ -1,241 +1,268 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
-import { CreditCard, ArrowRight, Ticket } from 'lucide-react'
 import { getCurrentUser } from '@/lib/auth/current-user'
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
+import { memberAccess } from '@/lib/gym/entitlement'
+import { listLedger, type LedgerEntry } from '@/lib/sessions/ledger'
 import { fmtAstDate } from '@/lib/time/ast'
 import PlanChangeRequest from '@/components/dashboard/plan-change-request'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Plan — The Worx',
+  title: 'Plan — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
-interface ActiveSubscription {
+interface PackRow {
   id: string
-  planId: string
-  planName: string
-  status: string
-  priceCents: number
-  currency: string
-  billingPeriod: string
-  currentPeriodEnd: string
-}
-
-interface ActivePass {
-  passId: string
-  passName: string
+  name: string
   usesRemaining: number
+  usesTotal: number
   expiresAt: string
+  sessionKind: 'pt' | 'open_gym'
 }
 
-async function loadActiveSubscription(
-  userId: string
-): Promise<ActiveSubscription | null> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-  const { data, error } = await supabase
-    .from('subscriptions')
+async function loadPacks(userId: string): Promise<PackRow[]> {
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('pass_purchases')
     .select(
-      'id, plan_id, status, current_period_end, plans(name, price_cents, currency, billing_period)'
+      'id, uses_total, uses_remaining, expires_at, passes(name, session_kind)'
     )
     .eq('user_id', userId)
-    .in('status', ['active', 'past_due', 'paused'])
-    .order('current_period_end', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  if (error || !data) return null
-  const row = data as Record<string, unknown>
-  const planRaw = row.plans as
-    | {
-        name?: string
-        price_cents?: number
-        currency?: string
-        billing_period?: string
-      }
-    | {
-        name?: string
-        price_cents?: number
-        currency?: string
-        billing_period?: string
-      }[]
-    | null
-  const plan = Array.isArray(planRaw) ? planRaw[0] : planRaw
-  return {
-    id: row.id as string,
-    planId: row.plan_id as string,
-    planName: plan?.name ?? (row.plan_id as string),
-    status: row.status as string,
-    priceCents: plan?.price_cents ?? 0,
-    currency: plan?.currency ?? 'TTD',
-    billingPeriod: plan?.billing_period ?? 'month',
-    currentPeriodEnd: row.current_period_end as string,
-  }
-}
-
-async function loadActivePasses(userId: string): Promise<ActivePass[]> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-  const { data, error } = await supabase
-    .from('pass_purchases')
-    .select('pass_id, uses_remaining, expires_at, passes(name)')
-    .eq('user_id', userId)
-    .gt('uses_remaining', 0)
     .gt('expires_at', new Date().toISOString())
     .order('expires_at', { ascending: true })
-
-  if (error || !data) return []
-  return (data as Record<string, unknown>[]).map((row) => {
-    const passRaw = row.passes as { name?: string } | { name?: string }[] | null
-    const pass = Array.isArray(passRaw) ? passRaw[0] : passRaw
+  return ((data as Record<string, unknown>[] | null) ?? []).map((r) => {
+    const raw = r.passes as
+      | { name?: string; session_kind?: string }
+      | { name?: string; session_kind?: string }[]
+      | null
+    const p = Array.isArray(raw) ? (raw[0] ?? null) : raw
     return {
-      passId: row.pass_id as string,
-      passName: pass?.name ?? (row.pass_id as string),
-      usesRemaining: row.uses_remaining as number,
-      expiresAt: row.expires_at as string,
+      id: r.id as string,
+      name: p?.name ?? 'Pack',
+      usesRemaining: r.uses_remaining as number,
+      usesTotal: r.uses_total as number,
+      expiresAt: r.expires_at as string,
+      sessionKind: (p?.session_kind as 'pt' | 'open_gym') ?? 'pt',
     }
   })
 }
 
-const fmtDate = fmtAstDate
-
-function fmtPrice(cents: number, currency: string): string {
-  return `${currency} $${(cents / 100).toFixed(0)}`
+const REASON_LABEL: Record<LedgerEntry['reason'], string> = {
+  plan_grant: 'plan month',
+  pack_purchase: 'pack',
+  booking_use: 'booked',
+  checkin_use: 'session',
+  no_show: 'no-show',
+  late_cancel: 'late cancel',
+  refund: 'refund',
+  expiry: 'expired',
+  admin_adjust: 'adjusted by the team',
 }
 
 export default async function PlanPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/sign-in')
-
-  const [subscription, passes] = await Promise.all([
-    loadActiveSubscription(user.id),
-    loadActivePasses(user.id),
+  const admin = createAdminClient()
+  const [access, packs, ledger] = await Promise.all([
+    memberAccess(admin, user.id),
+    loadPacks(user.id),
+    listLedger(admin, user.id, 25),
   ])
+  const plan = access.plan
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="font-heading text-3xl mb-1">Plan</h1>
-        <p className="text-neutral-600">
-          Your active membership and day passes.
-        </p>
-      </div>
+    <div className="max-w-xl">
+      <h1 className="heading-display text-4xl mb-6">Your plan</h1>
 
-      <section className="mb-8">
-        <h2 className="text-xs uppercase tracking-wide text-neutral-500 mb-3">
-          Membership
-        </h2>
-        {subscription ? (
-          <div className="bg-white border border-neutral-200 rounded-lg p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-md bg-turquoise-50 text-turquoise-700 flex items-center justify-center shrink-0">
-                <CreditCard size={20} />
-              </div>
+      <section className="rounded-lg bg-card border border-border p-5 mb-4">
+        {plan ? (
+          <>
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="font-heading text-xl mb-1">
-                  {subscription.planName}
-                </h3>
-                <p className="text-sm text-neutral-600">
-                  {fmtPrice(subscription.priceCents, subscription.currency)} /{' '}
-                  {subscription.billingPeriod}
+                <p className="text-[11px] tracking-[0.15em] uppercase text-ice-mute mb-1">
+                  Membership
                 </p>
+                <p className="font-heading text-2xl">{plan.name}</p>
               </div>
+              <StatusChip status={access.subscriptionStatus} />
             </div>
-            <dl className="grid grid-cols-2 gap-4 text-sm border-t border-neutral-100 pt-4">
+            <dl className="grid grid-cols-2 gap-4 mt-5 text-sm">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-neutral-500 mb-1">
-                  Status
-                </dt>
-                <dd className="font-medium capitalize">
-                  {subscription.status.replace('_', ' ')}
+                <dt className="text-xs text-ice-mute">PT sessions</dt>
+                <dd className="font-medium">
+                  {plan.ptSessionsPerMonth === null
+                    ? 'Unlimited'
+                    : plan.ptSessionsPerMonth === 0
+                      ? 'Not included'
+                      : `${plan.ptSessionsPerMonth} / month`}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-neutral-500 mb-1">
-                  Renews
+                <dt className="text-xs text-ice-mute">Open gym</dt>
+                <dd className="font-medium">
+                  {plan.includesOpenGym
+                    ? 'Included'
+                    : plan.openGymVisitsPerMonth
+                      ? `${plan.openGymVisitsPerMonth} visits / month`
+                      : 'Not included'}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-ice-mute">
+                  {access.subscriptionStatus === 'active' ? 'Renews' : 'Was due'}
                 </dt>
                 <dd className="font-medium">
-                  {fmtDate(subscription.currentPeriodEnd)}
+                  {access.periodEnd ? fmtAstDate(access.periodEnd) : '—'}
                 </dd>
               </div>
+              <div>
+                <dt className="text-xs text-ice-mute">Resets</dt>
+                <dd className="font-medium">Every month, no rollover</dd>
+              </div>
             </dl>
-          </div>
+          </>
         ) : (
-          <div className="bg-white border border-neutral-200 rounded-lg p-8 text-center">
-            <CreditCard size={28} className="mx-auto mb-3 text-neutral-400" />
-            <p className="font-medium mb-1">No active membership</p>
-            <p className="text-sm text-neutral-500 mb-6 max-w-sm mx-auto">
-              Pick a monthly plan for full-time, dedicated, or private office
-              access. Or pay-as-you-go with day passes below.
+          <>
+            <p className="font-heading text-2xl mb-1">No membership yet</p>
+            <p className="text-sm text-ice-dim">
+              Pick a monthly plan for the best per-session price, or buy a pack
+              if you want flexibility.
             </p>
+          </>
+        )}
+        <div className="flex flex-wrap gap-2 mt-5">
+          {plan && access.subscriptionStatus !== 'active' && (
+            <Link
+              href={`/subscribe/${plan.id}`}
+              className="h-11 px-5 rounded-full bg-primary text-primary-foreground font-heading text-sm inline-flex items-center"
+            >
+              Renew now
+            </Link>
+          )}
+          <Link
+            href="/buy"
+            className="h-11 px-5 rounded-full border border-ice text-ice font-heading text-sm inline-flex items-center"
+          >
+            {plan ? 'Buy a pack' : 'Choose a plan'}
+          </Link>
+          {plan && (
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-1 text-sm font-medium text-turquoise-700 hover:text-turquoise-900"
+              className="h-11 px-5 rounded-full border border-border text-ice-dim font-heading text-sm inline-flex items-center"
             >
-              See plans
-              <ArrowRight size={14} />
+              Change plan
             </Link>
-          </div>
-        )}
+          )}
+        </div>
       </section>
 
-      <section className="mb-8">
-        <h2 className="text-xs uppercase tracking-wide text-neutral-500 mb-3">
-          Membership changes
-        </h2>
-        <PlanChangeRequest />
+      <section className="rounded-lg bg-primary text-primary-foreground p-5 mb-4 grid grid-cols-2 gap-4">
+        <div>
+          <p className="font-stat text-4xl leading-none">
+            {access.ptUnlimited ? '∞' : access.ptBalance}
+          </p>
+          <p className="text-[11px] tracking-[0.1em] uppercase opacity-75 mt-1.5">
+            PT sessions left
+          </p>
+        </div>
+        <div>
+          <p className="font-stat text-4xl leading-none">
+            {access.openGymUnlimited ? '∞' : access.openGymBalance}
+          </p>
+          <p className="text-[11px] tracking-[0.1em] uppercase opacity-75 mt-1.5">
+            Open-gym visits left
+          </p>
+        </div>
       </section>
 
-      <section>
-        <h2 className="text-xs uppercase tracking-wide text-neutral-500 mb-3">
-          Day passes
-        </h2>
-        {passes.length > 0 ? (
-          <ul className="space-y-2">
-            {passes.map((p, i) => (
+      {packs.length > 0 && (
+        <section className="rounded-lg bg-card border border-border p-5 mb-4">
+          <p className="text-[11px] tracking-[0.15em] uppercase text-ice-mute mb-3">
+            Packs
+          </p>
+          <ul className="divide-y divide-border">
+            {packs.map((p) => (
               <li
-                key={i}
-                className="bg-white border border-neutral-200 rounded-lg p-4 flex items-center justify-between gap-3"
+                key={p.id}
+                className="py-3 flex items-center justify-between gap-3"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-md bg-turquoise-50 text-turquoise-700 flex items-center justify-center shrink-0">
-                    <Ticket size={18} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">{p.passName}</p>
-                    <p className="text-xs text-neutral-500">
-                      Expires {fmtDate(p.expiresAt)}
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-medium text-sm">{p.name}</p>
+                  <p className="text-xs text-ice-mute">
+                    {p.sessionKind === 'pt' ? 'PT' : 'Open gym'} · expires{' '}
+                    {fmtAstDate(p.expiresAt)}
+                  </p>
                 </div>
-                <p className="text-sm font-medium whitespace-nowrap">
-                  {p.usesRemaining}{' '}
-                  {p.usesRemaining === 1 ? 'day left' : 'days left'}
+                <p className="font-stat text-xl text-turf">
+                  {p.usesRemaining}
+                  <span className="font-sans text-xs text-ice-mute">
+                    /{p.usesTotal}
+                  </span>
                 </p>
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      <section className="rounded-lg bg-card border border-border p-5 mb-4">
+        <p className="text-[11px] tracking-[0.15em] uppercase text-ice-mute mb-3">
+          History
+        </p>
+        {ledger.length === 0 ? (
+          <p className="text-sm text-ice-mute">
+            Nothing yet — your first session will show up here.
+          </p>
         ) : (
-          <div className="bg-white border border-neutral-200 rounded-lg p-8 text-center">
-            <Ticket size={28} className="mx-auto mb-3 text-neutral-400" />
-            <p className="font-medium mb-1">No day passes</p>
-            <p className="text-sm text-neutral-500 mb-6">
-              Buy a single day or a multi-day pass.
-            </p>
-            <Link
-              href="/buy"
-              className="inline-flex items-center gap-1 text-sm font-medium text-turquoise-700 hover:text-turquoise-900"
-            >
-              Buy a pass
-              <ArrowRight size={14} />
-            </Link>
-          </div>
+          <ul className="divide-y divide-border">
+            {ledger.map((e) => (
+              <li
+                key={e.id}
+                className="py-2.5 flex items-center justify-between gap-3 text-sm"
+              >
+                <span>
+                  <span
+                    className={
+                      e.delta > 0
+                        ? 'font-stat text-lg text-turf mr-2'
+                        : 'font-stat text-lg text-ice mr-2'
+                    }
+                  >
+                    {e.delta > 0 ? `+${e.delta}` : e.delta}
+                  </span>
+                  {e.kind === 'pt' ? 'PT' : 'Open gym'} · {REASON_LABEL[e.reason]}
+                </span>
+                <span className="text-xs text-ice-mute">
+                  {fmtAstDate(e.createdAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
+
+      <PlanChangeRequest />
     </div>
+  )
+}
+
+function StatusChip({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    active: { label: 'Active', cls: 'bg-turf/15 text-turf' },
+    grace: { label: 'Renewal due', cls: 'bg-warn/15 text-warn' },
+    lapsed: { label: 'Lapsed', cls: 'bg-bad/15 text-bad' },
+    paused: { label: 'Paused', cls: 'bg-bronze-raised text-ice' },
+    none: { label: 'None', cls: 'bg-bronze-raised text-ice' },
+  }
+  const m = map[status] ?? map.none
+  return (
+    <span
+      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${m.cls}`}
+    >
+      {m.label}
+    </span>
   )
 }

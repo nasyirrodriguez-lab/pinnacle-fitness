@@ -14,17 +14,6 @@ import { unreadNotificationCount } from '@/lib/notifications/notify'
 
 export const dynamic = 'force-dynamic'
 
-async function userHasVirtualOffice(userId: string): Promise<boolean> {
-  const admin = createAdminClient()
-  const { data } = await admin
-    .from('virtual_office_subscriptions')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('is_active', true)
-    .maybeSingle()
-  return Boolean(data)
-}
-
 export default async function DashboardLayout({
   children,
 }: {
@@ -34,10 +23,11 @@ export default async function DashboardLayout({
   if (!user) redirect('/sign-in')
   if (needsOnboarding(user)) redirect('/welcome?next=/dashboard')
 
-  const [hasVirtualOffice, unreadMessages] = await Promise.all([
-    userHasVirtualOffice(user.id),
-    unreadNotificationCount(createAdminClient(), user.id),
-  ])
+  const unreadMessages = await unreadNotificationCount(
+    createAdminClient(),
+    user.id
+  )
+  const isTeam = ['coach', 'owner', 'admin'].includes(user.role)
 
   const memberName = user.fullName || user.email.split('@')[0] || 'Member'
   const memberEmail = user.email
@@ -56,17 +46,14 @@ export default async function DashboardLayout({
                   {memberEmail}
                 </p>
               </div>
-              <DashboardNav
-                hasVirtualOffice={hasVirtualOffice}
-                unreadMessages={unreadMessages}
-              />
-              {user.role === 'admin' && (
+              <DashboardNav unreadMessages={unreadMessages} />
+              {isTeam && (
                 <Link
                   href="/admin"
                   className="mt-6 mx-3 flex items-center gap-2 px-3 py-2 rounded-md bg-darkBlue-900 text-white text-sm font-medium hover:bg-darkBlue-800 transition-colors"
                 >
                   <Shield size={16} />
-                  Admin interface
+                  Coach portal
                 </Link>
               )}
               <div className="mt-6 px-3">
@@ -77,7 +64,7 @@ export default async function DashboardLayout({
           </div>
         </div>
       </div>
-      <MobileBottomNav hasVirtualOffice={hasVirtualOffice} />
+      <MobileBottomNav />
       <QrSheet fullName={memberName} />
       <InstallPrompt />
     </QrSheetProvider>

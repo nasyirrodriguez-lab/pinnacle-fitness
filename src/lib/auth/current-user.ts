@@ -8,7 +8,8 @@ export interface CurrentUserProfile {
   fullName: string | null
   phone: string | null
   company: string | null
-  role: 'member' | 'admin'
+  role: 'member' | 'coach' | 'owner' | 'staff' | 'admin'
+  pinCode: string | null
   termsVersion: string | null
   termsAcceptedAt: string | null
 }
@@ -26,7 +27,7 @@ export const getCurrentUser = cache(
     const { data: profile } = await supabase
       .from('profiles')
       .select(
-        'id, email, full_name, phone, company, role, terms_version, terms_accepted_at'
+        'id, email, full_name, phone, company, role, terms_version, terms_accepted_at, pin_code'
       )
       .eq('id', user.id)
       .maybeSingle()
@@ -40,6 +41,7 @@ export const getCurrentUser = cache(
         phone: null,
         company: null,
         role: 'member',
+        pinCode: null,
         termsVersion: null,
         termsAcceptedAt: null,
       }
@@ -52,7 +54,8 @@ export const getCurrentUser = cache(
       fullName: (row.full_name as string | null) ?? null,
       phone: (row.phone as string | null) ?? null,
       company: (row.company as string | null) ?? null,
-      role: (row.role as 'member' | 'admin') ?? 'member',
+      role: (row.role as CurrentUserProfile['role']) ?? 'member',
+      pinCode: (row.pin_code as string | null) ?? null,
       termsVersion: (row.terms_version as string | null) ?? null,
       termsAcceptedAt: (row.terms_accepted_at as string | null) ?? null,
     }

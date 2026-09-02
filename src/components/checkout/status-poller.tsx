@@ -118,10 +118,10 @@ export default function CheckoutStatusPoller({ paymentId }: Props) {
         <p className="text-neutral-600 mb-6">
           We couldn&apos;t find that payment. If you were charged, email{' '}
           <a
-            href="mailto:team@theworx.io"
+            href="mailto:hello@pinnaclefitness.app"
             className="text-turquoise-700 underline"
           >
-            team@theworx.io
+            hello@pinnaclefitness.app
           </a>
           .
         </p>
@@ -141,14 +141,14 @@ export default function CheckoutStatusPoller({ paymentId }: Props) {
       </h1>
       <p className="text-neutral-600 mb-6">
         {isTimeout
-          ? 'Wam is still confirming your payment. Your purchase activates automatically the moment it confirms — check your dashboard in a few minutes. If it still hasn’t appeared, email team@theworx.io.'
+          ? 'Wam is still confirming your payment. Your purchase activates automatically the moment it confirms — check your dashboard in a few minutes. If it still hasn’t appeared, email hello@pinnaclefitness.app.'
           : `Status: ${state.status}. If you were charged, contact `}
         {!isTimeout && (
           <a
-            href="mailto:team@theworx.io"
+            href="mailto:hello@pinnaclefitness.app"
             className="text-turquoise-700 underline"
           >
-            team@theworx.io
+            hello@pinnaclefitness.app
           </a>
         )}
         {!isTimeout && '.'}
