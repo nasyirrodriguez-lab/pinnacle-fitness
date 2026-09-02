@@ -93,7 +93,7 @@ export default function ProfileForm({ defaultValues, email }: Props) {
             {email}
           </p>
           <p className="text-xs text-neutral-400 mt-1">
-            Email is locked. Email team@theworx.io to change it.
+            Email is locked. Email hello@pinnaclefitness.app to change it.
           </p>
         </div>
 
@@ -126,7 +126,7 @@ export default function ProfileForm({ defaultValues, email }: Props) {
               <FormLabel>Company (optional)</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="The Worx"
+                  placeholder="Pinnacle Fitness"
                   autoComplete="organization"
                   disabled={isPending}
                   {...field}

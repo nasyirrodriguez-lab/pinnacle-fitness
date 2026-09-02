@@ -69,7 +69,7 @@ function buildHtml(args: {
     : ''
 
   const unsubscribeFooter = `<p style="margin:0;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:${BRAND.muted};">
-    You&rsquo;re receiving this because you&rsquo;re part of The Worx community.<br>
+    You&rsquo;re receiving this because you&rsquo;re part of Pinnacle Fitness community.<br>
     <a href="${args.unsubscribeUrl}" style="color:${BRAND.muted};text-decoration:underline;text-underline-offset:2px;">Unsubscribe</a>
   </p>`
 

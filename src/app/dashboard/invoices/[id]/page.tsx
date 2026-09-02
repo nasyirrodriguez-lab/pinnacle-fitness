@@ -9,7 +9,7 @@ import type { InvoiceLineItem } from '@/lib/invoices/create'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Invoice — The Worx',
+  title: 'Invoice — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -18,10 +18,9 @@ interface PageProps {
 }
 
 const KIND_LABEL: Record<string, string> = {
-  virtual_office: 'Virtual Office',
-  office_rental: 'Office Rental',
   membership: 'Membership',
-  booking: 'Booking',
+  pack: 'Sessions pack',
+  shop: 'Shop',
   other: 'Services',
 }
 
@@ -87,7 +86,7 @@ export default async function InvoicePage({ params }: PageProps) {
               <br />
               Port of Spain, Trinidad and Tobago
               <br />
-              team@theworx.io
+              hello@pinnaclefitness.app
             </p>
           </div>
           <div className="text-right">
@@ -171,7 +170,8 @@ export default async function InvoicePage({ params }: PageProps) {
           </p>
         )}
         <p className="text-xs text-neutral-400 mt-6">
-          The Worx · theworx.io · Thank you for building with us.
+          Pinnacle Fitness · pinnaclefitness.app · Thank you for building with
+          us.
         </p>
       </div>
     </div>

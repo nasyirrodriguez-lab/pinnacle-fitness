@@ -4,7 +4,7 @@ import StaffCheckinClient from '@/components/checkin/staff-checkin-client'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Staff check-in | The Worx',
+  title: 'Staff check-in | Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 

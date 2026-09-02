@@ -63,9 +63,9 @@ export default function SignUpForm() {
         <AiFillCheckCircle className="block w-20 h-20 text-blue-500" />
         <h3 className="text-xl">Success!</h3>
         <p className="text-center">
-          Welcome to The Worx! We&apos;re excited to have you on board. Look out
-          for an email from us soon containing details to get you up and running
-          at The Worx.
+          Welcome to Pinnacle Fitness! We&apos;re excited to have you on board.
+          Look out for an email from us soon containing details to get you up
+          and running at Pinnacle.
         </p>
       </div>
     )
@@ -76,7 +76,7 @@ export default function SignUpForm() {
       <h3 className="text-xl mb-4">Sign Up</h3>
       <p className="mb-8 text-lg">
         Fill in the form below and we&apos;ll be in touch to get you up and
-        running at The Worx.
+        running at Pinnacle.
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -232,8 +232,8 @@ export default function SignUpForm() {
           <AlertDescription>
             Uh oh… there was an error signing up. Please try again. If the error
             persists, please contact{' '}
-            <a href="mailto:support@theworx.io" className="underline">
-              support@theworx.io
+            <a href="mailto:support@pinnaclefitness.app" className="underline">
+              support@pinnaclefitness.app
             </a>
             .
           </AlertDescription>

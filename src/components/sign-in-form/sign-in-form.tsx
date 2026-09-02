@@ -89,7 +89,7 @@ export default function SignInForm({
                 <Input
                   type="email"
                   autoComplete="email"
-                  placeholder="you@theworx.io"
+                  placeholder="you@pinnaclefitness.app"
                   disabled={state.kind === 'submitting'}
                   {...field}
                 />

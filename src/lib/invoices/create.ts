@@ -3,7 +3,7 @@ import { getWam } from '@/lib/wam/client'
 import { sendInvoiceEmail } from '@/lib/email/invoice'
 import { sendMemberNotification } from '@/lib/notifications/notify'
 
-// Official Worx invoices. Every invoice is backed by a pending payment
+// Official Pinnacle invoices. Every invoice is backed by a pending payment
 // with a Wam intent, so "did they pay?" is answered by the same
 // webhook/reconcile pipeline as every other payment — the invoice shows
 // paid the moment the money confirms. Subscription-backed invoices
@@ -14,12 +14,7 @@ export interface InvoiceLineItem {
   amountCents: number
 }
 
-export type InvoiceKind =
-  | 'virtual_office'
-  | 'office_rental'
-  | 'membership'
-  | 'booking'
-  | 'other'
+export type InvoiceKind = 'membership' | 'pack' | 'shop' | 'other'
 
 export interface CreateInvoiceArgs {
   userId: string
@@ -38,7 +33,8 @@ export type CreateInvoiceResult =
 
 function getSiteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   )
 }
 
@@ -79,7 +75,6 @@ export async function createInvoice(
   if (args.planId) {
     metadata.planId = args.planId
     metadata.billingPeriod = 'month'
-    if (args.planId === 'virtual-office-monthly') metadata.virtualOffice = true
   }
   const { data: paymentRow, error: payErr } = await admin
     .from('payments')
@@ -106,7 +101,7 @@ export async function createInvoice(
       amountCents,
       currency: 'TTD',
       orderReference: `invoice-${paymentId}`,
-      description: `The Worx invoice ${number}`,
+      description: `Pinnacle Fitness invoice ${number}`,
       returnUrl: `${getSiteUrl()}/checkout/complete?paymentId=${paymentId}`,
       metadata: { paymentId, userId: args.userId, invoiceNumber: number },
     })
@@ -159,7 +154,7 @@ export async function createInvoice(
   await sendMemberNotification(admin, {
     userId: args.userId,
     title: `Invoice ${number} — TTD $${(amountCents / 100).toFixed(0)}`,
-    body: `Your Worx invoice${args.periodLabel ? ` for ${args.periodLabel}` : ''} is ready. Pay online from the email we just sent, or view it in your dashboard under Invoices.`,
+    body: `Your Pinnacle invoice${args.periodLabel ? ` for ${args.periodLabel}` : ''} is ready. Pay online from the email we just sent, or view it in your dashboard under Invoices.`,
     createdBy: args.createdBy ?? null,
   })
 

@@ -3,7 +3,7 @@ import { effectivePrice } from '@/lib/pricing/effective'
 import { createInvoice, type InvoiceLineItem } from '@/lib/invoices/create'
 
 // Monthly auto-invoicing: everyone currently renting an office
-// (designation office_rental) or holding a virtual-office membership
+// (profiles.designation = 'invoiced') — off by default via the monthly_invoicing setting
 // gets an official invoice for the month — plan price plus their active
 // add-ons — with a Wam pay link. Idempotent per member per month.
 
@@ -74,9 +74,7 @@ export async function invoiceMonthlyRenters(
       : raw.profiles
     if (!plan || profile?.archived) continue
 
-    const isVirtualOffice = raw.plan_id === 'virtual-office-monthly'
-    const isOfficeRental = profile?.designation === 'office_rental'
-    if (!isVirtualOffice && !isOfficeRental) continue
+    if (profile?.designation !== 'invoiced') continue
     result.candidates++
 
     // One invoice per member per month.
@@ -118,7 +116,7 @@ export async function invoiceMonthlyRenters(
 
     const created = await createInvoice(admin, {
       userId: raw.user_id,
-      kind: isVirtualOffice ? 'virtual_office' : 'office_rental',
+      kind: 'membership',
       lineItems,
       periodLabel,
       dueAt: dueAt.toISOString(),

@@ -9,7 +9,7 @@ import ShareLinkCard from '@/components/referral-form/share-link-card'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Refer a friend — The Worx',
+  title: 'Refer a friend — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -26,7 +26,8 @@ interface ReferralRow {
 
 function getSiteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   )
 }
 
@@ -102,7 +103,7 @@ export default async function ReferPage() {
       ) : (
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 text-sm text-orange-900">
           Couldn&apos;t generate your referral code. Refresh and try again, or
-          email team@theworx.io.
+          email hello@pinnaclefitness.app.
         </div>
       )}
 
@@ -195,8 +196,8 @@ export default async function ReferPage() {
       <p className="text-xs text-neutral-500">
         Want to send an email instead?{' '}
         <a
-          href={`mailto:?subject=${encodeURIComponent('Come check out The Worx with me')}&body=${encodeURIComponent(
-            `Hey — I'm a member at The Worx, our coworking space in Port of Spain. I think you'd like it. Sign up through my link and we both get a free day:\n\n${shareUrl}`
+          href={`mailto:?subject=${encodeURIComponent('Come check out Pinnacle Fitness with me')}&body=${encodeURIComponent(
+            `Hey — I'm a member at Pinnacle, our gym in Port of Spain. I think you'd like it. Sign up through my link and we both get a free day:\n\n${shareUrl}`
           )}`}
           className="text-turquoise-700 underline"
         >

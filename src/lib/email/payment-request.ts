@@ -30,7 +30,7 @@ export async function sendPaymentRequestEmail(args: {
     eyebrow('Payment request'),
     display(`Hi ${name}, you're all set up`),
     paragraph(
-      `The Worx team has set you up with <strong>${args.productName}</strong>. One step left — once you pay, it's active immediately.`
+      `the Pinnacle team has set you up with <strong>${args.productName}</strong>. One step left — once you pay, it's active immediately.`
     ),
     infoBlock({
       eyebrow: args.productName,

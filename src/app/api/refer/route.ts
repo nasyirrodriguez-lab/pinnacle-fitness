@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   const resend = new Resend(apiKey)
   const { error } = await resend.emails.send({
     from: getEmailFrom(),
-    to: 'team@theworx.io',
+    to: 'hello@pinnaclefitness.app',
     replyTo: referrerEmail || undefined,
     subject: `Referral: ${data.friendName} (via ${referrerName})`,
     html: buildHtml({

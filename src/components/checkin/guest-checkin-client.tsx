@@ -309,7 +309,7 @@ function TermsStep({ onAgree }: { onAgree: () => void }) {
             rel="noopener noreferrer"
             className="underline text-turquoise-700"
           >
-            theworx.io/terms
+            pinnaclefitness.app/terms
           </a>
           .
         </p>

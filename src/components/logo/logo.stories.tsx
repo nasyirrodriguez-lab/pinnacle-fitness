@@ -130,7 +130,7 @@ export const Combined: StoryObj = {
       {/* Icon + Text */}
       <div className="flex items-center gap-4">
         <Icon size={48} className="text-neutral-900" />
-        <h2 className="text-2xl font-heading font-bold">The Worx</h2>
+        <h2 className="text-2xl font-heading font-bold">Pinnacle Fitness</h2>
       </div>
 
       {/* Full Wordmark */}

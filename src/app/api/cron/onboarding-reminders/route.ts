@@ -74,12 +74,13 @@ export async function GET(request: NextRequest) {
   }
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   const result = await sendBroadcast({
     admin,
     input: {
-      subject: 'Finish setting up your Worx account',
-      bodyMarkdown: `You're one step away — your Worx account isn't fully set up yet, so some things (bookings, passes, check-in) won't work smoothly until it is.\n\nIt takes under a minute: ${siteUrl}/welcome\n\nNeed a hand? Just reply to this email.`,
+      subject: 'Finish setting up your Pinnacle account',
+      bodyMarkdown: `You're one step away — your Pinnacle account isn't fully set up yet, so some things (bookings, passes, check-in) won't work smoothly until it is.\n\nIt takes under a minute: ${siteUrl}/welcome\n\nNeed a hand? Just reply to this email.`,
       recipients: incomplete.map((p) => ({
         userId: p.id,
         email: p.email,
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
     await sendMemberNotification(admin, {
       userId: p.id,
       title: 'Finish setting up your account',
-      body: 'Complete your profile at theworx.io/welcome so bookings, passes, and check-in all work smoothly.',
+      body: 'Complete your profile at pinnaclefitness.app/welcome so bookings, passes, and check-in all work smoothly.',
       createdBy: null,
     })
   }

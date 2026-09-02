@@ -5,7 +5,7 @@ import { createAdminClient } from '@/utils/supabase/admin'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Unsubscribe — The Worx',
+  title: 'Unsubscribe — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -63,14 +63,14 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
               <span className="font-medium text-neutral-900">
                 {result.email}
               </span>{' '}
-              will no longer receive broadcast emails from The Worx. You&apos;ll
-              still get important account-related emails (sign-in links, payment
-              confirmations, booking confirmations).
+              will no longer receive broadcast emails from Pinnacle Fitness.
+              You&apos;ll still get important account-related emails (sign-in
+              links, payment confirmations, booking confirmations).
             </p>
             <p className="text-sm text-neutral-500">
               Changed your mind?{' '}
               <a
-                href="mailto:team@theworx.io?subject=Re-subscribe%20to%20The%20Worx%20updates"
+                href="mailto:hello@pinnaclefitness.app?subject=Re-subscribe%20to%20Pinnacle%20updates"
                 className="text-turquoise-700 underline"
               >
                 Email us to resubscribe
@@ -82,7 +82,7 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
                 href="/"
                 className="text-sm text-turquoise-700 underline font-medium"
               >
-                Back to The Worx
+                Back to Pinnacle Fitness
               </Link>
             </p>
           </>
@@ -93,10 +93,10 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
             <p className="text-sm text-neutral-500">
               To unsubscribe, reply to any recent email from us or write to{' '}
               <a
-                href="mailto:team@theworx.io"
+                href="mailto:hello@pinnaclefitness.app"
                 className="text-turquoise-700 underline"
               >
-                team@theworx.io
+                hello@pinnaclefitness.app
               </a>
               .
             </p>

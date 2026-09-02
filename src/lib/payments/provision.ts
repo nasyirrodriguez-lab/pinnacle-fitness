@@ -118,7 +118,10 @@ async function grantPlanMonth(
     open_gym_visits_per_month: number | null
   } | null
   if (!p) return
-  if (typeof p.pt_sessions_per_month === 'number' && p.pt_sessions_per_month > 0) {
+  if (
+    typeof p.pt_sessions_per_month === 'number' &&
+    p.pt_sessions_per_month > 0
+  ) {
     await resetMonthlyGrant(admin, {
       userId: args.userId,
       kind: 'pt',
@@ -145,7 +148,7 @@ export async function grantSubscriptionFromMetadata(
     userId: string
     planId: string
     paymentId?: string | null
-    // Legacy flag from the coworking fork; ignored.
+    // Legacy flag from the gym fork; ignored.
     isVirtualOffice?: boolean
   }
 ): Promise<ProvisionResult> {

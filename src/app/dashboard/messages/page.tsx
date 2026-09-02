@@ -12,7 +12,7 @@ import MessageCompose from '@/components/dashboard/message-compose'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Messages — The Worx',
+  title: 'Messages — Pinnacle Fitness',
 }
 
 export default async function MessagesPage() {
@@ -34,7 +34,7 @@ export default async function MessagesPage() {
       <div className="mb-6">
         <h1 className="font-heading text-3xl mb-1">Messages</h1>
         <p className="text-neutral-600">
-          Updates from The Worx team — and a direct line back to us.
+          Updates from the Pinnacle team — and a direct line back to us.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export default async function MessagesPage() {
                 {n.body}
               </p>
               <p className="text-xs text-neutral-500 mt-3">
-                {n.sender === 'member' ? 'You' : 'The Worx team'} ·{' '}
+                {n.sender === 'member' ? 'You' : 'the Pinnacle team'} ·{' '}
                 {fmtAstDateTime(n.createdAt)}
               </p>
             </li>

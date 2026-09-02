@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 
 // The pending referral code lives in a 30-day cookie set when a friend
-// opens theworx.io/r/<code>. We read it during completeOnboarding() and
+// opens pinnaclefitness.app/r/<code>. We read it during completeOnboarding() and
 // clear it afterwards.
 
 export const REF_COOKIE = 'worx_ref'

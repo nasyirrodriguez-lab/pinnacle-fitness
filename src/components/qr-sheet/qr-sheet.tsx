@@ -158,8 +158,9 @@ function ScanMode({ onClose }: { onClose: () => void }) {
         <ScanLine size={36} className="text-neutral-400 mx-auto mb-3" />
         <p className="font-medium mb-2">Scanner not available here</p>
         <p className="text-sm text-neutral-600 mb-4">
-          iOS blocks camera access in installed web apps. Open theworx.io in
-          Safari and try again, or use the QR on the kiosk to scan you in.
+          iOS blocks camera access in installed web apps. Open
+          pinnaclefitness.app in Safari and try again, or use the QR on the
+          kiosk to scan you in.
         </p>
         <Button variant="outline" onClick={onClose}>
           Close
@@ -180,7 +181,7 @@ function ScanMode({ onClose }: { onClose: () => void }) {
             // URL we own; otherwise show it for the member to read.
             try {
               const url = new URL(raw)
-              if (url.hostname.endsWith('theworx.io')) {
+              if (url.hostname.endsWith('pinnaclefitness.app')) {
                 window.location.assign(url.toString())
                 return
               }
@@ -200,7 +201,7 @@ function ScanMode({ onClose }: { onClose: () => void }) {
         />
       </div>
       <p className="mt-3 text-xs text-neutral-500 text-center">
-        Point at any QR code from The Worx — passes, events, Wi-Fi.
+        Point at any QR code from Pinnacle Fitness — passes, events, Wi-Fi.
       </p>
     </div>
   )

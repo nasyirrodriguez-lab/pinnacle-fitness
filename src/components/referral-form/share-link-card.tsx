@@ -10,7 +10,7 @@ interface Props {
 }
 
 const SHARE_TEXT_TEMPLATE = (url: string) =>
-  `Come check out The Worx with me — our coworking space in Port of Spain. Sign up through my link and we both get a free day pass: ${url}`
+  `Come check out Pinnacle Fitness with me — our gym in Port of Spain. Sign up through my link and we both get a free day pass: ${url}`
 
 export default function ShareLinkCard({ code, shareUrl }: Props) {
   const [copied, setCopied] = useState(false)
@@ -33,7 +33,7 @@ export default function ShareLinkCard({ code, shareUrl }: Props) {
     }
     try {
       await navigator.share({
-        title: 'The Worx',
+        title: 'Pinnacle Fitness',
         text,
         url: shareUrl,
       })

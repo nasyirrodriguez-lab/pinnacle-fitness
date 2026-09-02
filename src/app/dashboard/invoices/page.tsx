@@ -11,7 +11,7 @@ import { fmtAstDate } from '@/lib/time/ast'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Invoices — The Worx',
+  title: 'Invoices — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -280,10 +280,10 @@ export default async function InvoicesPage() {
       <p className="mt-6 text-xs text-neutral-500">
         Need a formal receipt or VAT invoice? Email{' '}
         <a
-          href="mailto:team@theworx.io"
+          href="mailto:hello@pinnaclefitness.app"
           className="text-turquoise-700 underline"
         >
-          team@theworx.io
+          hello@pinnaclefitness.app
         </a>{' '}
         with your payment date.
       </p>

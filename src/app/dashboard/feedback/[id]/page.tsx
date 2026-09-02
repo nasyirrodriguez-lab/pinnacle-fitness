@@ -6,7 +6,7 @@ import FeedbackForm from '@/components/dashboard/feedback-form'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Feedback — The Worx',
+  title: 'Feedback — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 

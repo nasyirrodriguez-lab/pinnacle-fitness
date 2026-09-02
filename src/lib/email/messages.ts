@@ -13,7 +13,8 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 function getSiteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   )
 }
 

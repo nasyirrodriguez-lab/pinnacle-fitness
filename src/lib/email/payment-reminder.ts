@@ -15,7 +15,8 @@ import { fmtAstDateTime, fmtAstDate } from '@/lib/time/ast'
 
 function getSiteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   )
 }
 
@@ -36,7 +37,7 @@ export async function sendBookingPaymentReminder(args: {
   const name = args.firstName?.trim() || 'there'
   const body = [
     eyebrow('Booking payment'),
-    display(`Hi ${name}, a quick one from The Worx`),
+    display(`Hi ${name}, a quick one from Pinnacle Fitness`),
     paragraph(
       `Just a friendly reminder that your <strong>${args.resourceName}</strong> booking on <strong>${fmtAstDateTime(args.startIso)}</strong> has a balance of <strong>${fmtTtd(args.amountCents)}</strong>.`
     ),
@@ -102,7 +103,10 @@ export async function sendRenewalReminder(args: {
       from: getEmailFrom(),
       to: args.to,
       subject: `Your ${args.planName} membership — renewal reminder`,
-      html: emailLayout({ preheader: 'Your Worx membership renewal', body }),
+      html: emailLayout({
+        preheader: 'Your Pinnacle membership renewal',
+        body,
+      }),
     })
     return true
   } catch (err) {

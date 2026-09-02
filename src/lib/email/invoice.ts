@@ -10,7 +10,7 @@ import { getEmailFrom } from '@/lib/email/sender'
 import { fmtAstDate } from '@/lib/time/ast'
 import type { InvoiceLineItem } from '@/lib/invoices/create'
 
-// The official Worx invoice, in email form: numbered, line-itemed, with
+// The official Pinnacle invoice, in email form: numbered, line-itemed, with
 // a Pay-now button wired to our payment tracking.
 
 function fmtTtd(cents: number): string {
@@ -57,7 +57,7 @@ export async function sendInvoiceEmail(args: {
   const name = args.firstName?.trim() || 'there'
   const body = [
     eyebrow(`Invoice ${args.number}`),
-    display(`Hi ${name}, your Worx invoice is ready`),
+    display(`Hi ${name}, your Pinnacle invoice is ready`),
     paragraph(
       [
         args.periodLabel
@@ -80,7 +80,7 @@ export async function sendInvoiceEmail(args: {
     await resend.emails.send({
       from: getEmailFrom(),
       to: args.to,
-      subject: `The Worx — Invoice ${args.number} (${fmtTtd(args.amountCents)})`,
+      subject: `Pinnacle Fitness — Invoice ${args.number} (${fmtTtd(args.amountCents)})`,
       html: emailLayout({
         preheader: `Invoice ${args.number}: ${fmtTtd(args.amountCents)}${args.periodLabel ? ` for ${args.periodLabel}` : ''}`,
         body,

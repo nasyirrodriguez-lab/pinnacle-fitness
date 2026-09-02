@@ -1,62 +1,51 @@
 const FAQS = [
   {
-    id: 'what-is-coworking',
-    title: 'What is coworking?',
+    id: 'not-a-first-gym',
+    title: 'Can I join if I’m new to training?',
     description:
-      'Coworking is a style of work that involves a shared workspace, often with a community of like-minded professionals. It is an alternative to traditional office spaces and offers flexible options for freelancers, entrepreneurs, and remote workers.',
+      'Pinnacle isn’t a first gym. Our sessions are coached and progressive, so we look for people who already train consistently and want to be pushed further. If you’ve got six months or more of regular training behind you, apply — if not, build that base first and come back.',
   },
   {
-    id: 'what-is-the-worx',
-    title: 'What is The Worx?',
+    id: 'how-membership-works',
+    title: 'How does membership work?',
     description:
-      'The Worx is a coworking space in Port of Spain that fosters innovation and collaboration among professionals. Our space brings people together, is rooted in trust and collaboration, and allows people to interact successfully and grow together.',
+      'Membership is by application. Apply on the site, meet a coach for an intro session, and if it’s a fit you’ll get an email with a link to pay for your plan. Your membership goes live the moment the payment confirms. We keep numbers small so coaches know every member by name, and we open spots as they come up.',
   },
   {
-    id: 'what-services-does-the-worx-offer',
-    title: 'What services does The Worx offer?',
+    id: 'plans-and-packs',
+    title: 'What’s the difference between a plan and a pack?',
     description:
-      'The Worx offers a range of services and amenities, including high-speed internet, comfortable workstations, meeting rooms, call booths, printing/scanning/copying, coffee/tea/snacks, free parking. We also offer networking events, mentorship/coaching, educational workshops, and community events.',
+      'Monthly plans (8 Sessions, 12 Sessions, Unlimited) reset every month and are the cheapest way to train. Packs of 5, 10 or 20 sessions buy flexibility — they’re valid for 30 days from purchase. Both are booked and used the same way.',
   },
   {
-    id: 'what-kind-of-professionals-use-coworking spaces',
-    title: 'What kind of professionals use coworking spaces?',
+    id: 'what-is-a-session',
+    title: 'What counts as a session?',
     description:
-      'Coworking spaces are popular among freelancers, entrepreneurs, remote workers, startups, and small businesses. They are also used by professionals in various industries, including technology, creative, legal, and finance.',
+      'A PT session is a coached, small-group hour with Nasyir or Matthew that you book in the app. A session is used when you check in at the iPad — not when you book — so a free cancellation costs nothing. Cancel inside four hours of the start, or don’t show, and the session is used.',
   },
   {
-    id: 'what-are-the-benefits-of-coworking',
-    title: 'What are the benefits of coworking?',
+    id: 'open-gym',
+    title: 'How does open gym work?',
     description:
-      'Coworking offers many benefits, including a flexible work environment, cost savings compared to traditional office spaces, networking opportunities, collaboration with like-minded professionals, and access to resources and services.',
+      'Open gym isn’t booked ahead. Come in during opening hours, scan your QR at the iPad, and you’re on the floor if there’s room — we cap the floor at 20 so everyone has space. The app shows how many people are on the floor before you leave home. Scan out on the way out so the count stays right.',
   },
   {
-    id: 'is-there-a-minimum-contract-period-for-the-worx',
-    title: 'Is there a minimum contract period for The Worx?',
+    id: 'checking-in',
+    title: 'How do I check in?',
     description:
-      'We offer flexible payment plans, including weekly, monthly, annual and pay-as-you-go options. There is no minimum contract period, so you can choose the payment plan that works best for you.',
+      'Open the Pinnacle app on your phone (add it to your home screen), tap My QR, and scan it on the iPad at the door. If your phone’s dead, find your name on the iPad and enter your 4-digit PIN.',
   },
   {
-    id: 'what-are-the-opening-hours-of-the-worx',
-    title: 'What are the opening hours of The Worx?',
-    description: 'We are open Monday to Friday from 9:00 AM to 5:00 PM.',
+    id: 'paying',
+    title: 'How do I pay?',
+    description:
+      'Wam, straight from your phone — or cash at the front desk, which a coach confirms in two taps. Memberships renew monthly; you’ll get a reminder three days before with a pay link.',
   },
   {
-    id: 'how-much-does-it-cost-to-use-the-worx',
-    title: 'How much does it cost to use The Worx?',
+    id: 'hours',
+    title: 'When are you open?',
     description:
-      'Our pricing varies depending on the type of membership plan and the services and amenities you require. We offer a range of affordable and flexible plans to suit your needs, starting at $100.',
-  },
-  {
-    id: 'how-can-i-become-a-member-of-the-worx',
-    title: 'How can I become a member of The Worx?',
-    description:
-      'You can become a member by filling out our online application form and selecting the plan that best suits your needs. Once we receive your application, we will review it and get in touch with you to discuss further details.',
-  },
-  {
-    id: 'can-i-book-a-tour-of-the-worx',
-    title: 'Can I book a tour of The Worx?',
-    description:
-      'Better than a tour you can book an Explore Pass that gives you and a friend access to the space for a day.',
+      'Monday to Friday 5:30 AM – 7:00 PM, Saturday 7:00 AM – 1:00 PM, at The Playground — Sport & Social, 227 Western Main Rd, Port of Spain.',
   },
 ]
 

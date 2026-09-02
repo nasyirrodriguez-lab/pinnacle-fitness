@@ -28,10 +28,10 @@ export default function PlanChangeRequest() {
           The team has your request and will confirm with you. Questions in the
           meantime? Email{' '}
           <a
-            href="mailto:team@theworx.io"
+            href="mailto:hello@pinnaclefitness.app"
             className="text-turquoise-700 underline"
           >
-            team@theworx.io
+            hello@pinnaclefitness.app
           </a>
           .
         </p>
@@ -46,10 +46,10 @@ export default function PlanChangeRequest() {
         To request a pause, deactivation, or reactivation of your plan, pick an
         option below — it goes straight to the team. You can also email{' '}
         <a
-          href="mailto:team@theworx.io"
+          href="mailto:hello@pinnaclefitness.app"
           className="text-turquoise-700 underline"
         >
-          team@theworx.io
+          hello@pinnaclefitness.app
         </a>
         .
       </p>

@@ -45,7 +45,7 @@ export default function MessageCompose() {
       <div className="mt-3">
         <Button type="submit" size="sm" disabled={isPending || !body.trim()}>
           <Send size={14} className="mr-1.5" />
-          {isPending ? 'Sending…' : 'Send to The Worx team'}
+          {isPending ? 'Sending…' : 'Send to the Pinnacle team'}
         </Button>
       </div>
     </form>

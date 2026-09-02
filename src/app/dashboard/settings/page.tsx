@@ -31,7 +31,7 @@ export default async function SettingsPage() {
         />
       </section>
 
-      {user.role === 'admin' && (
+      {['owner', 'admin'].includes(user.role) && (
         <section className="bg-darkBlue-900 text-white rounded-lg p-6 mb-6">
           <h2 className="font-heading text-lg mb-2">Admin tools</h2>
           <p className="text-sm text-white/80 mb-4">
@@ -49,8 +49,9 @@ export default async function SettingsPage() {
       <section className="bg-white border border-neutral-200 rounded-lg p-6 mb-6">
         <h2 className="font-heading text-lg mb-2">Install the app</h2>
         <p className="text-sm text-neutral-600 mb-4">
-          Add The Worx to your home screen for one-tap check-in, your QR code,
-          and bookings. Works on iPhone and Android — no app store download.
+          Add Pinnacle Fitness to your home screen for one-tap check-in, your QR
+          code, and bookings. Works on iPhone and Android — no app store
+          download.
         </p>
         <Link
           href="/install"

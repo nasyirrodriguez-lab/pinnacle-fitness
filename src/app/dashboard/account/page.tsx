@@ -18,7 +18,7 @@ import ProfilePhotoCard from '@/components/dashboard/profile-photo-card'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Account — The Worx',
+  title: 'Account — Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -255,7 +255,13 @@ export default async function AccountPage() {
               Role
             </dt>
             <dd className="font-medium">
-              {user.role === 'admin' ? 'Admin' : 'Member'}
+              {user.role === 'owner' || user.role === 'admin'
+                ? 'Owner'
+                : user.role === 'coach'
+                  ? 'Coach'
+                  : user.role === 'staff'
+                    ? 'Front desk'
+                    : 'Member'}
             </dd>
           </div>
           <div>

@@ -377,19 +377,6 @@ export async function adminControlSubscription(
     body: `Admin ${actionLabel} membership ${data.subscriptionId}.`,
   })
 
-  // A VO membership going inactive should reflect on the VO record too.
-  if (data.action === 'cancel' || data.action === 'pause') {
-    await admin
-      .from('virtual_office_subscriptions')
-      .update({ is_active: false })
-      .eq('subscription_id', data.subscriptionId)
-  } else {
-    await admin
-      .from('virtual_office_subscriptions')
-      .update({ is_active: true })
-      .eq('subscription_id', data.subscriptionId)
-  }
-
   revalidatePath(`/admin/members/${data.userId}`)
   revalidatePath('/admin/members')
   return { ok: true }
@@ -789,7 +776,6 @@ export async function adminRequestPayment(
   if (data.kind === 'plan') {
     metadata.planId = product.id
     metadata.billingPeriod = 'month'
-    if (product.id === 'virtual-office-monthly') metadata.virtualOffice = true
   } else {
     metadata.passId = product.id
   }
@@ -814,7 +800,8 @@ export async function adminRequestPayment(
   const paymentId = (paymentRow as { id: string }).id
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   let intent
   try {
     intent = await getWam().createPaymentIntent({
@@ -964,7 +951,8 @@ export async function adminEditPaymentRequest(
         : 'your membership'
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   let intent
   try {
     intent = await getWam().createPaymentIntent({
@@ -1029,7 +1017,10 @@ export async function adminEditPaymentRequest(
 const adjustSessionsSchema = z.object({
   userId: z.string().uuid(),
   kind: z.enum(['pt', 'open_gym']),
-  delta: z.number().int().refine((n) => n !== 0, 'Enter a non-zero number'),
+  delta: z
+    .number()
+    .int()
+    .refine((n) => n !== 0, 'Enter a non-zero number'),
   note: z.string().trim().max(200).optional().nullable(),
 })
 
@@ -1043,7 +1034,9 @@ export async function adminAdjustSessions(
     data = adjustSessionsSchema.parse(input)
   } catch (err) {
     const msg =
-      err instanceof z.ZodError ? (err.issues[0]?.message ?? 'Invalid') : 'Invalid'
+      err instanceof z.ZodError
+        ? (err.issues[0]?.message ?? 'Invalid')
+        : 'Invalid'
     return { ok: false, error: msg }
   }
   const admin = createAdminClient()
@@ -1088,7 +1081,9 @@ export async function adminUpdateGymProfile(
     data = gymProfileSchema.parse(input)
   } catch (err) {
     const msg =
-      err instanceof z.ZodError ? (err.issues[0]?.message ?? 'Invalid') : 'Invalid'
+      err instanceof z.ZodError
+        ? (err.issues[0]?.message ?? 'Invalid')
+        : 'Invalid'
     return { ok: false, error: msg }
   }
   const admin = createAdminClient()
@@ -1100,7 +1095,10 @@ export async function adminUpdateGymProfile(
   }
   if (data.clearPin) update.pin_code = null
   else if (data.pinCode) update.pin_code = data.pinCode
-  const { error } = await admin.from('profiles').update(update).eq('id', data.userId)
+  const { error } = await admin
+    .from('profiles')
+    .update(update)
+    .eq('id', data.userId)
   if (error) return { ok: false, error: 'Could not save' }
   revalidatePath(`/admin/members/${data.userId}`)
   return { ok: true }

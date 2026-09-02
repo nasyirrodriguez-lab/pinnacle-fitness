@@ -1,5 +1,5 @@
 // =====================================================================
-// AST — Atlantic Standard Time (UTC-4, no DST). The Worx operates in
+// AST — Atlantic Standard Time (UTC-4, no DST). Pinnacle Fitness operates in
 // Trinidad, so every date/time the app displays should be rendered in
 // AST regardless of where the server (Vercel = UTC) or the viewer's
 // browser happens to be. Storage stays UTC; this module is the display

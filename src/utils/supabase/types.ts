@@ -12,7 +12,7 @@ export type Database = {
           full_name: string | null
           phone: string | null
           company: string | null
-          role: 'member' | 'admin'
+          role: 'member' | 'coach' | 'owner' | 'staff' | 'admin'
           archived: boolean
           nexudus_id: string | null
           pincode: string | null
