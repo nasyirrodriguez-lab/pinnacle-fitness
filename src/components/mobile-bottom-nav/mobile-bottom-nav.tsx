@@ -6,8 +6,8 @@ import {
   Calendar,
   Home,
   QrCode,
+  CreditCard,
   Settings as SettingsIcon,
-  User,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useQrSheet } from '@/components/qr-sheet/qr-sheet-context'
@@ -28,38 +28,38 @@ const LEFT_TABS: Tab[] = [
   },
   {
     href: '/dashboard/bookings',
-    label: 'Bookings',
+    label: 'Book',
     icon: Calendar,
-    match: (p) => p.startsWith('/dashboard/bookings') || p === '/book',
+    match: (p) => p.startsWith('/dashboard/bookings') || p.startsWith('/book'),
   },
 ]
 
 const RIGHT_TABS: Tab[] = [
   {
-    href: '/dashboard/account',
-    label: 'Account',
-    icon: User,
+    href: '/dashboard/plan',
+    label: 'Plan',
+    icon: CreditCard,
     match: (p) =>
-      p.startsWith('/dashboard/account') ||
       p.startsWith('/dashboard/plan') ||
+      p.startsWith('/dashboard/account') ||
       p.startsWith('/dashboard/invoices'),
   },
   {
     href: '/dashboard/settings',
     label: 'Settings',
     icon: SettingsIcon,
-    match: (p) => p.startsWith('/dashboard/settings'),
+    match: (p) =>
+      p.startsWith('/dashboard/settings') ||
+      p.startsWith('/dashboard/messages'),
   },
 ]
 
-// `hasVirtualOffice` is still forwarded from the layout but the bottom
-// nav no longer surfaces a Mail tab — at 5 tabs + the FAB the bar is
-// already dense on small phones. VO members reach mail from the
-// dashboard home tile and `/dashboard/mail` directly.
 interface Props {
   hasVirtualOffice?: boolean
 }
 
+// Floating pill bar: four tabs with the QR in the middle as the one turf
+// circle — the fastest thing to reach at the door.
 export default function MobileBottomNav(_props: Props) {
   void _props
   const pathname = usePathname() ?? '/'
@@ -68,27 +68,23 @@ export default function MobileBottomNav(_props: Props) {
   return (
     <nav
       aria-label="Primary"
-      className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-neutral-200"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      className="md:hidden fixed inset-x-0 bottom-0 z-40 px-4"
+      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
     >
-      <div className="relative grid grid-cols-5 items-stretch h-16">
+      <div className="grid grid-cols-5 items-center h-16 rounded-full bg-bronze border border-bronze-line shadow-[0_12px_40px_rgba(0,0,0,0.5)] px-2">
         {LEFT_TABS.map((tab) => (
           <TabLink key={tab.href} tab={tab} pathname={pathname} />
         ))}
 
-        {/* Center QR FAB — lifted above the bar */}
-        <div className="relative flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <button
             type="button"
             onClick={() => openSheet('show')}
             aria-label="Show my check-in QR"
-            className="absolute -top-6 w-14 h-14 rounded-full bg-turquoise-500 hover:bg-turquoise-600 text-white shadow-lg flex items-center justify-center transition active:scale-95"
+            className="w-13 h-13 rounded-full bg-turf text-turf-ink flex items-center justify-center transition active:scale-95 shadow-[0_0_24px_rgba(78,201,92,0.35)]"
           >
             <QrCode size={26} />
           </button>
-          <span className="mt-7 text-[10px] font-medium text-neutral-500">
-            QR
-          </span>
         </div>
 
         {RIGHT_TABS.map((tab) => (
@@ -105,15 +101,18 @@ function TabLink({ tab, pathname }: { tab: Tab; pathname: string }) {
   return (
     <Link
       href={tab.href}
-      className={cn(
-        'flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition',
-        active
-          ? 'text-turquoise-700'
-          : 'text-neutral-500 hover:text-neutral-900'
-      )}
+      className="flex items-center justify-center"
+      aria-label={tab.label}
+      aria-current={active ? 'page' : undefined}
     >
-      <Icon size={22} />
-      <span>{tab.label}</span>
+      <span
+        className={cn(
+          'flex items-center justify-center w-11 h-11 rounded-full transition',
+          active ? 'bg-ice text-ground' : 'text-ice-dim hover:text-ice'
+        )}
+      >
+        <Icon size={22} />
+      </span>
     </Link>
   )
 }

@@ -1,74 +1,103 @@
 import Link from 'next/link'
-import { AiFillInstagram, AiFillLinkedin } from 'react-icons/ai'
-import Icon from '@/components/logo/icon'
+import { AiFillInstagram } from 'react-icons/ai'
+import Wordmark from '@/components/logo/wordmark'
 import DirectionsButton from '@/components/directions-button/directions-button'
-import { LOCATION } from '@/config/location'
+import { LOCATION, CONTACT, HOURS } from '@/config/location'
 
 export default function Footer() {
   return (
-    <footer className="px-8 py-16 bg-neutral-900">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-        <div>
-          <Icon color="white" size={96} />
+    <footer className="px-6 lg:px-12 py-16 bg-ground border-t border-bronze-line text-ice">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="md:col-span-1">
+          <Wordmark width={170} variant="stacked" />
+          <p className="mt-4 text-sm text-ice-dim max-w-xs">
+            A members-only coached gym. Small by design, so every coach knows
+            every member by name.
+          </p>
         </div>
+
         <div>
-          <div className="flex flex-col items-start gap-4">
-            <h4 className="text-white text-xl">The Worx</h4>
-            <div>
-              <p className="text-white">{LOCATION.streetLine1}</p>
-              {LOCATION.streetLine2 && (
-                <p className="text-white">{LOCATION.streetLine2}</p>
-              )}
-              <p className="text-white">{LOCATION.city}</p>
-              <p className="text-white">{LOCATION.country}</p>
-              <DirectionsButton variant="inline" className="mt-2" />
-            </div>
-            <div>
-              <div className="flex flex-col items-start gap-0">
-                <a
-                  href="mailto:team@theworx.io"
-                  className="text-white hover:text-turquoise-500"
-                >
-                  team@theworx.io
-                </a>
-                <a
-                  href="tel:+18682810830"
-                  className="text-white hover:text-turquoise-500"
-                >
-                  +1 (868) 281-0830
-                </a>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-turf mb-3">
+            Find us
+          </p>
+          <p className="text-sm font-semibold">{LOCATION.venue}</p>
+          <p className="text-sm text-ice-dim">{LOCATION.streetLine1}</p>
+          {LOCATION.streetLine2 && (
+            <p className="text-sm text-ice-dim">{LOCATION.streetLine2}</p>
+          )}
+          <p className="text-sm text-ice-dim">
+            {LOCATION.city}, {LOCATION.country}
+          </p>
+          <DirectionsButton variant="inline" className="mt-2" />
+        </div>
+
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-turf mb-3">
+            Hours
+          </p>
+          <dl className="text-sm space-y-1">
+            {HOURS.map((h) => (
+              <div key={h.days} className="flex justify-between gap-4">
+                <dt className="text-ice-dim">{h.days}</dt>
+                <dd className="font-semibold tabular-nums">
+                  {h.open ? `${h.open} – ${h.close}` : 'Closed'}
+                </dd>
               </div>
-            </div>
-          </div>
+            ))}
+          </dl>
         </div>
-        <div className="justify-self-start md:justify-self-end">
-          <div className="flex items-center gap-2">
-            <a
-              href="https://www.instagram.com/wearetheworx"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Follow The Worx on Instagram"
-              className="text-white hover:text-turquoise-500"
-            >
-              <AiFillInstagram size={24} />
-            </a>
-            <a
-              href="https://www.linkedin.com/company/wearetheworx"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Follow The Worx on LinkedIn"
-              className="text-white hover:text-turquoise-500"
-            >
-              <AiFillLinkedin size={24} />
-            </a>
-          </div>
+
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-turf mb-3">
+            Talk to a coach
+          </p>
+          <ul className="text-sm space-y-1">
+            {CONTACT.phones.map((p) => (
+              <li key={p.name} className="flex justify-between gap-4">
+                <span className="text-ice-dim">{p.name}</span>
+                <a
+                  href={`tel:${p.tel}`}
+                  className="font-semibold tabular-nums hover:text-turf"
+                >
+                  {p.display}
+                </a>
+              </li>
+            ))}
+            <li className="pt-2">
+              <a
+                href={`mailto:${CONTACT.email}`}
+                className="text-ice-dim hover:text-turf"
+              >
+                {CONTACT.email}
+              </a>
+            </li>
+            <li>
+              <a
+                href={CONTACT.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Pinnacle Fitness on Instagram"
+                className="inline-flex items-center gap-2 text-ice-dim hover:text-turf"
+              >
+                <AiFillInstagram size={20} /> Instagram
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-      <div className="mt-12 pt-6 border-t border-neutral-800 flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400">
-        <p>&copy; {new Date().getFullYear()} The Worx. All rights reserved.</p>
-        <Link href="/terms" className="hover:text-turquoise-500">
-          Terms and Conditions
-        </Link>
+      <div className="mt-12 pt-6 border-t border-bronze-line flex flex-wrap items-center justify-between gap-4 text-xs text-ice-mute">
+        <p>
+          &copy; {new Date().getFullYear()} {LOCATION.name}. Membership by
+          application.
+        </p>
+        <div className="flex gap-5">
+          <Link href="/apply" className="hover:text-turf">
+            Apply
+          </Link>
+          <Link href="/terms" className="hover:text-turf">
+            Member Code &amp; Terms
+          </Link>
+        </div>
       </div>
     </footer>
   )

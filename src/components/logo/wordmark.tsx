@@ -1,27 +1,52 @@
 import { cn } from '@/lib/utils'
+import Icon from './icon'
 
-interface WordmarkProps extends React.SVGProps<SVGSVGElement> {
+interface WordmarkProps {
   width?: number
+  className?: string
+  variant?: 'wordmark' | 'icon' | 'stacked'
 }
 
+// Text wordmark until the real logo file lands. `width` is honoured as an
+// approximate visual width so existing call sites keep their sizing.
 export default function Wordmark({
-  width = 610,
+  width = 160,
   className,
-  ...props
+  variant = 'wordmark',
 }: WordmarkProps) {
+  if (variant === 'icon') {
+    return <Icon size={Math.round(width * 0.25)} className={className} />
+  }
+  const scale = width / 160
   return (
-    <svg
-      viewBox="0 0 610 200"
-      width={width}
-      height="auto"
-      className={cn('block', className)}
-      {...props}
+    <span
+      className={cn(
+        'inline-flex items-center gap-2 select-none text-current',
+        className
+      )}
+      style={{ fontSize: `${scale}rem` }}
+      aria-label="Pinnacle Fitness"
     >
-      <path fill="#111" d="M5 5.27h600v189.47H5z" />
-      <path
-        d="M433.36 81.9c0-21.14-18.08-37.12-39.06-37.12-3.71 0-40.48.16-40.48.16v109.27l35.8.16 45.19-.16-25.66-37.12c13.4-5.33 24.21-19.21 24.21-35.19Zm-42.49 13.57c-7.33 0-13.56-6.05-13.56-13.56s6.23-13.75 13.56-13.75c7.7 0 13.75 6.23 13.75 13.75s-6.05 13.56-13.75 13.56ZM282.68 42.66c-31.64 0-57.34 25.86-57.34 57.34s25.7 57.34 57.34 57.34 57.34-25.7 57.34-57.34-25.7-57.34-57.34-57.34Zm.16 80.79-23.61-23.29 23.13-23.13 23.45 23.45-22.97 22.97ZM566.85 67.08l-21.68-21.84-25.21 25.06V45.24h-31.32V70.3l-25.06-25.06-21.84 21.84 32.92 32.76-32.92 32.76 21.84 21.84 25.06-25.06v25.06h31.32v-25.06l25.21 25.06 21.68-21.84-32.76-32.76 32.76-32.76Zm-62.8 55.74-22.17-22.5 22.17-22.17 22.5 22.17-22.5 22.5ZM193.45 44.52l-10.38 25.11-22.32-25.01h-1.24l-21.72 26.84-11.07-26.94H93.14l37.47 112.34 29.5-44.44 29.5 44.44 37.47-112.34h-33.63zM53.85 122.85h-10.7v32.44h10.7v-10.87h27.2V133.5h-27.2v-10.65zM43.15 95.6h10.87v10.75H43.15v10.93h37.9v-10.93H70.29V95.6h10.76V84.84h-37.9V95.6zM70.29 55.27H59.43v10.82h-5.41V44.52H43.15v32.43h37.9V44.52H70.29v10.75z"
-        fill="#fff"
-      />
-    </svg>
+      <Icon size={Math.round(26 * scale)} className="shrink-0" />
+      <span
+        className={cn(
+          'flex leading-none',
+          variant === 'stacked' ? 'flex-col items-start' : 'items-baseline gap-1.5'
+        )}
+      >
+        <span
+          className="font-heading text-[1.25em] font-black uppercase tracking-[-0.02em]"
+          style={{ fontVariationSettings: "'wdth' 118" }}
+        >
+          Pinnacle
+        </span>
+        <span
+          className="font-heading text-[0.5em] font-semibold uppercase tracking-[0.22em] opacity-70"
+          style={{ fontVariationSettings: "'wdth' 100" }}
+        >
+          Fitness
+        </span>
+      </span>
+    </span>
   )
 }
