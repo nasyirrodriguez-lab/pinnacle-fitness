@@ -11,7 +11,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Check in | The Worx',
+  title: 'Check in | Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 
@@ -33,9 +33,9 @@ export default async function CheckinLayout({
 
   return (
     <ReceptionStatusProvider initial={initialStatus}>
-      <div className="min-h-screen bg-neutral-50">
+      <div className="min-h-screen bg-ground">
         <header
-          className="sticky top-0 z-30 bg-white border-b border-neutral-200 px-6 py-4 flex items-center justify-between"
+          className="sticky top-0 z-30 bg-ground border-b border-bronze-line px-6 py-4 flex items-center justify-between text-ice"
           style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
         >
           <Link href={device ? '/checkin' : '/'}>

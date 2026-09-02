@@ -6,7 +6,7 @@ import { Download, Share, X, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useInstall } from '@/lib/install/use-install'
 
-const DISMISS_KEY = 'worx_install_dismissed_at'
+const DISMISS_KEY = 'pinnacle_install_dismissed_at'
 const DISMISS_WINDOW_DAYS = 30
 
 // Bumped each time the user dismisses so React reads a fresh value
@@ -132,7 +132,7 @@ function Body({
       <>
         <p className="font-medium text-sm mb-1">Get the app experience</p>
         <p className="text-xs text-white/80 mb-3">
-          Open theworx.io in <strong>Safari</strong>, then tap Share &rarr; Add
+          Open pinnaclefitness.app in <strong>Safari</strong>, then tap Share &rarr; Add
           to Home Screen. iOS blocks app install from{' '}
           {env.browser === 'chrome' ? 'Chrome' : 'this browser'}.
         </p>
@@ -152,7 +152,7 @@ function Body({
     return (
       <>
         <p className="font-medium text-sm mb-1">
-          Add The Worx to your home screen
+          Add Pinnacle to your home screen
         </p>
         <p className="text-xs text-white/80 mb-3 flex items-center gap-1">
           Tap <Share size={14} className="inline mx-0.5" /> below &rarr;{' '}
@@ -174,7 +174,7 @@ function Body({
     return (
       <>
         <p className="font-medium text-sm mb-1">
-          Install The Worx for one-tap check-in
+          Install Pinnacle for one-tap check-in
         </p>
         <p className="text-xs text-white/80 mb-3">
           Adds an icon to your home screen. Free, takes a second.
@@ -203,7 +203,7 @@ function Body({
     return (
       <>
         <p className="font-medium text-sm mb-1">
-          Add The Worx to your home screen
+          Add Pinnacle to your home screen
         </p>
         <p className="text-xs text-white/80 mb-3">
           Tap the menu and pick <strong>Install app</strong> or{' '}
