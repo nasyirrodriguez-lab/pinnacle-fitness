@@ -20,7 +20,6 @@ export default function TrainerPrompt() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ trainer }),
     })
-    })
 
     if (!res.ok) {
       setError('Something went wrong. Please try again.')
