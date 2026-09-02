@@ -14,11 +14,32 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Pinnacle Fitness',
-  description: 'Train hard. Find your rhythm. Build something together.',
+  title: 'Pinnacle Fitness — Train with us',
+  description: "Trinidad's premier boutique gym. Book your first class free.",
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
+  },
+  openGraph: {
+    title: 'Pinnacle Fitness — Train with us',
+    description: "Trinidad's premier boutique gym. Book your first class free.",
+    url: 'https://pinnaclefitnesstt.vercel.app',
+    siteName: 'Pinnacle Fitness',
+    images: [
+      {
+        url: 'https://pinnaclefitnesstt.vercel.app/PHOTO-2026-08-25-06-14-47.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Pinnacle Fitness',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pinnacle Fitness — Train with us',
+    description: "Trinidad's premier boutique gym. Book your first class free.",
+    images: ['https://pinnaclefitnesstt.vercel.app/PHOTO-2026-08-25-06-14-47.jpg'],
   },
 }
 
