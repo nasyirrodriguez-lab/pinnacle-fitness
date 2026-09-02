@@ -1,0 +1,309 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Brand Colors (base 500 in OKLCH) */
+  --brand-darkOrange: oklch(0.62 0.19 28);
+  --brand-green: oklch(0.5 0.12 168);
+  --brand-turquoise: oklch(0.76 0.11 207);
+  --brand-slate: oklch(0.73 0.07 260);
+  --brand-pink: oklch(0.82 0.08 15);
+  --brand-orange: oklch(0.81 0.16 75);
+  --brand-lime: oklch(0.86 0.18 105);
+  --brand-darkBlue: oklch(0.35 0.07 245);
+  --brand-blue: oklch(0.53 0.12 260);
+  --brand-red: oklch(0.6 0.21 18);
+
+  /* Neutral scale */
+  --neutral-50: oklch(0.97 0 0);
+  --neutral-100: oklch(0.93 0 0);
+  --neutral-200: oklch(0.83 0 0);
+  --neutral-300: oklch(0.73 0 0);
+  --neutral-400: oklch(0.64 0 0);
+  --neutral-500: oklch(0.55 0 0);
+  --neutral-600: oklch(0.45 0 0);
+  --neutral-700: oklch(0.35 0 0);
+  --neutral-800: oklch(0.25 0 0);
+  --neutral-900: oklch(0.15 0 0);
+  --neutral-950: oklch(0.1 0 0);
+
+  /* shadcn semantic tokens */
+  --radius: 0.5rem;
+  --background: oklch(1 0 0);
+  --foreground: var(--neutral-900);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--neutral-900);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--neutral-900);
+  --primary: var(--brand-lime);
+  --primary-foreground: var(--neutral-900);
+  --secondary: var(--neutral-100);
+  --secondary-foreground: var(--neutral-900);
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--neutral-600);
+  --accent: var(--brand-lime);
+  --accent-foreground: var(--neutral-900);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(1 0 0);
+  --border: var(--neutral-200);
+  --input: var(--neutral-200);
+  --ring: var(--brand-lime);
+}
+
+.dark {
+  --background: var(--neutral-900);
+  --foreground: oklch(1 0 0);
+  --card: var(--neutral-800);
+  --card-foreground: oklch(1 0 0);
+  --popover: var(--neutral-800);
+  --popover-foreground: oklch(1 0 0);
+  --primary: var(--brand-lime);
+  --primary-foreground: var(--neutral-900);
+  --secondary: var(--neutral-700);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: var(--neutral-700);
+  --muted-foreground: var(--neutral-400);
+  --accent: var(--brand-lime);
+  --accent-foreground: var(--neutral-900);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(1 0 0);
+  --border: var(--neutral-700);
+  --input: var(--neutral-700);
+  --ring: var(--brand-lime);
+}
+
+@theme {
+  /* Neutral palette */
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-950: var(--neutral-950);
+
+  /* Lime (L=0.86 C=0.18 H=105) */
+  --color-lime-50: oklch(0.98 0.04 105);
+  --color-lime-100: oklch(0.96 0.06 105);
+  --color-lime-200: oklch(0.93 0.1 105);
+  --color-lime-300: oklch(0.9 0.13 105);
+  --color-lime-400: oklch(0.88 0.16 105);
+  --color-lime-500: oklch(0.86 0.18 105);
+  --color-lime-600: oklch(0.76 0.18 105);
+  --color-lime-700: oklch(0.64 0.16 105);
+  --color-lime-800: oklch(0.5 0.13 105);
+  --color-lime-900: oklch(0.38 0.1 105);
+  --color-lime-950: oklch(0.28 0.07 105);
+
+  /* Turquoise (L=0.76 C=0.11 H=207) */
+  --color-turquoise-50: oklch(0.98 0.02 207);
+  --color-turquoise-100: oklch(0.95 0.04 207);
+  --color-turquoise-200: oklch(0.9 0.06 207);
+  --color-turquoise-300: oklch(0.85 0.08 207);
+  --color-turquoise-400: oklch(0.8 0.1 207);
+  --color-turquoise-500: oklch(0.76 0.11 207);
+  --color-turquoise-600: oklch(0.66 0.11 207);
+  --color-turquoise-700: oklch(0.54 0.1 207);
+  --color-turquoise-800: oklch(0.42 0.08 207);
+  --color-turquoise-900: oklch(0.32 0.06 207);
+  --color-turquoise-950: oklch(0.22 0.04 207);
+
+  /* Dark Orange (L=0.62 C=0.19 H=28) */
+  --color-darkOrange-50: oklch(0.97 0.04 28);
+  --color-darkOrange-100: oklch(0.94 0.06 28);
+  --color-darkOrange-200: oklch(0.88 0.1 28);
+  --color-darkOrange-300: oklch(0.8 0.14 28);
+  --color-darkOrange-400: oklch(0.72 0.17 28);
+  --color-darkOrange-500: oklch(0.62 0.19 28);
+  --color-darkOrange-600: oklch(0.54 0.18 28);
+  --color-darkOrange-700: oklch(0.44 0.15 28);
+  --color-darkOrange-800: oklch(0.34 0.12 28);
+  --color-darkOrange-900: oklch(0.26 0.08 28);
+  --color-darkOrange-950: oklch(0.18 0.05 28);
+
+  /* Orange (L=0.81 C=0.16 H=75) */
+  --color-orange-50: oklch(0.98 0.03 75);
+  --color-orange-100: oklch(0.95 0.05 75);
+  --color-orange-200: oklch(0.91 0.08 75);
+  --color-orange-300: oklch(0.87 0.11 75);
+  --color-orange-400: oklch(0.84 0.14 75);
+  --color-orange-500: oklch(0.81 0.16 75);
+  --color-orange-600: oklch(0.71 0.16 75);
+  --color-orange-700: oklch(0.59 0.14 75);
+  --color-orange-800: oklch(0.47 0.11 75);
+  --color-orange-900: oklch(0.36 0.08 75);
+  --color-orange-950: oklch(0.26 0.05 75);
+
+  /* Green (L=0.50 C=0.12 H=168) */
+  --color-green-50: oklch(0.97 0.02 168);
+  --color-green-100: oklch(0.93 0.04 168);
+  --color-green-200: oklch(0.85 0.06 168);
+  --color-green-300: oklch(0.75 0.08 168);
+  --color-green-400: oklch(0.64 0.1 168);
+  --color-green-500: oklch(0.5 0.12 168);
+  --color-green-600: oklch(0.44 0.11 168);
+  --color-green-700: oklch(0.36 0.09 168);
+  --color-green-800: oklch(0.28 0.07 168);
+  --color-green-900: oklch(0.22 0.05 168);
+  --color-green-950: oklch(0.16 0.03 168);
+
+  /* Dark Blue (L=0.35 C=0.07 H=245) */
+  --color-darkBlue-50: oklch(0.97 0.01 245);
+  --color-darkBlue-100: oklch(0.93 0.02 245);
+  --color-darkBlue-200: oklch(0.85 0.03 245);
+  --color-darkBlue-300: oklch(0.72 0.04 245);
+  --color-darkBlue-400: oklch(0.55 0.06 245);
+  --color-darkBlue-500: oklch(0.35 0.07 245);
+  --color-darkBlue-600: oklch(0.3 0.07 245);
+  --color-darkBlue-700: oklch(0.25 0.06 245);
+  --color-darkBlue-800: oklch(0.2 0.05 245);
+  --color-darkBlue-900: oklch(0.16 0.04 245);
+  --color-darkBlue-950: oklch(0.12 0.03 245);
+
+  /* Blue (L=0.53 C=0.12 H=260) */
+  --color-blue-50: oklch(0.97 0.02 260);
+  --color-blue-100: oklch(0.94 0.04 260);
+  --color-blue-200: oklch(0.88 0.06 260);
+  --color-blue-300: oklch(0.78 0.08 260);
+  --color-blue-400: oklch(0.66 0.1 260);
+  --color-blue-500: oklch(0.53 0.12 260);
+  --color-blue-600: oklch(0.46 0.11 260);
+  --color-blue-700: oklch(0.38 0.1 260);
+  --color-blue-800: oklch(0.3 0.08 260);
+  --color-blue-900: oklch(0.24 0.06 260);
+  --color-blue-950: oklch(0.18 0.04 260);
+
+  /* Slate (L=0.73 C=0.07 H=260) */
+  --color-slate-50: oklch(0.98 0.01 260);
+  --color-slate-100: oklch(0.95 0.02 260);
+  --color-slate-200: oklch(0.9 0.03 260);
+  --color-slate-300: oklch(0.84 0.05 260);
+  --color-slate-400: oklch(0.78 0.06 260);
+  --color-slate-500: oklch(0.73 0.07 260);
+  --color-slate-600: oklch(0.63 0.07 260);
+  --color-slate-700: oklch(0.52 0.06 260);
+  --color-slate-800: oklch(0.4 0.05 260);
+  --color-slate-900: oklch(0.3 0.04 260);
+  --color-slate-950: oklch(0.22 0.03 260);
+
+  /* Pink (L=0.82 C=0.08 H=15) */
+  --color-pink-50: oklch(0.98 0.02 15);
+  --color-pink-100: oklch(0.95 0.03 15);
+  --color-pink-200: oklch(0.91 0.04 15);
+  --color-pink-300: oklch(0.87 0.06 15);
+  --color-pink-400: oklch(0.84 0.07 15);
+  --color-pink-500: oklch(0.82 0.08 15);
+  --color-pink-600: oklch(0.72 0.08 15);
+  --color-pink-700: oklch(0.6 0.07 15);
+  --color-pink-800: oklch(0.48 0.06 15);
+  --color-pink-900: oklch(0.36 0.04 15);
+  --color-pink-950: oklch(0.26 0.03 15);
+
+  /* Red (L=0.60 C=0.21 H=18) */
+  --color-red-50: oklch(0.97 0.04 18);
+  --color-red-100: oklch(0.94 0.06 18);
+  --color-red-200: oklch(0.88 0.1 18);
+  --color-red-300: oklch(0.8 0.14 18);
+  --color-red-400: oklch(0.7 0.18 18);
+  --color-red-500: oklch(0.6 0.21 18);
+  --color-red-600: oklch(0.52 0.2 18);
+  --color-red-700: oklch(0.42 0.17 18);
+  --color-red-800: oklch(0.34 0.13 18);
+  --color-red-900: oklch(0.26 0.09 18);
+  --color-red-950: oklch(0.18 0.06 18);
+
+  /* shadcn semantic colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Typography */
+  --font-sans: Sen, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-heading: Unbounded, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+@layer base {
+  /* Note: don't set overflow-x: hidden on <html>. iOS Safari then treats
+     <html> as the scroll container, and position: sticky descendants
+     resolve their containing block against <html> instead of the
+     viewport — sticky stops working. Keep horizontal-overflow protection
+     on <body> only. */
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-bold;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}

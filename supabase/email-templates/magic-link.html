@@ -1,0 +1,159 @@
+<!--
+  Magic-link email template for The Worx.
+
+  This template is NOT served from the app — paste it into Supabase Dashboard
+  → Authentication → Email Templates → Magic Link (Subject + HTML).
+
+  Supabase substitution variables:
+    {{ .ConfirmationURL }}  →  the sign-in URL
+    {{ .Email }}            →  recipient email
+    {{ .SiteURL }}          →  your configured site URL
+
+  Subject line to use:  Sign in to The Worx
+
+  Keep this file in version control as a source of truth so future tweaks
+  don't drift from the brand.
+-->
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<title>Sign in to The Worx</title>
+<!--[if mso]>
+<style>body, table, td, p, a, h1, h2, h3 { font-family: Arial, Helvetica, sans-serif !important; }</style>
+<![endif]-->
+<style>
+  body { margin:0; padding:0; background:#FAFAFA; -webkit-font-smoothing:antialiased; }
+  table { border-collapse:collapse; }
+  img { border:0; display:block; outline:none; text-decoration:none; }
+  a { color:#0B385B; }
+  .preheader { display:none !important; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden; mso-hide:all; }
+  @media only screen and (max-width:620px) {
+    .container { width:100% !important; }
+    .px-pad { padding-left:24px !important; padding-right:24px !important; }
+    .h-display { font-size:36px !important; line-height:1.05 !important; }
+    .cta-btn { display:block !important; width:100% !important; box-sizing:border-box; }
+    .stack-col { display:block !important; width:100% !important; }
+    .stack-col + .stack-col { margin-top:16px; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#FAFAFA;font-family:'Sen',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#111111;">
+<div class="preheader">Tap the button below to sign in to your member dashboard.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FAFAFA;">
+  <tbody><tr><td align="center" style="padding:24px 12px;">
+    <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#FFFFFF;">
+      <tbody>
+        <!-- Masthead -->
+        <tr>
+          <td style="background:#D9E01F;padding:32px 40px 28px;" class="px-pad">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tbody><tr>
+                <td align="left" valign="middle">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="140" height="47" viewBox="0 0 648 216" fill="none" style="display:block;">
+                    <path d="M648 0H0V216H648V0Z" fill="#111111"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M300.528 58.1304C328.305 58.1304 350.823 80.7255 350.823 108.598C350.823 136.471 328.305 159.066 300.528 159.066C272.75 159.066 250.232 136.471 250.232 108.598C250.232 80.7255 272.75 58.1304 300.528 58.1304ZM300.528 88.5514L279.878 109.272L300.528 129.993L321.178 109.272L300.528 88.5514Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M131.206 56.6348L165.344 158.774L192.727 118.141L219.7 158.774L253.617 56.6348H223.015L213.116 80.027L192.411 56.6348L172.154 81.3267L161.576 56.6348H131.206Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M406.193 57.9688C415.808 57.9688 437.54 67.7705 437.54 89.8572C437.54 104.582 430.296 115.741 415.808 123.335L438.978 155.939H364.904V57.9688H406.193ZM398.289 79.8557C391.375 79.8557 385.77 85.4552 385.77 92.3625C385.77 99.2699 391.375 104.869 398.289 104.869C405.204 104.869 410.809 99.2699 410.809 92.3625C410.809 85.4552 405.204 79.8557 398.289 79.8557Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M517.82 58.1304V81.9599L540.757 58.1304L560 79.2104L530.605 107.914L560 136.928L540.757 155.861L517.82 133.161V155.861H491.506V133.161L468.223 155.861L449.499 136.928L479.252 108.598L449.499 79.2104L468.223 58.1304L491.506 81.9599V58.1304H517.82ZM504.492 90.1794L486.137 108.598L504.492 127.017L522.848 108.598L504.492 90.1794Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M88.5006 56.9268H98.351V75.5472H102.913V66.237H112.891V56.9268H122.665V86.2547H88.5006V56.9268Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M88.5006 93.8794H122.665V103.714H113.465V112.95H122.665V122.938H88.5006V112.95H98.0793V103.38H88.5006V93.8794Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M88.4308 128.801V158.902H97.4201V148.67H122.665V138.287H97.4201V128.801H88.4308Z" fill="white"/>
+                  </svg>
+                </td>
+                <td align="right" valign="middle">
+                  <span style="font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#0B385B;">1&nbsp;LUIS&nbsp;ST&nbsp;·&nbsp;PORT&nbsp;OF&nbsp;SPAIN</span>
+                </td>
+              </tr></tbody>
+            </table>
+          </td>
+        </tr>
+        <tr><td style="height:8px;background:#0B385B;line-height:8px;font-size:0;">&nbsp;</td></tr>
+
+        <!-- Body -->
+        <tr><td style="padding:48px 40px 8px;background:#FFFFFF;" class="px-pad">
+          <p style="margin:0 0 18px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#0B385B;line-height:1;">
+            Your sign-in code
+          </p>
+          <h1 class="h-display" style="margin:0 0 24px;font-family:'Unbounded','Arial Black',Arial,sans-serif;font-weight:700;font-size:42px;line-height:1.02;letter-spacing:-0.02em;color:#111111;">
+            Paste this to sign in.
+          </h1>
+          <p style="margin:0 0 18px;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;color:#2D4763;">
+            Go back to the tab where you requested sign-in and paste this code.
+          </p>
+
+          <!-- Primary: the code, big and copyable -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;background:#47C4DA;">
+            <tbody><tr>
+              <td style="padding:28px 28px;text-align:center;">
+                <p style="margin:0;font-family:'Unbounded','Arial Black',Arial,sans-serif;font-weight:700;font-size:44px;line-height:1;letter-spacing:0.16em;color:#0B385B;">
+                  {{ .Token }}
+                </p>
+              </td>
+            </tr></tbody>
+          </table>
+
+          <p style="margin:24px 0 12px;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#555845;">
+            Or tap below if you&rsquo;re reading this email in the same browser you started sign-in from:
+          </p>
+
+          <!-- Secondary CTA -->
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 12px;">
+            <tbody><tr><td>
+              <!--[if mso]>
+              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ .ConfirmationURL }}" style="height:46px;v-text-anchor:middle;width:200px;" arcsize="0%" strokecolor="#0B385B" strokeweight="1px" fillcolor="#FFFFFF">
+                <w:anchorlock/>
+                <center style="color:#0B385B;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:0.12em;">TAP TO SIGN IN →</center>
+              </v:roundrect>
+              <![endif]-->
+              <!--[if !mso]><!-- -->
+              <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;background:#FFFFFF;color:#0B385B;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 24px;border:1px solid #0B385B;line-height:1;">
+                Tap&nbsp;to&nbsp;sign&nbsp;in&nbsp;→
+              </a>
+              <!--<![endif]-->
+            </td></tr></tbody>
+          </table>
+
+          <p style="margin:24px 0 8px;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.55;color:#555845;">
+            Code and link both expire in a few minutes and can only be used once. If you didn&rsquo;t request this, you can ignore the email.
+          </p>
+        </td></tr>
+        <tr><td style="height:40px;line-height:40px;font-size:0;background:#FFFFFF;">&nbsp;</td></tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#0B385B;padding:36px 40px;" class="px-pad">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tbody><tr>
+                <td valign="top" class="stack-col" style="width:55%;">
+                  <p style="margin:0 0 8px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#D9E01F;line-height:1;">FIND&nbsp;US</p>
+                  <p style="margin:0 0 14px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:17px;letter-spacing:-0.005em;color:#FFFFFF;line-height:1.3;">
+                    1&nbsp;Luis&nbsp;Street,<br>Port&nbsp;of&nbsp;Spain
+                  </p>
+                  <p style="margin:0;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#93AAD8;">
+                    <a href="https://theworx.io" style="color:#FFFFFF;text-decoration:underline;text-underline-offset:3px;">theworx.io</a><br>
+                    <a href="mailto:team@theworx.io" style="color:#FFFFFF;text-decoration:underline;text-underline-offset:3px;">team@theworx.io</a>
+                  </p>
+                </td>
+                <td valign="top" class="stack-col" style="width:45%;" align="right">
+                  <p style="margin:0 0 8px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#D9E01F;line-height:1;">WHAT&nbsp;WE&nbsp;DO</p>
+                  <p style="margin:0;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.7;color:#FFFFFF;">
+                    Coworking&nbsp;&amp;&nbsp;hot&nbsp;desks<br>
+                    Private&nbsp;offices<br>
+                    Meeting&nbsp;rooms<br>
+                    Virtual&nbsp;office<br>
+                    Events&nbsp;&amp;&nbsp;education
+                  </p>
+                </td>
+              </tr></tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </td></tr></tbody>
+</table>
+</body></html>
