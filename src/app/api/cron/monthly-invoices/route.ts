@@ -17,7 +17,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 
-  const result = await invoiceMonthlyRenters(createAdminClient())
+  // Off by default for the gym: only runs when an owner turns on the
+  // settings key `monthly_invoicing` (for anyone billed by invoice).
+  const admin = createAdminClient()
+  const { data: flag } = await admin
+    .from('settings')
+    .select('value')
+    .eq('key', 'monthly_invoicing')
+    .maybeSingle()
+  if ((flag as { value?: unknown } | null)?.value !== true) {
+    return NextResponse.json({ ok: true, skipped: 'monthly_invoicing off' })
+  }
+  const result = await invoiceMonthlyRenters(admin)
   if (result.errors.length > 0) {
     console.error('[cron/monthly-invoices] errors:', result.errors)
   }

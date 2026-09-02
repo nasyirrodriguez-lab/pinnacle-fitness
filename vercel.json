@@ -15,6 +15,10 @@
     {
       "path": "/api/cron/gym-housekeeping",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/session-nudges",
+      "schedule": "30 12 * * *"
     }
   ]
 }
