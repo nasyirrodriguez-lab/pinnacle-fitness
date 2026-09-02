@@ -5,6 +5,7 @@ import MemberQRCode from '@/components/MemberQRCode'
 import LogoutButton from '@/components/LogoutButton'
 import RenewBanner from '@/components/dashboard/RenewBanner'
 import HomeLogoButton from '@/components/dashboard/HomeLogoButton'
+import TrainerPrompt from '@/components/dashboard/TrainerPrompt'
 import type { Member } from '@/lib/types'
 
 const planNames: Record<string, string> = {
@@ -32,7 +33,7 @@ export default async function DashboardPage() {
 
   const [{ data: member }, { data: profile }] = await Promise.all([
     supabase.from('members').select('*').eq('user_id', user.id).single<Member>(),
-    supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+    supabase.from('profiles').select('full_name, trainer').eq('id', user.id).single(),
   ])
 
   if (!member) {
@@ -45,6 +46,8 @@ export default async function DashboardPage() {
       </div>
     )
   }
+
+  const trainerAssigned = profile?.trainer
 
   const fullName: string = profile?.full_name || user.email || 'Member'
   const firstName = fullName.split(' ')[0]
@@ -62,6 +65,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#E8E4DC]">
+      {!trainerAssigned && <TrainerPrompt />}
       {/* Header */}
       <header className="border-b border-[#CCC8C0] bg-[#E8E4DC]/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
