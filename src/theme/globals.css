@@ -1,0 +1,394 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* =====================================================================
+   Pinnacle Fitness design system — dark only.
+   Three brand colours: Artificial Turf (the single action colour),
+   Urbane Bronze (SW 7048 — every surface), Crushed Ice (every word).
+
+   The codebase was forked from a light-themed app that uses Tailwind
+   palette classes everywhere (bg-white cards, text-neutral-900 copy,
+   turquoise accents, darkBlue buttons, orange warnings). Rather than
+   rewrite hundreds of files, the palettes are REMAPPED here so the old
+   class names render the new system: `bg-white` is a bronze card, the
+   neutral scale is inverted so `text-neutral-900` is ice, turquoise and
+   lime are turf, darkBlue is raised bronze, orange is amber, red is red.
+   New code should prefer the semantic tokens (bg-card, text-foreground,
+   bg-primary…) and the pinnacle palette (turf, bronze, ice) below.
+   ===================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Brand */
+  --pf-ground: #0b0e0c;
+  --pf-card: #2b2925;
+  --pf-raised: #54504b;
+  --pf-line: #3d3a35;
+  --pf-ice: #e5e8e6;
+  --pf-ice-dim: #b3b7b3;
+  --pf-ice-mute: #8a8d89;
+  --pf-turf: #4ec95c;
+  --pf-turf-ink: #06120a;
+  --pf-turf-deep: #1f6b2e;
+  --pf-warn: #e0a24a;
+  --pf-bad: #e2624f;
+
+  /* shadcn semantic tokens */
+  --radius: 1.375rem;
+  --background: var(--pf-ground);
+  --foreground: var(--pf-ice);
+  --card: var(--pf-card);
+  --card-foreground: var(--pf-ice);
+  --popover: var(--pf-card);
+  --popover-foreground: var(--pf-ice);
+  --primary: var(--pf-turf);
+  --primary-foreground: var(--pf-turf-ink);
+  --secondary: var(--pf-raised);
+  --secondary-foreground: var(--pf-ice);
+  --muted: #1f2320;
+  --muted-foreground: var(--pf-ice-dim);
+  --accent: #14311b;
+  --accent-foreground: #cdf4d1;
+  --destructive: var(--pf-bad);
+  --destructive-foreground: var(--pf-ice);
+  --border: var(--pf-line);
+  --input: var(--pf-line);
+  --ring: var(--pf-turf);
+}
+
+.dark {
+  --background: var(--pf-ground);
+  --foreground: var(--pf-ice);
+}
+
+@theme {
+  /* ---- Pinnacle palette (use these in new code) ---- */
+  --color-ground: var(--pf-ground);
+  --color-bronze: var(--pf-card);
+  --color-bronze-raised: var(--pf-raised);
+  --color-bronze-line: var(--pf-line);
+  --color-ice: var(--pf-ice);
+  --color-ice-dim: var(--pf-ice-dim);
+  --color-ice-mute: var(--pf-ice-mute);
+  --color-turf: var(--pf-turf);
+  --color-turf-ink: var(--pf-turf-ink);
+  --color-turf-deep: var(--pf-turf-deep);
+  --color-warn: var(--pf-warn);
+  --color-bad: var(--pf-bad);
+
+  /* ---- Legacy palette remap ---- */
+  --color-white: #2b2925;
+  --color-black: #0b0e0c;
+
+  /* Neutral, inverted: 50 = page tint near ground … 900 = ice */
+  --color-neutral-50: #141715;
+  --color-neutral-100: #1f2320;
+  --color-neutral-200: #3d3a35;
+  --color-neutral-300: #4a4741;
+  --color-neutral-400: #6f6c66;
+  --color-neutral-500: #8a8d89;
+  --color-neutral-600: #b3b7b3;
+  --color-neutral-700: #c9ccc9;
+  --color-neutral-800: #dadddb;
+  --color-neutral-900: #e5e8e6;
+  --color-neutral-950: #f2f4f3;
+
+  /* Turf scale on a dark ground: 50 = faint tint, 500 = turf, 700 = text turf */
+  --color-turquoise-50: #0f2114;
+  --color-turquoise-100: #14311b;
+  --color-turquoise-200: #1b4a26;
+  --color-turquoise-300: #236a33;
+  --color-turquoise-400: #35a346;
+  --color-turquoise-500: #4ec95c;
+  --color-turquoise-600: #63d46f;
+  --color-turquoise-700: #7ede88;
+  --color-turquoise-800: #a5eaad;
+  --color-turquoise-900: #cdf4d1;
+  --color-turquoise-950: #e8faea;
+
+  --color-lime-50: #0f2114;
+  --color-lime-100: #14311b;
+  --color-lime-200: #1b4a26;
+  --color-lime-300: #236a33;
+  --color-lime-400: #35a346;
+  --color-lime-500: #4ec95c;
+  --color-lime-600: #63d46f;
+  --color-lime-700: #7ede88;
+  --color-lime-800: #a5eaad;
+  --color-lime-900: #cdf4d1;
+  --color-lime-950: #e8faea;
+
+  --color-green-50: #0f2114;
+  --color-green-100: #14311b;
+  --color-green-200: #1b4a26;
+  --color-green-300: #236a33;
+  --color-green-400: #35a346;
+  --color-green-500: #4ec95c;
+  --color-green-600: #63d46f;
+  --color-green-700: #7ede88;
+  --color-green-800: #a5eaad;
+  --color-green-900: #cdf4d1;
+  --color-green-950: #e8faea;
+
+  /* Bronze family: darkBlue-900 buttons = raised bronze (+ ice text) */
+  --color-darkBlue-50: #1f2320;
+  --color-darkBlue-100: #262a27;
+  --color-darkBlue-200: #3d3a35;
+  --color-darkBlue-300: #4a4741;
+  --color-darkBlue-400: #54504b;
+  --color-darkBlue-500: #54504b;
+  --color-darkBlue-600: #5f5b55;
+  --color-darkBlue-700: #66625b;
+  --color-darkBlue-800: #6b665f;
+  --color-darkBlue-900: #54504b;
+  --color-darkBlue-950: #3d3a35;
+
+  /* Amber (warnings) */
+  --color-orange-50: #2a2114;
+  --color-orange-100: #3a2c15;
+  --color-orange-200: #5a4420;
+  --color-orange-300: #7a5b27;
+  --color-orange-400: #b6853c;
+  --color-orange-500: #e0a24a;
+  --color-orange-600: #e5ad5c;
+  --color-orange-700: #e9b86f;
+  --color-orange-800: #f0c98b;
+  --color-orange-900: #f6ddb0;
+  --color-orange-950: #fbeed6;
+
+  --color-darkOrange-50: #2a2114;
+  --color-darkOrange-100: #3a2c15;
+  --color-darkOrange-200: #5a4420;
+  --color-darkOrange-300: #7a5b27;
+  --color-darkOrange-400: #b6853c;
+  --color-darkOrange-500: #e0a24a;
+  --color-darkOrange-600: #e5ad5c;
+  --color-darkOrange-700: #e9b86f;
+  --color-darkOrange-800: #f0c98b;
+  --color-darkOrange-900: #f6ddb0;
+  --color-darkOrange-950: #fbeed6;
+
+  /* Red (blocked / errors) */
+  --color-red-50: #2b1613;
+  --color-red-100: #3b1c18;
+  --color-red-200: #5a2a24;
+  --color-red-300: #7e3a31;
+  --color-red-400: #c9553f;
+  --color-red-500: #e2624f;
+  --color-red-600: #e87160;
+  --color-red-700: #ee8a7b;
+  --color-red-800: #f3a89d;
+  --color-red-900: #f7c4bc;
+  --color-red-950: #fbe1dc;
+
+  /* Blue / slate / pink → bronze-ice greys (no other hues in this system) */
+  --color-blue-50: #1f2320;
+  --color-blue-100: #262a27;
+  --color-blue-200: #3d3a35;
+  --color-blue-300: #6f6c66;
+  --color-blue-400: #8a8d89;
+  --color-blue-500: #8a8d89;
+  --color-blue-600: #b3b7b3;
+  --color-blue-700: #c9ccc9;
+  --color-blue-800: #dadddb;
+  --color-blue-900: #e5e8e6;
+  --color-blue-950: #f2f4f3;
+
+  --color-slate-50: #1f2320;
+  --color-slate-100: #262a27;
+  --color-slate-200: #3d3a35;
+  --color-slate-300: #6f6c66;
+  --color-slate-400: #8a8d89;
+  --color-slate-500: #8a8d89;
+  --color-slate-600: #b3b7b3;
+  --color-slate-700: #c9ccc9;
+  --color-slate-800: #dadddb;
+  --color-slate-900: #e5e8e6;
+  --color-slate-950: #f2f4f3;
+
+  --color-pink-50: #1f2320;
+  --color-pink-100: #262a27;
+  --color-pink-200: #3d3a35;
+  --color-pink-300: #6f6c66;
+  --color-pink-400: #8a8d89;
+  --color-pink-500: #8a8d89;
+  --color-pink-600: #b3b7b3;
+  --color-pink-700: #c9ccc9;
+  --color-pink-800: #dadddb;
+  --color-pink-900: #e5e8e6;
+  --color-pink-950: #f2f4f3;
+
+  /* shadcn semantic colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Typography — Archivo everywhere; width + italic axes do the work */
+  --font-sans:
+    var(--font-archivo), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
+  --font-heading:
+    var(--font-archivo), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
+
+  /* Radius — pills for buttons, 22px cards (rounded-lg is the card radius) */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.375rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
+  --radius-card: 1.375rem;
+}
+
+/* Stat numbers: Archivo Black Italic, wide — the Nike Run Club treatment. */
+@utility font-stat {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-weight: 900;
+  font-variation-settings: 'wdth' 108;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Marketing display headings: wide, heavy, uppercase. */
+@utility heading-display {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-variation-settings: 'wdth' 118;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+
+@utility rounded-card {
+  border-radius: var(--radius-card);
+}
+
+@layer base {
+  /* Note: don't set overflow-x: hidden on <html>. iOS Safari then treats
+     <html> as the scroll container, and position: sticky descendants
+     resolve their containing block against <html> instead of the
+     viewport — sticky stops working. Keep horizontal-overflow protection
+     on <body> only. */
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    background: var(--pf-ground);
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: hidden;
+    font-variation-settings: 'wdth' 100;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+    font-weight: 800;
+    font-variation-settings: 'wdth' 112;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+  }
+
+  ::selection {
+    background: var(--pf-turf);
+    color: var(--pf-turf-ink);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Legacy-class corrections. `--color-white` is the bronze card surface so
+   `bg-white` cards go dark, but text that was white on a coloured button
+   must stay light, and `text-darkBlue-900` link text needs contrast on a
+   bronze card (the raised-bronze button background can't do both, so
+   those links read as turf — the action colour — instead).
+   --------------------------------------------------------------------- */
+@layer utilities {
+  .text-white {
+    color: var(--pf-ice);
+  }
+  .text-white\/90 {
+    color: rgb(229 232 230 / 0.9);
+  }
+  .text-white\/80 {
+    color: rgb(229 232 230 / 0.8);
+  }
+  .text-white\/70 {
+    color: rgb(229 232 230 / 0.7);
+  }
+  .text-white\/60 {
+    color: rgb(229 232 230 / 0.6);
+  }
+  .text-black {
+    color: var(--pf-ground);
+  }
+  .text-darkBlue-900 {
+    color: #7ede88;
+  }
+  .hover\:text-darkBlue-900:hover {
+    color: #7ede88;
+  }
+  .border-white {
+    border-color: var(--pf-ice);
+  }
+  .ring-white {
+    --tw-ring-color: var(--pf-ice);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 220" fill="none">
-  <line x1="248" y1="18" x2="248" y2="72" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
-  <polygon points="248,18 272,26 248,34" fill="currentColor"/>
-  <polygon points="195,88 248,58 301,88 290,88 248,68 206,88" fill="currentColor"/>
-  <polygon points="208,100 248,74 288,100 277,100 248,82 219,100" fill="currentColor"/>
-  <polygon points="220,112 248,90 276,112 265,112 248,98 231,112" fill="currentColor"/>
-  <text x="50" y="168" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="88" fill="currentColor" letter-spacing="-2">PINNACLE</text>
-  <text x="258" y="205" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="46" fill="currentColor" letter-spacing="3">FITNESS</text>
-</svg>
