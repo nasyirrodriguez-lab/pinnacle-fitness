@@ -1,109 +1,125 @@
-// Shared visual shell for transactional + broadcast emails. Centralizing
-// here keeps the brand consistent and makes it easy to tweak the look in
-// one place.
+// Shared visual shell for transactional + broadcast emails. One place to
+// keep the brand consistent: ground-black header with the Pinnacle
+// wordmark, bronze card body, turf accents, ice type.
 //
-// Visual references the brand identity used in the Worx reopening
-// announcement: sulphur yellow masthead, 8px navy ring, Unbounded display
-// headings with letter-spacing, Sen body, navy footer. Transactional
-// variant — calmer than the marketing blast but unmistakably the same
-// brand.
-//
-// Email clients are stricter than browsers: most strip <style> tags, ignore
-// custom fonts, and constrain CSS. We inline everything and keep the @font-
-// face block as a progressive enhancement (Apple Mail, iOS Mail respect
-// it; Outlook/Gmail will fall back to the stack).
+// Email clients are stricter than browsers: most strip <style> tags,
+// ignore custom fonts, and constrain CSS. Everything is inlined; the
+// Archivo stack falls back to Arial Black / Arial.
+
+import { LOCATION, CONTACT, HOURS } from '@/config/location'
 
 export const BRAND = {
-  sulphur: '#D9E01F',
-  navy: '#0B385B',
-  navyLight: '#93AAD8',
-  ink: '#111111',
-  body: '#2D4763',
-  cornbird: '#47C4DA',
-  coral: '#E91945',
-  paper: '#FFFFFF',
-  bgSoft: '#FAFAFA',
-  border: '#E4E7EA',
-  muted: '#555845',
+  ground: '#0B0E0C',
+  card: '#2B2925',
+  raised: '#54504B',
+  line: '#3D3A35',
+  ice: '#E5E8E6',
+  iceDim: '#B3B7B3',
+  iceMute: '#8A8D89',
+  turf: '#4EC95C',
+  turfInk: '#06120A',
+  turfDeep: '#1F6B2E',
+  warn: '#E0A24A',
+  bad: '#E2624F',
+  // Legacy keys kept so older templates keep compiling.
+  ink: '#E5E8E6',
+  body: '#B3B7B3',
+  paper: '#2B2925',
+  bgSoft: '#0B0E0C',
+  border: '#3D3A35',
+  muted: '#8A8D89',
+  navy: '#4EC95C',
+  navyLight: '#B3B7B3',
+  sulphur: '#4EC95C',
+  cornbird: '#54504B',
+  coral: '#E0A24A',
 } as const
 
-export const ADDRESS_LINE_1 = '1 Luis Street'
-export const ADDRESS_LINE_2 = 'Port of Spain, Trinidad and Tobago'
-export const SUPPORT_EMAIL = 'team@theworx.io'
+export const ADDRESS_LINE_1 = `${LOCATION.venue}, ${LOCATION.streetLine1}`
+export const ADDRESS_LINE_2 = `${LOCATION.city}, Trinidad and Tobago`
+export const SUPPORT_EMAIL = CONTACT.email
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? CONTACT.siteUrl
+
+const FONT_DISPLAY = `'Archivo','Arial Black',Arial,Helvetica,sans-serif`
+const FONT_BODY = `'Archivo',Helvetica,Arial,sans-serif`
 
 const HEAD_STYLES = `
-  body { margin:0; padding:0; background:${BRAND.bgSoft}; -webkit-font-smoothing:antialiased; }
+  body { margin:0; padding:0; background:${BRAND.ground}; -webkit-font-smoothing:antialiased; }
   table { border-collapse:collapse; }
   img { border:0; display:block; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
-  a { color:${BRAND.navy}; }
+  a { color:${BRAND.turf}; }
   .preheader { display:none !important; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden; mso-hide:all; }
   @media only screen and (max-width:620px) {
     .container { width:100% !important; }
     .px-pad { padding-left:24px !important; padding-right:24px !important; }
-    .h-display { font-size:36px !important; line-height:1.05 !important; }
+    .h-display { font-size:34px !important; line-height:1.02 !important; }
     .cta-btn { display:block !important; width:100% !important; box-sizing:border-box; }
     .stack-col { display:block !important; width:100% !important; }
     .stack-col + .stack-col { margin-top:16px; }
   }
 `.trim()
 
-const WORDMARK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="140" height="47" viewBox="0 0 648 216" fill="none" style="display:block;">
-<path d="M648 0H0V216H648V0Z" fill="${BRAND.ink}"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M300.528 58.1304C328.305 58.1304 350.823 80.7255 350.823 108.598C350.823 136.471 328.305 159.066 300.528 159.066C272.75 159.066 250.232 136.471 250.232 108.598C250.232 80.7255 272.75 58.1304 300.528 58.1304ZM300.528 88.5514L279.878 109.272L300.528 129.993L321.178 109.272L300.528 88.5514Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M131.206 56.6348L165.344 158.774L192.727 118.141L219.7 158.774L253.617 56.6348H223.015L213.116 80.027L192.411 56.6348L172.154 81.3267L161.576 56.6348H131.206Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M406.193 57.9688C415.808 57.9688 437.54 67.7705 437.54 89.8572C437.54 104.582 430.296 115.741 415.808 123.335L438.978 155.939H364.904V57.9688H406.193ZM398.289 79.8557C391.375 79.8557 385.77 85.4552 385.77 92.3625C385.77 99.2699 391.375 104.869 398.289 104.869C405.204 104.869 410.809 99.2699 410.809 92.3625C410.809 85.4552 405.204 79.8557 398.289 79.8557Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M517.82 58.1304V81.9599L540.757 58.1304L560 79.2104L530.605 107.914L560 136.928L540.757 155.861L517.82 133.161V155.861H491.506V133.161L468.223 155.861L449.499 136.928L479.252 108.598L449.499 79.2104L468.223 58.1304L491.506 81.9599V58.1304H517.82ZM504.492 90.1794L486.137 108.598L504.492 127.017L522.848 108.598L504.492 90.1794Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M88.5006 56.9268H98.351V75.5472H102.913V66.237H112.891V56.9268H122.665V86.2547H88.5006V56.9268Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M88.5006 93.8794H122.665V103.714H113.465V112.95H122.665V122.938H88.5006V112.95H98.0793V103.38H88.5006V93.8794Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M88.4308 128.801V158.902H97.4201V148.67H122.665V138.287H97.4201V128.801H88.4308Z" fill="white"/>
-</svg>`
+const WORDMARK = `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tbody><tr>
+  <td valign="middle" style="padding-right:10px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 64 64" style="display:block;"><path fill="${BRAND.turf}" d="M32 14 6 56h52L32 14Zm0 12.5L47 50H17l15-23.5Z"/><path fill="${BRAND.turf}" d="M31 4h2v14h-2z"/><path fill="${BRAND.turf}" d="M33 5h13l-4 4 4 4H33z"/></svg>
+  </td>
+  <td valign="middle">
+    <span style="font-family:${FONT_DISPLAY};font-weight:900;font-size:22px;letter-spacing:-0.02em;text-transform:uppercase;color:${BRAND.ice};line-height:1;">Pinnacle</span>
+    <span style="font-family:${FONT_BODY};font-weight:600;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.iceDim};line-height:1;padding-left:6px;">Fitness</span>
+  </td>
+</tr></tbody></table>`
 
 const MASTHEAD = `<tr>
-  <td style="background:${BRAND.sulphur};padding:32px 40px 28px;" class="px-pad">
+  <td style="background:${BRAND.ground};padding:28px 40px 24px;" class="px-pad">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
       <tbody><tr>
-        <td align="left" valign="middle">${WORDMARK_SVG}</td>
+        <td align="left" valign="middle">${WORDMARK}</td>
         <td align="right" valign="middle">
-          <span style="font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:${BRAND.navy};">
-            1&nbsp;LUIS&nbsp;ST&nbsp;·&nbsp;PORT&nbsp;OF&nbsp;SPAIN
+          <span style="font-family:${FONT_BODY};font-weight:600;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:${BRAND.iceMute};">
+            THE&nbsp;PLAYGROUND&nbsp;·&nbsp;PORT&nbsp;OF&nbsp;SPAIN
           </span>
         </td>
       </tr></tbody>
     </table>
   </td>
 </tr>
-<tr><td style="height:8px;background:${BRAND.navy};line-height:8px;font-size:0;">&nbsp;</td></tr>`
+<tr><td style="height:4px;background:${BRAND.turf};line-height:4px;font-size:0;">&nbsp;</td></tr>`
+
+const hoursHtml = HOURS.map(
+  (h) => `${h.days}: ${h.open ? `${h.open}–${h.close}` : 'Closed'}`
+).join('<br>')
+
+const phonesHtml = CONTACT.phones
+  .map(
+    (p) =>
+      `${p.name} <a href="tel:${p.tel}" style="color:${BRAND.ice};text-decoration:none;">${p.display}</a>`
+  )
+  .join('<br>')
 
 const FOOTER = `<tr>
-  <td style="background:${BRAND.navy};padding:36px 40px;" class="px-pad">
+  <td style="background:${BRAND.ground};padding:32px 40px;border-top:1px solid ${BRAND.line};" class="px-pad">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
       <tbody><tr>
-        <td valign="top" class="stack-col" style="width:55%;">
-          <p style="margin:0 0 8px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.sulphur};line-height:1;">
+        <td valign="top" class="stack-col" style="width:50%;">
+          <p style="margin:0 0 8px;font-family:${FONT_BODY};font-weight:700;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.turf};line-height:1;">
             FIND&nbsp;US
           </p>
-          <p style="margin:0 0 14px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:17px;letter-spacing:-0.005em;color:${BRAND.paper};line-height:1.3;">
+          <p style="margin:0 0 12px;font-family:${FONT_BODY};font-weight:600;font-size:14px;color:${BRAND.ice};line-height:1.45;">
             ${ADDRESS_LINE_1},<br>${ADDRESS_LINE_2}
           </p>
-          <p style="margin:0;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:${BRAND.navyLight};">
-            <a href="${SITE_URL}" style="color:${BRAND.paper};text-decoration:underline;text-underline-offset:3px;">theworx.io</a><br>
-            <a href="mailto:${SUPPORT_EMAIL}" style="color:${BRAND.paper};text-decoration:underline;text-underline-offset:3px;">${SUPPORT_EMAIL}</a>
+          <p style="margin:0;font-family:${FONT_BODY};font-size:12px;line-height:1.7;color:${BRAND.iceDim};">
+            <a href="${SITE_URL}" style="color:${BRAND.ice};text-decoration:underline;text-underline-offset:3px;">${CONTACT.domain}</a><br>
+            <a href="mailto:${SUPPORT_EMAIL}" style="color:${BRAND.ice};text-decoration:underline;text-underline-offset:3px;">${SUPPORT_EMAIL}</a>
           </p>
         </td>
-        <td valign="top" class="stack-col" style="width:45%;" align="right">
-          <p style="margin:0 0 8px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.sulphur};line-height:1;">
-            WHAT&nbsp;WE&nbsp;DO
+        <td valign="top" class="stack-col" style="width:50%;" align="right">
+          <p style="margin:0 0 8px;font-family:${FONT_BODY};font-weight:700;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.turf};line-height:1;">
+            HOURS&nbsp;&amp;&nbsp;COACHES
           </p>
-          <p style="margin:0;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.7;color:${BRAND.paper};">
-            Coworking&nbsp;&amp;&nbsp;hot&nbsp;desks<br>
-            Private&nbsp;offices<br>
-            Meeting&nbsp;rooms<br>
-            Virtual&nbsp;office<br>
-            Events&nbsp;&amp;&nbsp;education
-          </p>
+          <p style="margin:0 0 10px;font-family:${FONT_BODY};font-size:12px;line-height:1.7;color:${BRAND.iceDim};">${hoursHtml}</p>
+          <p style="margin:0;font-family:${FONT_BODY};font-size:12px;line-height:1.7;color:${BRAND.iceDim};">${phonesHtml}</p>
         </td>
       </tr></tbody>
     </table>
@@ -139,9 +155,9 @@ export function emailLayout({
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
-<meta name="color-scheme" content="light only">
-<meta name="supported-color-schemes" content="light only">
-<title>The Worx</title>
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark light">
+<title>Pinnacle Fitness</title>
 <!--[if mso]>
 <style>
   body, table, td, p, a, h1, h2, h3 { font-family: Arial, Helvetica, sans-serif !important; }
@@ -149,15 +165,15 @@ export function emailLayout({
 <![endif]-->
 <style>${HEAD_STYLES}</style>
 </head>
-<body style="margin:0;padding:0;background:${BRAND.bgSoft};font-family:'Sen',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:${BRAND.ink};">
+<body style="margin:0;padding:0;background:${BRAND.ground};font-family:${FONT_BODY};color:${BRAND.ice};">
 ${preheaderBlock}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND.bgSoft};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND.ground};">
   <tbody><tr><td align="center" style="padding:24px 12px;">
-    <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:${BRAND.paper};">
+    <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:${BRAND.card};border-radius:22px;overflow:hidden;">
       <tbody>
         ${MASTHEAD}
-        <tr><td style="padding:48px 40px 8px;background:${BRAND.paper};" class="px-pad">${body}</td></tr>
-        <tr><td style="height:40px;line-height:40px;font-size:0;background:${BRAND.paper};">&nbsp;</td></tr>
+        <tr><td style="padding:44px 40px 8px;background:${BRAND.card};" class="px-pad">${body}</td></tr>
+        <tr><td style="height:36px;line-height:36px;font-size:0;background:${BRAND.card};">&nbsp;</td></tr>
         ${FOOTER}
       </tbody>
     </table>
@@ -172,26 +188,34 @@ ${preheaderBlock}
 // =========================================================================
 
 export function eyebrow(text: string): string {
-  return `<p style="margin:0 0 18px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.navy};line-height:1;">
+  return `<p style="margin:0 0 16px;font-family:${FONT_BODY};font-weight:700;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:${BRAND.turf};line-height:1;">
     ${escapeHtml(text)}
   </p>`
 }
 
 export function display(text: string): string {
-  return `<h1 class="h-display" style="margin:0 0 24px;font-family:'Unbounded','Arial Black',Arial,sans-serif;font-weight:700;font-size:42px;line-height:1.02;letter-spacing:-0.02em;color:${BRAND.ink};">
+  return `<h1 class="h-display" style="margin:0 0 22px;font-family:${FONT_DISPLAY};font-weight:900;font-size:40px;line-height:0.98;letter-spacing:-0.02em;text-transform:uppercase;color:${BRAND.ice};">
     ${text}
   </h1>`
 }
 
 export function heading(text: string): string {
-  return `<h2 style="margin:0 0 14px;font-family:'Unbounded','Arial Black',Arial,sans-serif;font-weight:700;font-size:24px;line-height:1.15;letter-spacing:-0.015em;color:${BRAND.ink};">
+  return `<h2 style="margin:0 0 14px;font-family:${FONT_DISPLAY};font-weight:800;font-size:22px;line-height:1.15;letter-spacing:-0.015em;color:${BRAND.ice};">
     ${escapeHtml(text)}
   </h2>`
 }
 
 export function paragraph(html: string): string {
-  return `<p style="margin:0 0 18px;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;color:${BRAND.body};">
+  return `<p style="margin:0 0 18px;font-family:${FONT_BODY};font-size:16px;line-height:1.55;color:${BRAND.iceDim};">
     ${html}
+  </p>`
+}
+
+// Big stat line — sessions left, amount due — in the Nike-style heavy italic.
+export function stat(value: string, label: string): string {
+  return `<p style="margin:0 0 18px;font-family:${FONT_DISPLAY};color:${BRAND.ice};">
+    <span style="font-style:italic;font-weight:900;font-size:44px;line-height:1;letter-spacing:-0.03em;color:${BRAND.turf};">${escapeHtml(value)}</span>
+    <span style="font-family:${FONT_BODY};font-weight:500;font-size:14px;color:${BRAND.iceDim};padding-left:8px;">${escapeHtml(label)}</span>
   </p>`
 }
 
@@ -199,21 +223,15 @@ export function ctaButton(href: string, label: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 12px;">
     <tbody><tr><td>
       <!--[if mso]>
-      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${href}" style="height:54px;v-text-anchor:middle;width:260px;" arcsize="0%" strokecolor="${BRAND.ink}" strokeweight="1px" fillcolor="${BRAND.navy}">
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${href}" style="height:54px;v-text-anchor:middle;width:260px;" arcsize="50%" strokecolor="${BRAND.turf}" strokeweight="1px" fillcolor="${BRAND.turf}">
         <w:anchorlock/>
-        <center style="color:${BRAND.paper};font-family:Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:0.16em;">${escapeHtml(label).toUpperCase()}</center>
+        <center style="color:${BRAND.turfInk};font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">${escapeHtml(label)}</center>
       </v:roundrect>
       <![endif]-->
       <!--[if !mso]><!-- -->
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td style="background:${BRAND.coral};padding:1px 0 0 1px;">
-            <a href="${href}" target="_blank" class="cta-btn" style="display:inline-block;background:${BRAND.navy};color:${BRAND.paper};font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:18px 32px;border:1px solid ${BRAND.ink};margin:-7px 0 0 -7px;line-height:1;">
-              ${escapeHtml(label)}&nbsp;→
-            </a>
-          </td>
-        </tr></tbody>
-      </table>
+      <a href="${href}" target="_blank" class="cta-btn" style="display:inline-block;background:${BRAND.turf};color:${BRAND.turfInk};font-family:${FONT_BODY};font-weight:700;font-size:15px;text-decoration:none;padding:17px 32px;border-radius:999px;line-height:1;">
+        ${escapeHtml(label)}&nbsp;→
+      </a>
       <!--<![endif]-->
     </td></tr></tbody>
   </table>`
@@ -224,32 +242,33 @@ export function infoBlock(args: {
   eyebrow?: string
   title: string
   body?: string
-  background?: 'cornbird' | 'sulphur' | 'navy'
+  background?: 'cornbird' | 'sulphur' | 'navy' | 'turf' | 'bronze'
 }): string {
   const palette = (() => {
     switch (args.background) {
       case 'sulphur':
-        return { bg: BRAND.sulphur, fg: BRAND.ink, accent: BRAND.navy }
       case 'navy':
-        return { bg: BRAND.navy, fg: BRAND.paper, accent: BRAND.sulphur }
+      case 'turf':
+        return { bg: BRAND.turf, fg: BRAND.turfInk, accent: BRAND.turfDeep }
       case 'cornbird':
+      case 'bronze':
       default:
-        return { bg: BRAND.cornbird, fg: BRAND.navy, accent: BRAND.navy }
+        return { bg: BRAND.raised, fg: BRAND.ice, accent: BRAND.turf }
     }
   })()
 
   const eyebrowHtml = args.eyebrow
-    ? `<p style="margin:0 0 12px;font-family:'Unbounded',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${palette.accent};line-height:1;">${escapeHtml(args.eyebrow)}</p>`
+    ? `<p style="margin:0 0 12px;font-family:${FONT_BODY};font-weight:700;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:${palette.accent};line-height:1;">${escapeHtml(args.eyebrow)}</p>`
     : ''
   const bodyHtml = args.body
-    ? `<p style="margin:8px 0 0;font-family:'Sen',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:${palette.fg};opacity:0.9;">${args.body}</p>`
+    ? `<p style="margin:8px 0 0;font-family:${FONT_BODY};font-size:14px;line-height:1.5;color:${palette.fg};opacity:0.9;">${args.body}</p>`
     : ''
 
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px;background:${palette.bg};">
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px;background:${palette.bg};border-radius:18px;">
     <tbody><tr>
-      <td style="padding:24px 28px;">
+      <td style="padding:22px 26px;">
         ${eyebrowHtml}
-        <p style="margin:0;font-family:'Unbounded','Arial Black',Arial,sans-serif;font-weight:700;font-size:22px;line-height:1.15;letter-spacing:-0.01em;color:${palette.fg};">
+        <p style="margin:0;font-family:${FONT_DISPLAY};font-weight:800;font-size:22px;line-height:1.15;letter-spacing:-0.01em;color:${palette.fg};">
           ${args.title}
         </p>
         ${bodyHtml}
@@ -259,7 +278,7 @@ export function infoBlock(args: {
 }
 
 export function divider(): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;"><tbody><tr><td style="border-top:1px solid ${BRAND.border};line-height:1px;font-size:0;">&nbsp;</td></tr></tbody></table>`
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;"><tbody><tr><td style="border-top:1px solid ${BRAND.line};line-height:1px;font-size:0;">&nbsp;</td></tr></tbody></table>`
 }
 
 export function escapeHtml(s: string): string {

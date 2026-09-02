@@ -26,7 +26,7 @@ export default function InstallGuide() {
         <div>
           <p className="font-heading text-lg mb-1">You&apos;re already in.</p>
           <p className="text-sm text-neutral-700">
-            The Worx is installed on this device. Your home-screen icon opens
+            Pinnacle is installed on this device. Your home-screen icon opens
             straight to your dashboard.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function InstallGuide() {
       {primary !== 'android-other' && <Guide kind="android-other" />}
 
       <p className="text-sm text-neutral-500 mt-8">
-        Installing The Worx adds it to your home screen and lets it open
+        Installing Pinnacle adds it to your home screen and lets it open
         full-screen, like a native app. It&apos;s the same website underneath —
         your sign-in carries over.
       </p>
@@ -153,7 +153,7 @@ function GuideBody({
           Scroll down and tap <strong>Add to Home Screen</strong>.
         </Step>
         <Step n={3}>
-          Tap <strong>Add</strong> in the top-right. The Worx now lives on your
+          Tap <strong>Add</strong> in the top-right. Pinnacle now lives on your
           home screen.
         </Step>
       </ol>
@@ -165,12 +165,12 @@ function GuideBody({
       <div className="space-y-3 text-sm text-neutral-700">
         <p>
           Apple blocks app install from non-Safari browsers on iOS. You can
-          still use theworx.io here, but to get the home-screen icon you need
+          still use pinnaclefitness.app here, but to get the home-screen icon you need
           Safari.
         </p>
         <ol className="space-y-3">
           <Step n={1}>
-            Copy the URL: <code>theworx.io</code>
+            Copy the URL: <code>pinnaclefitness.app</code>
           </Step>
           <Step n={2}>
             Open <strong>Safari</strong> and paste it into the address bar.
@@ -198,7 +198,7 @@ function GuideBody({
               className="w-full sm:w-auto"
             >
               <Download size={16} className="mr-2" />
-              Install The Worx
+              Install Pinnacle
             </Button>
             <p className="text-xs text-neutral-500">
               Not seeing the dialog? Tap the ⋮ menu and choose{' '}
@@ -238,7 +238,7 @@ function GuideBody({
         Firefox calls it <strong>Install</strong> in the address bar.
       </Step>
       <Step n={3}>
-        Confirm and you&apos;re done. The Worx appears in your app drawer.
+        Confirm and you&apos;re done. Pinnacle appears in your app drawer.
       </Step>
     </ol>
   )

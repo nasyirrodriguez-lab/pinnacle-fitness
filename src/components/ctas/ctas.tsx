@@ -7,12 +7,12 @@ import { useModalContext } from '@/providers/modal-provider/modal-provider'
 
 type ButtonProps = React.ComponentProps<typeof Button>
 
-export function BookNow({
-  label = 'Book Now',
+export function ApplyNow({
+  label = 'Apply to join',
   ...props
 }: ButtonProps & { label?: string }) {
   return (
-    <Link href="/buy">
+    <Link href="/apply">
       <Button size="default" {...props}>
         {label}
       </Button>
@@ -20,11 +20,15 @@ export function BookNow({
   )
 }
 
+// Kept for call sites that still import BookNow — members book from the
+// app, applicants apply.
+export const BookNow = ApplyNow
+
 export function ViewPricing(props: ButtonProps) {
   return (
     <Link href="/pricing">
       <Button variant="outline" size="default" {...props}>
-        View Pricing
+        See memberships
       </Button>
     </Link>
   )
@@ -32,13 +36,9 @@ export function ViewPricing(props: ButtonProps) {
 
 export function Login(props: ButtonProps) {
   return (
-    <Link
-      href="https://theworxtt.spaces.nexudus.com/login?&v=latest"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <Link href="/sign-in">
       <Button variant="outline" size="default" {...props}>
-        Book Now
+        Sign in
       </Button>
     </Link>
   )
@@ -55,7 +55,7 @@ export function Inquire({
       onClick={() => openModal('INQUIRY_MODAL', { defaultInterests })}
       {...props}
     >
-      Get in Touch
+      Get in touch
     </Button>
   )
 }
@@ -79,7 +79,7 @@ export function CtaRow({
     >
       {includes.includes('sign-up-now') && (
         <div>
-          <BookNow {...props?.buttonProps} />
+          <ApplyNow {...props?.buttonProps} />
         </div>
       )}
       {includes.includes('view-pricing') && (

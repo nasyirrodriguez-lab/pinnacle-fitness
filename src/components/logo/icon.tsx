@@ -4,19 +4,24 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
   size?: number
 }
 
-export default function Icon({ size, className, ...props }: IconProps) {
+// Pinnacle mark: a peak with a flag planted on it. Placeholder geometry
+// until the real logo file arrives — keep the API stable.
+export default function Icon({ size = 32, className, ...props }: IconProps) {
   return (
     <svg
-      viewBox="0 0 300 300"
+      viewBox="0 0 64 64"
       width={size}
       height={size}
       className={cn('inline-block', className)}
+      aria-hidden="true"
       {...props}
     >
       <path
         fill="currentColor"
-        d="M290 76.68 241.47 27.8l-56.43 56.07V27.79h-70.08v56.07L58.88 27.79 10 76.68 83.68 150 10 223.32l48.88 48.88 56.07-56.07v56.07h70.09v-56.07l56.43 56.07L290 223.32l-73.33-73.33L290 76.67ZM149.45 201.42l-49.61-50.35 49.61-49.61 50.35 49.61-50.35 50.35Z"
+        d="M32 14 6 56h52L32 14Zm0 12.5L47 50H17l15-23.5Z"
       />
+      <path fill="currentColor" d="M31 4h2v14h-2z" />
+      <path fill="currentColor" d="M33 5h13l-4 4 4 4H33z" />
     </svg>
   )
 }

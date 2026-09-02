@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic'
 
 function getSiteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://theworx.io'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
   )
 }
 
@@ -91,14 +91,14 @@ export default async function CheckinHome() {
     margin: 1,
     width: 280,
     errorCorrectionLevel: 'M',
-    color: { dark: '#0a1620', light: '#ffffff' },
+    color: { dark: '#0b0e0c', light: '#e5e8e6' },
   })
 
   return (
     <KioskGate>
       <div className="text-center mb-5">
         <h1 className="font-heading text-3xl md:text-4xl mb-1">
-          Welcome to The Worx
+          Welcome to Pinnacle
         </h1>
         <p className="text-neutral-600">
           Scan with your phone, or tap an option below.
@@ -116,7 +116,7 @@ export default async function CheckinHome() {
             dangerouslySetInnerHTML={{ __html: qrSvg }}
           />
           <p className="text-xs text-neutral-500 leading-relaxed">
-            Point your camera at the code — check in, book rooms, and manage
+            Point your camera at the code — check in, book a session, and manage
             your membership from your own phone.
           </p>
         </div>

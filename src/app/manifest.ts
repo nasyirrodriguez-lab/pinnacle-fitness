@@ -1,24 +1,21 @@
 import type { MetadataRoute } from 'next'
 
-// Dynamic web app manifest. Keeps the install + standalone experience in
-// sync with our brand colours and lets us evolve fields without editing a
-// static JSON file. The previous public/site.webmanifest is superseded by
-// this route — Next.js will serve /manifest.webmanifest from here.
-
+// Dynamic web app manifest — the home-screen app members pin. Keeps the
+// install + standalone experience in sync with the brand colours.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'The Worx — Member',
-    short_name: 'The Worx',
+    name: 'Pinnacle Fitness',
+    short_name: 'Pinnacle',
     description:
-      'Your member dashboard for The Worx coworking in Port of Spain. Book a room, manage your plan, and check in at the door.',
+      'Your Pinnacle membership: book sessions with your coach, see what you have left, and scan in at the door.',
     start_url: '/dashboard',
     scope: '/',
     id: '/dashboard',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#D9E01F',
-    theme_color: '#D9E01F',
-    categories: ['business', 'productivity', 'lifestyle'],
+    background_color: '#0B0E0C',
+    theme_color: '#0B0E0C',
+    categories: ['health', 'fitness', 'lifestyle'],
     icons: [
       {
         src: '/android-chrome-192x192.png',
@@ -44,19 +41,13 @@ export default function manifest(): MetadataRoute.Manifest {
         name: 'Show my check-in QR',
         short_name: 'My QR',
         url: '/my-qr',
-        description: 'Quickly pull up your QR code for door check-in.',
+        description: 'Pull up your QR code to scan in at the door.',
       },
       {
-        name: 'Book a room',
+        name: 'Book a session',
         short_name: 'Book',
         url: '/book',
-        description: 'Reserve a meeting room or conference room.',
-      },
-      {
-        name: 'My bookings',
-        short_name: 'Bookings',
-        url: '/dashboard/bookings',
-        description: 'See and manage upcoming bookings.',
+        description: 'Book PT with Nasyir or Matthew.',
       },
     ],
   }
