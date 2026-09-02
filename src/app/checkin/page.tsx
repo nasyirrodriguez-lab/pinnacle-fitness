@@ -5,11 +5,9 @@ import {
   UserPlus,
   Smartphone,
   LogOut,
-  CalendarCheck,
-  Sparkles,
   Shield,
-  Users,
   Megaphone,
+  ShoppingBag,
 } from 'lucide-react'
 import KioskGate from '@/components/checkin/kiosk-gate'
 
@@ -17,7 +15,8 @@ export const dynamic = 'force-dynamic'
 
 function getSiteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://pinnaclefitness.app'
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://pinnaclefitness.app'
   )
 }
 
@@ -28,59 +27,45 @@ function getSiteUrl(): string {
 const ACTIONS = [
   {
     href: '/checkin/member',
-    title: "I'm a member",
-    body: 'Scan your QR or find your name.',
+    title: 'Check in',
+    body: 'PT session or open gym — scan your QR or find your name.',
     icon: UserCircle,
     tone: 'bg-turquoise-50 text-turquoise-700',
   },
   {
+    href: '/checkin/checkout',
+    title: 'Leaving',
+    body: 'Tap your name on the way out so the floor count stays right.',
+    icon: LogOut,
+    tone: 'bg-neutral-100 text-neutral-600',
+  },
+  {
     href: '/checkin/guest',
     title: "I'm a guest",
-    body: 'Meeting, event, tour, or trying us out.',
+    body: 'Intro session, or here with a member.',
     icon: UserPlus,
     tone: 'bg-turquoise-50 text-turquoise-700',
   },
   {
-    href: '/checkin/group',
-    title: 'Members: group check-in',
-    body: "On a team's group plan? Check in here.",
-    icon: Users,
-    tone: 'bg-turquoise-50 text-turquoise-700',
-  },
-  {
-    href: '/checkin/booking',
-    title: 'Here for a booking',
-    body: 'Meeting room, conference room, events.',
-    icon: CalendarCheck,
-    tone: 'bg-blue-50 text-blue-700',
-  },
-  {
-    href: '/checkin/signup',
-    title: 'Become a member',
-    body: 'Join in under a minute — free Explore Pass.',
-    icon: Sparkles,
-    tone: 'bg-lime-50 text-lime-700',
-  },
-  {
-    href: '/checkin/staff',
-    title: 'Staff, partners & private',
-    body: 'Team, investors, associates — free entry.',
-    icon: Shield,
+    href: '/checkin/shop',
+    title: 'Shop',
+    body: 'Water, Lucozade, Gatorade, shakes, pre-workout.',
+    icon: ShoppingBag,
     tone: 'bg-lime-50 text-lime-700',
   },
   {
     href: '/checkin/connect',
-    title: 'Join & follow',
-    body: 'WhatsApp group, Instagram, TikTok, LinkedIn.',
+    title: 'Want to join?',
+    body: 'Apply from your phone, follow us on Instagram.',
     icon: Megaphone,
     tone: 'bg-pink-50 text-pink-700',
   },
   {
-    href: '/checkin/checkout',
-    title: 'Heading out?',
-    body: 'Tap your name to check out.',
-    icon: LogOut,
-    tone: 'bg-neutral-100 text-neutral-600',
+    href: '/checkin/staff',
+    title: 'Coaches & staff',
+    body: 'Team check-in.',
+    icon: Shield,
+    tone: 'bg-lime-50 text-lime-700',
   },
 ]
 
@@ -116,8 +101,8 @@ export default async function CheckinHome() {
             dangerouslySetInnerHTML={{ __html: qrSvg }}
           />
           <p className="text-xs text-neutral-500 leading-relaxed">
-            Point your camera at the code — check in, book a session, and manage
-            your membership from your own phone.
+            Point your camera at the code to open your app — your QR, your
+            sessions, and booking, all from your own phone.
           </p>
         </div>
 
