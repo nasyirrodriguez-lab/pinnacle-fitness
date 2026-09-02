@@ -674,7 +674,7 @@ export default async function AdminMemberDetailPage({ params }: PageProps) {
                 fullName: member.fullName ?? '',
                 phone: member.phone ?? '',
                 company: member.company ?? '',
-                role: member.role,
+                role: member.role as Role,
                 designation: member.designation ?? 'none',
                 archived: member.archived,
               }}

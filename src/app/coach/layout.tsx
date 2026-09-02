@@ -1,19 +1,18 @@
 import Link from 'next/link'
-import { requireAdmin } from '@/lib/auth/require-admin'
-import AdminNav from '@/components/admin/admin-nav'
-import SignOutButton from '@/components/sign-out-button/sign-out-button'
+import { requireCoach } from '@/lib/auth/require-admin'
+import { isOwner } from '@/lib/auth/roles'
 import ViewSwitch from '@/components/admin/view-switch'
+import CoachNav from '@/components/admin/coach-nav'
+import SignOutButton from '@/components/sign-out-button/sign-out-button'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminLayout({
+export default async function CoachLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const owner = await requireAdmin()
-  const ownerName = owner.fullName || owner.email.split('@')[0]
-
+  const coach = await requireCoach()
   return (
     <div className="bg-neutral-50 min-h-[calc(100vh-200px)]">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -21,19 +20,18 @@ export default async function AdminLayout({
           <aside className="md:sticky md:top-8 md:self-start">
             <div className="mb-4 px-3">
               <p className="text-xs uppercase tracking-wide text-neutral-500 mb-1">
-                Business
+                Coach
               </p>
               <p className="text-sm font-medium text-neutral-900 truncate">
-                {ownerName}
+                {coach.fullName || coach.email}
               </p>
-              <p className="text-xs text-neutral-500 truncate">{owner.email}</p>
             </div>
-            {owner.coachId && (
+            {isOwner(coach.role) && (
               <div className="mb-4 px-3">
-                <ViewSwitch current="business" />
+                <ViewSwitch current="coach" />
               </div>
             )}
-            <AdminNav />
+            <CoachNav />
             <div className="mt-6 px-3 space-y-2">
               <Link
                 href="/dashboard"
