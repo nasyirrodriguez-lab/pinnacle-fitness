@@ -19,7 +19,7 @@ export default async function AdminPage() {
 
   const [membersRes, profilesRes, authUsersRes, checkInsRes, paymentsRes, freeTrialRes] = await Promise.all([
     adminClient.from('members').select('*').order('created_at', { ascending: false }),
-    adminClient.from('profiles').select('id, full_name'),
+    adminClient.from('profiles').select('id, full_name, trainer'),
     adminClient.auth.admin.listUsers({ perPage: 1000 }),
     supabase.from('check_ins').select('*').gte('checked_in_at', `${today}T00:00:00`).order('checked_in_at', { ascending: false }),
     supabase.from('payments').select('*').order('paid_at', { ascending: false }),
@@ -27,7 +27,7 @@ export default async function AdminPage() {
   ])
 
   const profileMap = Object.fromEntries(
-    (profilesRes.data ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name ?? ''])
+    (profilesRes.data ?? []).map((p: { id: string; full_name: string | null; trainer?: string | null }) => [p.id, { name: p.full_name ?? '', trainer: p.trainer ?? '' }])
   )
   const userEmailMap = Object.fromEntries(
     (authUsersRes.data?.users ?? []).map((u) => [u.id, u.email ?? ''])
@@ -35,10 +35,11 @@ export default async function AdminPage() {
 
   const members = ((membersRes.data ?? []) as Member[]).map((m) => ({
     ...m,
-    name: profileMap[m.user_id] || 'Unknown',
+    name: profileMap[m.user_id]?.name || 'Unknown',
+    trainer: profileMap[m.user_id]?.trainer || '',
     email: userEmailMap[m.user_id] || '',
     join_date: m.created_at,
-  })) as Member[]
+  })) as (Member & { trainer: string })[]
 
   const checkIns = (checkInsRes.data ?? []) as CheckIn[]
   const payments = (paymentsRes.data ?? []) as Payment[]

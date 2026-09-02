@@ -4,18 +4,23 @@ import { useState, useMemo } from 'react'
 import type { Member } from '@/lib/types'
 import MemberModal from './MemberModal'
 
+type MemberWithTrainer = Member & { trainer?: string }
+
 const planBadge: Record<string, string> = {
   basic: 'bg-zinc-700 text-zinc-300',
   premium: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
   elite: 'bg-orange-500/20 text-orange-300 border border-orange-500/30',
 }
 
-export default function MembersSection({ initialMembers }: { initialMembers: Member[] }) {
-  const [members, setMembers] = useState<Member[]>(initialMembers)
+const TRAINERS = ['Nasyir Rodriguez', 'Matthew Sirjoo']
+
+export default function MembersSection({ initialMembers }: { initialMembers: MemberWithTrainer[] }) {
+  const [members] = useState<MemberWithTrainer[]>(initialMembers)
   const [query, setQuery] = useState('')
   const [filterPlan, setFilterPlan] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
-  const [selected, setSelected] = useState<Member | null>(null)
+  const [filterTrainer, setFilterTrainer] = useState<string>('all')
+  const [selected, setSelected] = useState<MemberWithTrainer | null>(null)
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase()
@@ -23,13 +28,13 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
       const matchQ = !q || (m.name ?? '').toLowerCase().includes(q) || (m.email ?? '').toLowerCase().includes(q) || m.member_code.toLowerCase().includes(q)
       const matchPlan = filterPlan === 'all' || m.plan_type === filterPlan
       const matchStatus = filterStatus === 'all' || (m.status ?? 'active') === filterStatus
-      return matchQ && matchPlan && matchStatus
+      const matchTrainer = filterTrainer === 'all' || m.trainer === filterTrainer
+      return matchQ && matchPlan && matchStatus && matchTrainer
     })
-  }, [members, query, filterPlan, filterStatus])
+  }, [members, query, filterPlan, filterStatus, filterTrainer])
 
   function handleSaved(updated: Member) {
-    setMembers((prev) => prev.map((m) => (m.id === updated.id ? updated : m)))
-    setSelected(updated)
+    setSelected(updated as MemberWithTrainer)
   }
 
   const selectCls = 'rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-300 focus:border-orange-500 focus:outline-none transition'
@@ -44,8 +49,8 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
           </svg>
@@ -56,6 +61,10 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
             className="w-full rounded-lg border border-zinc-700 bg-zinc-800 pl-9 pr-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 transition"
           />
         </div>
+        <select value={filterTrainer} onChange={(e) => setFilterTrainer(e.target.value)} className={selectCls}>
+          <option value="all">All trainers</option>
+          {TRAINERS.map((t) => <option key={t} value={t}>{t}</option>)}
+        </select>
         <select value={filterPlan} onChange={(e) => setFilterPlan(e.target.value)} className={selectCls}>
           <option value="all">All plans</option>
           <option value="basic">Basic</option>
@@ -78,7 +87,7 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-800/40">
-                  {['Member', 'Email', 'Plan', 'Status', 'Joined', ''].map((h) => (
+                  {['Member', 'Email', 'Trainer', 'Plan', 'Status', 'Joined', ''].map((h) => (
                     <th key={h} className="px-5 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
@@ -99,6 +108,7 @@ export default function MembersSection({ initialMembers }: { initialMembers: Mem
                         <p className="text-xs text-orange-400 font-mono mt-0.5">{m.member_code}</p>
                       </td>
                       <td className="px-5 py-4 text-zinc-400 text-xs">{m.email || '—'}</td>
+                      <td className="px-5 py-4 text-zinc-300 text-xs whitespace-nowrap">{m.trainer || '—'}</td>
                       <td className="px-5 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${planBadge[m.plan_type] ?? planBadge.basic}`}>
                           {m.plan_type ?? 'basic'}

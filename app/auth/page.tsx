@@ -13,6 +13,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [trainer, setTrainer] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -36,7 +37,7 @@ export default function AuthPage() {
         await fetch('/api/profile/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, fullName, memberCode }),
+          body: JSON.stringify({ userId, fullName, memberCode, trainer }),
         })
       }
       toast.success('Account created! Check your email to confirm.')
@@ -92,10 +93,20 @@ export default function AuthPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {mode === 'signup' && (
-              <div>
-                <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Full Name</label>
-                <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className={inputClass} />
-              </div>
+              <>
+                <div>
+                  <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Full Name</label>
+                  <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Choose your trainer</label>
+                  <select value={trainer} onChange={(e) => setTrainer(e.target.value)} required className={inputClass + ' cursor-pointer appearance-none'}>
+                    <option value="">Select a trainer…</option>
+                    <option value="Nasyir Rodriguez">Nasyir Rodriguez</option>
+                    <option value="Matthew Sirjoo">Matthew Sirjoo</option>
+                  </select>
+                </div>
+              </>
             )}
             <div>
               <label className="block text-xs font-medium tracking-[0.1em] uppercase text-[#6B6560] mb-1.5">Email</label>
