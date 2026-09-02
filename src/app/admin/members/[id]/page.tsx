@@ -14,7 +14,6 @@ import { signedVisitorPhotoUrl } from '@/lib/photos/upload'
 import { fmtAstDate, fmtAstDateTime } from '@/lib/time/ast'
 import AdminMemberForm from '@/components/admin/admin-member-form'
 import AdminNoteForm from '@/components/admin/admin-note-form'
-import AdminVirtualOfficeCard from '@/components/admin/admin-virtual-office-card'
 import AdminSubscriptionControls from '@/components/admin/admin-subscription-controls'
 import AdminRoomCreditsCard, {
   type RoomCreditRow,
@@ -1099,7 +1098,6 @@ export default async function AdminMemberDetailPage({ params }: PageProps) {
 
           <section className="bg-white border border-neutral-200 rounded-lg p-6">
             <h2 className="font-heading text-lg mb-4">Virtual office</h2>
-            <AdminVirtualOfficeCard userId={member.id} vo={virtualOffice} />
           </section>
 
           <section className="bg-white border border-neutral-200 rounded-lg p-6">

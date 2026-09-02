@@ -127,7 +127,6 @@ export async function updatePlan(
 
   revalidatePath('/admin/catalog')
   revalidatePath(`/admin/catalog/plans/${data.id}`)
-  revalidatePath('/spaces')
   revalidatePath('/pricing')
   return { ok: true }
 }
@@ -194,7 +193,6 @@ export async function updatePass(
 
   revalidatePath('/admin/catalog')
   revalidatePath(`/admin/catalog/passes/${data.id}`)
-  revalidatePath('/spaces')
   revalidatePath('/pricing')
   revalidatePath('/buy')
   return { ok: true }
@@ -350,7 +348,6 @@ export async function applyCatalogDiscount(
   }
 
   revalidatePath('/admin/catalog')
-  revalidatePath('/spaces')
   revalidatePath('/pricing')
   revalidatePath('/buy')
   return { ok: true }
@@ -386,7 +383,6 @@ export async function clearCatalogDiscount(input: {
   }
 
   revalidatePath('/admin/catalog')
-  revalidatePath('/spaces')
   revalidatePath('/pricing')
   revalidatePath('/buy')
   return { ok: true }
@@ -450,7 +446,6 @@ export async function updateResource(
 
   revalidatePath('/admin/catalog')
   revalidatePath(`/admin/catalog/resources/${data.id}`)
-  revalidatePath('/spaces')
   revalidatePath('/pricing')
   revalidatePath('/book')
   revalidatePath(`/book/${data.id}`)
@@ -492,7 +487,6 @@ export async function deleteProduct(input: {
 
   if (!deleteErr) {
     revalidatePath('/admin/catalog')
-    revalidatePath('/spaces')
     revalidatePath('/pricing')
     revalidatePath('/buy')
     return { ok: true, outcome: 'deleted' }
@@ -514,7 +508,6 @@ export async function deleteProduct(input: {
   }
 
   revalidatePath('/admin/catalog')
-  revalidatePath('/spaces')
   revalidatePath('/pricing')
   revalidatePath('/buy')
   return { ok: true, outcome: 'retired' }

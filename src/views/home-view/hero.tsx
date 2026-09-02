@@ -15,22 +15,22 @@ const TEXTS = ['entrepreneurs', 'innovators', 'creatives', 'collaborators']
 const WORKSPACE_TYPES = [
   {
     label: 'Coworking',
-    href: '/spaces#workstations',
+    href: '/pricing',
     icon: AiOutlineDesktop,
   },
   {
     label: 'Private Offices',
-    href: '/spaces#offices',
+    href: '/pricing',
     icon: AiOutlineBuild,
   },
   {
     label: 'Meeting Spaces',
-    href: '/spaces#meeting-spaces',
+    href: '/pricing',
     icon: AiOutlinePhone,
   },
   {
     label: 'Events',
-    href: '/spaces#events',
+    href: '/pricing',
     icon: AiOutlineCalendar,
   },
 ]

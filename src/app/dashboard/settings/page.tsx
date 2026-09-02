@@ -78,7 +78,7 @@ export default async function SettingsPage() {
           See Account
         </Link>
         . Browse{' '}
-        <Link href="/spaces" className="text-turquoise-700 underline">
+        <Link href="/pricing" className="text-turquoise-700 underline">
           plans
         </Link>{' '}
         or review the{' '}

@@ -9,7 +9,6 @@ import {
   Receipt,
   Package,
   Mail,
-  Inbox,
   ScanLine,
   Coins,
   FileText,
@@ -74,12 +73,6 @@ const NAV_ITEMS = [
     href: '/admin/feedback',
     label: 'Feedback',
     icon: MessageSquareHeart,
-    exact: false,
-  },
-  {
-    href: '/admin/virtual-office',
-    label: 'Virtual Office',
-    icon: Inbox,
     exact: false,
   },
   {

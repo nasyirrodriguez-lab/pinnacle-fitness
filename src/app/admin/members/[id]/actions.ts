@@ -391,7 +391,6 @@ export async function adminControlSubscription(
 
   revalidatePath(`/admin/members/${data.userId}`)
   revalidatePath('/admin/members')
-  revalidatePath('/admin/virtual-office')
   return { ok: true }
 }
 

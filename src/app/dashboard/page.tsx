@@ -173,7 +173,7 @@ export default async function DashboardPage() {
         <Tile
           title="Plans & passes"
           body="Pick a monthly plan or buy a multi-day pass."
-          href="/spaces"
+          href="/pricing"
           icon={<CreditCard size={20} />}
         />
         <Tile

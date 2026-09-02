@@ -110,7 +110,7 @@ export default async function SubscribePage({ params }: PageProps) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12 md:py-16">
       <Link
-        href="/spaces#plans"
+        href="/pricing"
         className="inline-flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 mb-6"
       >
         <ChevronLeft size={16} />

@@ -308,7 +308,7 @@ export default async function AccountPage() {
           </Link>
           {!subscription && (
             <Link
-              href="/spaces#plans"
+              href="/pricing"
               className="inline-flex items-center gap-1 text-sm font-medium text-turquoise-700 hover:text-turquoise-900"
             >
               See plans

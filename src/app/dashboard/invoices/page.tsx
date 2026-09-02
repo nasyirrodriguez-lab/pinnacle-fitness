@@ -239,7 +239,7 @@ export default async function InvoicesPage() {
             Your receipts will appear here after your first payment.
           </p>
           <Link
-            href="/spaces"
+            href="/pricing"
             className="inline-flex items-center gap-1 text-sm font-medium text-turquoise-700 hover:text-turquoise-900"
           >
             See plans &amp; passes

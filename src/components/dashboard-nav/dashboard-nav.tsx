@@ -41,9 +41,6 @@ export default function DashboardNav({
   const items = [
     ...BASE_ITEMS,
     { href: '/dashboard/messages', label: 'Messages', icon: Inbox },
-    ...(hasVirtualOffice
-      ? [{ href: '/dashboard/mail', label: 'Mail', icon: Mail }]
-      : []),
     ...TRAIL_ITEMS,
   ]
 

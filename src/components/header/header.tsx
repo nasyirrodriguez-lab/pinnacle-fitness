@@ -19,8 +19,9 @@ import { useSignedInHint } from '@/lib/auth-hint'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
-  { href: '/spaces', label: 'Pricing & Spaces' },
-  { href: '/jobs', label: 'Jobs' },
+  { href: '/programs', label: 'Programs' },
+  { href: '/coaches', label: 'Coaches' },
+  { href: '/pricing', label: 'Pricing' },
   { href: '/contact', label: 'Contact' },
 ]
 

@@ -381,7 +381,7 @@ export default async function BuyIndexPage() {
       {hasEventVenues && (
         <section className="mb-12">
           <Link
-            href="/spaces#events"
+            href="/pricing"
             className="group flex items-center justify-between gap-4 bg-neutral-900 text-white rounded-lg p-6 hover:bg-neutral-800 transition"
           >
             <div className="flex items-start gap-4">
@@ -414,7 +414,7 @@ export default async function BuyIndexPage() {
         <p className="text-sm text-neutral-600">
           Want the full tour with photos, inventory, and what&apos;s included?{' '}
           <Link
-            href="/spaces"
+            href="/pricing"
             className="text-turquoise-700 underline font-medium"
           >
             See pricing &amp; spaces

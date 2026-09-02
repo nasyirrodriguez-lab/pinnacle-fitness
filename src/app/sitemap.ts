@@ -1,41 +1,40 @@
 import type { MetadataRoute } from 'next'
 import { getBaseUrl } from '@/utils/getBaseUrl'
-import { getOpenJobs } from '@/config/jobs'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl()
-  const jobs = getOpenJobs()
-
+  const now = new Date()
   return [
+    { url: baseUrl, lastModified: now, changeFrequency: 'weekly', priority: 1 },
     {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/spaces`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
+      url: `${baseUrl}/programs`,
+      lastModified: now,
+      changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
+      url: `${baseUrl}/coaches`,
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/jobs`,
-      lastModified: new Date(),
+      url: `${baseUrl}/pricing`,
+      lastModified: now,
       changeFrequency: 'weekly',
-      priority: 0.7,
+      priority: 0.9,
     },
-    ...jobs.map((job) => ({
-      url: `${baseUrl}/jobs/${job.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
+    {
+      url: `${baseUrl}/apply`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: now,
+      changeFrequency: 'monthly',
       priority: 0.6,
-    })),
+    },
   ]
 }

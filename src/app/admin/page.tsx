@@ -395,30 +395,6 @@ export default async function AdminOverviewPage() {
             )}
           </div>
 
-          {stats.pendingVoDocs > 0 && (
-            <Link
-              href="/admin/virtual-office"
-              className="block bg-orange-50 border border-orange-200 rounded-lg p-5 hover:bg-orange-100 transition"
-            >
-              <div className="flex items-start gap-3">
-                <AlertCircle
-                  size={20}
-                  className="text-orange-600 shrink-0 mt-0.5"
-                />
-                <div>
-                  <p className="font-medium text-sm text-orange-900 mb-0.5">
-                    Virtual Office documents
-                  </p>
-                  <p className="text-xs text-orange-800">
-                    {stats.pendingVoDocs} document
-                    {stats.pendingVoDocs === 1 ? '' : 's'} waiting for your
-                    review.
-                  </p>
-                </div>
-              </div>
-            </Link>
-          )}
-
           <div className="bg-white border border-neutral-200 rounded-lg p-5">
             <h2 className="font-heading text-base mb-2">
               <Receipt size={16} className="inline mr-1.5 -mt-1" />

@@ -22,7 +22,7 @@ export function BookNow({
 
 export function ViewPricing(props: ButtonProps) {
   return (
-    <Link href="/spaces">
+    <Link href="/pricing">
       <Button variant="outline" size="default" {...props}>
         View Pricing
       </Button>
