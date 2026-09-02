@@ -4,7 +4,7 @@ import CheckoutClient from '@/components/checkin/checkout-client'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Check out | The Worx',
+  title: 'Check out | Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 

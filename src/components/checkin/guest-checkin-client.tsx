@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import SelfieCapture from '@/components/selfie-capture/selfie-capture'
 import SlideWizard from '@/components/slide-wizard/slide-wizard'
 
-type Kind = 'meeting' | 'event' | 'staff-guest' | 'signing-up' | 'tour'
+type Kind = 'intro' | 'with-member' | 'guest-of-coach' | 'tour'
 
 interface FormState {
   kind: Kind | null
@@ -37,32 +37,26 @@ const KIND_OPTIONS: Array<{
   icon: typeof CalendarClock
 }> = [
   {
-    value: 'meeting',
-    label: 'A meeting visit',
-    description: 'Meeting a member or the team.',
-    icon: CalendarClock,
-  },
-  {
-    value: 'event',
-    label: "I'm here for an event",
-    description: 'Workshop, talk, or a hosted event.',
-    icon: PartyPopper,
-  },
-  {
-    value: 'staff-guest',
-    label: "I'm with staff or an investor",
-    description: 'Guest of the team, staff, or an investor.',
-    icon: UserRound,
-  },
-  {
-    value: 'signing-up',
-    label: "I'm signing up today",
-    description: 'Trying us out as a new member.',
+    value: 'intro',
+    label: 'My intro session',
+    description: 'Applied and booked an intro with a coach.',
     icon: ClipboardList,
   },
   {
+    value: 'with-member',
+    label: "I'm here with a member",
+    description: 'A member is bringing you in on their guest visit.',
+    icon: UserRound,
+  },
+  {
+    value: 'guest-of-coach',
+    label: 'Guest of Nasyir or Matthew',
+    description: 'The coaches know you’re coming.',
+    icon: PartyPopper,
+  },
+  {
     value: 'tour',
-    label: 'A tour of the space',
+    label: 'Just having a look',
     description: 'First time here — show me around.',
     icon: Compass,
   },
@@ -104,12 +98,12 @@ export default function GuestCheckinClient({
 
     const fd = new FormData()
     fd.append('fullName', form.fullName.trim())
-    // Sign-up walk-ins collapse to 'guest' in the visits log; the kiosk
-    // option mostly exists to set front-desk expectations. Event guests
-    // stay 'guest' too but carry a reason so the admin feed shows it.
+    // Every guest is logged as a guest visit with the reason the coaches
+    // care about; tours stay their own kind so the feed can tell them apart.
     fd.append('kind', form.kind === 'tour' ? 'tour' : 'guest')
-    if (form.kind === 'event') fd.append('reason', 'event')
-    if (form.kind === 'staff-guest') fd.append('reason', 'staff guest')
+    if (form.kind === 'intro') fd.append('reason', 'intro session')
+    if (form.kind === 'with-member') fd.append('reason', 'guest of a member')
+    if (form.kind === 'guest-of-coach') fd.append('reason', 'guest of a coach')
     // Reaching the selfie step requires tapping "I agree" on the terms
     // step, so acceptance is guaranteed by the wizard flow.
     fd.append('termsAccepted', 'true')
@@ -295,7 +289,7 @@ function TermsStep({ onAgree }: { onAgree: () => void }) {
     <div className="space-y-5">
       <h2 className="font-heading text-3xl md:text-4xl">One last thing</h2>
       <div className="bg-white border border-neutral-200 rounded-lg p-5 space-y-3 text-sm text-neutral-700">
-        <p>By checking in you agree to The Worx terms &amp; conditions:</p>
+        <p>By checking in you agree to the Pinnacle Member Code:</p>
         <ul className="space-y-1.5 pl-4 list-disc text-neutral-600">
           <li>Follow the house rules and treat the space and people kindly.</li>
           <li>

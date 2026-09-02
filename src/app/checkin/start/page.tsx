@@ -8,7 +8,7 @@ import GuestPhoneCheckin from '@/components/checkin/guest-phone-checkin'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Check in | The Worx',
+  title: 'Check in | Pinnacle Fitness',
   robots: { index: false, follow: false },
 }
 

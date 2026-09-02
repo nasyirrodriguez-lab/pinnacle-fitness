@@ -11,7 +11,7 @@ export default function GuestPhoneCheckin() {
         <p className="text-xs uppercase tracking-wide text-turquoise-700 font-medium mb-2">
           Check in
         </p>
-        <h1 className="font-heading text-3xl mb-1">Welcome to The Worx</h1>
+        <h1 className="font-heading text-3xl mb-1">Welcome to Pinnacle</h1>
         <p className="text-sm text-neutral-600">
           A few quick questions and we&apos;ll let the team know you&apos;re
           here.
