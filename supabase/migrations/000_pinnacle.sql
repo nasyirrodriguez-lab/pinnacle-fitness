@@ -13,7 +13,7 @@ create extension if not exists "pgcrypto";
 create extension if not exists "btree_gist";
 
 -- =====================================================================
--- Helpers (declared first — policies below depend on them)
+-- Helpers
 -- =====================================================================
 create or replace function public.set_updated_at()
 returns trigger language plpgsql as $$
@@ -21,30 +21,6 @@ begin
   new.updated_at := now();
   return new;
 end $$;
-
--- Anyone who runs the gym. 'admin' is the legacy role name the app code
--- still checks (role === 'admin'); coaches and owners are admins too.
--- TODO(code): move the app's checks to role in ('coach','owner','admin').
-create or replace function public.is_admin()
-returns boolean language sql security definer set search_path = public as $$
-  select exists (
-    select 1 from public.profiles
-    where id = auth.uid()
-      and role in ('coach','owner','admin')
-      and archived = false
-  )
-$$;
-
--- Front-desk staff can check people in and sell, but see no money.
-create or replace function public.is_staff_or_above(uid uuid default auth.uid())
-returns boolean language sql security definer set search_path = public as $$
-  select exists (
-    select 1 from public.profiles
-    where id = uid
-      and role in ('staff','coach','owner','admin')
-      and archived = false
-  )
-$$;
 
 -- =====================================================================
 -- profiles: 1:1 with auth.users
@@ -109,6 +85,30 @@ create index if not exists profiles_created_at_idx
 drop trigger if exists profiles_updated_at on public.profiles;
 create trigger profiles_updated_at before update on public.profiles
   for each row execute function public.set_updated_at();
+
+-- Anyone who runs the gym. 'admin' is the legacy role name the app code
+-- still checks (role === 'admin'); coaches and owners are admins too.
+-- TODO(code): move the app's checks to role in ('coach','owner','admin').
+create or replace function public.is_admin()
+returns boolean language sql security definer set search_path = public as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid()
+      and role in ('coach','owner','admin')
+      and archived = false
+  )
+$$;
+
+-- Front-desk staff can check people in and sell, but see no money.
+create or replace function public.is_staff_or_above(uid uuid default auth.uid())
+returns boolean language sql security definer set search_path = public as $$
+  select exists (
+    select 1 from public.profiles
+    where id = uid
+      and role in ('staff','coach','owner','admin')
+      and archived = false
+  )
+$$;
 
 -- Designations: a badge in admin views. Data-driven so owners can rename
 -- without a deploy. Coaches/owners/staff also carry a `role`; the
