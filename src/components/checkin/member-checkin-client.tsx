@@ -13,6 +13,7 @@ interface KioskPass {
   currency: string
   usesTotal: number
   validityDays: number
+  sessionKind: 'pt' | 'open_gym'
 }
 
 const Scanner = dynamic(
@@ -26,25 +27,51 @@ interface SearchResult {
   email: string
 }
 
+type Member = { id: string; fullName: string | null; email: string }
+type BookingInfo = { coachName: string; startLabel: string }
+type FloorInfo = { onFloor: number; cap: number }
+
 type MemberCheckinResponse =
   | {
       status: 'checked_in'
-      member: { id: string; fullName: string | null; email: string }
-      via: 'subscription' | 'pass'
-      passDeducted?: number
+      member: Member
+      via: 'pt' | 'open_gym' | 'team'
+      booking?: BookingInfo
+      ptLeft?: number | null
+      openGymLeft?: number | null
+      grace?: { lapsedDays: number; planName: string | null } | null
+      floor?: FloorInfo
     }
-  | {
-      status: 'already_checked_in'
-      member: { fullName: string | null; email: string }
-    }
+  | { status: 'already_checked_in'; member: Member; since?: string }
   | {
       status: 'needs_payment'
-      member: { id: string; fullName: string | null; email: string }
+      kind: 'pt' | 'open_gym'
+      member: Member
+      title: string
+      body: string
+      booking?: BookingInfo
+      lateBooking?: BookingInfo | null
+    }
+  | {
+      status: 'lapsed'
+      member: Member
+      lapsedDays: number
+      planName: string | null
+      title: string
+      body: string
+    }
+  | { status: 'floor_full'; member: Member; floor: FloorInfo }
+  | {
+      status: 'pt_early'
+      member: Member
+      booking: BookingInfo
+      earlyMinutes: number
     }
 
 type View =
   | { kind: 'scan' }
   | { kind: 'searching' }
+  | { kind: 'pin'; userId: string; label: string; error?: string }
   | { kind: 'submitting' }
   | { kind: 'success'; result: MemberCheckinResponse }
   | { kind: 'error'; message: string }
@@ -115,16 +142,35 @@ export default function MemberCheckinClient() {
     }
   }
 
-  const submitUser = async (userId: string) => {
+  // Name search has no QR to prove it's you, so it asks for the 4-digit
+  // PIN set during onboarding before it does anything.
+  const submitUser = (userId: string, label: string) => {
+    setView({ kind: 'pin', userId, label })
+  }
+
+  const submitUserWithPin = async (
+    userId: string,
+    pin: string,
+    label: string
+  ) => {
     setView({ kind: 'submitting' })
     try {
       const res = await fetch('/api/checkin/member', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, pin }),
       })
       const data = await res.json()
       if (!res.ok) {
+        if (data.error === 'pin_mismatch') {
+          setView({
+            kind: 'pin',
+            userId,
+            label,
+            error: 'That PIN didn’t match. Try again.',
+          })
+          return
+        }
         setView({ kind: 'error', message: humanError(data.error) })
         return
       }
@@ -134,38 +180,130 @@ export default function MemberCheckinClient() {
     }
   }
 
+  if (view.kind === 'pin') {
+    return (
+      <ResultCard>
+        <PinPad
+          label={view.label}
+          error={view.error}
+          onBack={() => setView({ kind: 'scan' })}
+          onSubmit={(pin) => submitUserWithPin(view.userId, pin, view.label)}
+        />
+      </ResultCard>
+    )
+  }
+
   if (view.kind === 'success') {
     const r = view.result
+    const first = (r.member.fullName ?? r.member.email).split(' ')[0]
     return (
       <ResultCard>
         {r.status === 'needs_payment' ? (
-          <NeedsPayment member={r.member} />
+          <NeedsPayment
+            member={r.member}
+            kind={r.kind}
+            title={r.title}
+            body={r.body}
+            lateBooking={r.lateBooking ?? null}
+          />
+        ) : r.status === 'lapsed' ? (
+          <NeedsPayment
+            member={r.member}
+            kind="open_gym"
+            title={r.title}
+            body={r.body}
+            lateBooking={null}
+            lapsed
+          />
+        ) : r.status === 'floor_full' ? (
+          <>
+            <AlertCircle size={48} className="text-orange-500 mb-3" />
+            <h2 className="font-heading text-2xl mb-1">
+              Floor’s full right now
+            </h2>
+            <p className="font-stat text-5xl text-turquoise-700 my-3">
+              {r.floor.onFloor}
+              <span className="font-sans text-lg text-neutral-500">
+                {' '}
+                of {r.floor.cap}
+              </span>
+            </p>
+            <p className="text-sm text-neutral-600 max-w-sm">
+              {first}, we cap the floor at {r.floor.cap} so everyone gets the
+              space. Hang tight — the next scan-out opens a spot. A coach can
+              also let you know when it’s clear.
+            </p>
+          </>
+        ) : r.status === 'pt_early' ? (
+          <>
+            <CheckCircle2 size={48} className="text-turquoise-500 mb-3" />
+            <h2 className="font-heading text-2xl mb-1">
+              You’re early, {first}
+            </h2>
+            <p className="text-neutral-600 mb-2">
+              PT with {r.booking.coachName} at{' '}
+              <span className="font-stat text-2xl text-turquoise-700">
+                {r.booking.startLabel}
+              </span>
+            </p>
+            <p className="text-sm text-neutral-500 max-w-sm">
+              Scan again from {r.earlyMinutes} minutes before your session and
+              you’re in. Grab a water in the meantime.
+            </p>
+          </>
         ) : r.status === 'already_checked_in' ? (
           <>
             <CheckCircle2 size={56} className="text-turquoise-500 mb-3" />
-            <h2 className="font-heading text-2xl mb-1">
-              You&apos;re already checked in
-            </h2>
+            <h2 className="font-heading text-2xl mb-1">You’re already in</h2>
             <p className="text-neutral-600">
-              {r.member.fullName ?? r.member.email}
+              {r.member.fullName ?? r.member.email} · use “Leaving” on the way
+              out so the floor count stays right.
             </p>
           </>
         ) : (
           <>
             <CheckCircle2 size={56} className="text-turquoise-500 mb-3" />
-            <h2 className="font-heading text-2xl mb-1">Welcome in</h2>
-            <p className="text-neutral-600 mb-2">
-              {r.member.fullName ?? r.member.email}
-            </p>
-            {r.via === 'pass' && typeof r.passDeducted === 'number' && (
-              <p className="text-sm text-neutral-500">
-                Day pass deducted — {r.passDeducted} use
-                {r.passDeducted === 1 ? '' : 's'} remaining.
+            <h2 className="font-heading text-3xl mb-1">Welcome in, {first}</h2>
+            {r.via === 'pt' && r.booking && (
+              <p className="text-neutral-600 mb-2">
+                PT with {r.booking.coachName} ·{' '}
+                <span className="font-stat text-xl">
+                  {r.booking.startLabel}
+                </span>
               </p>
             )}
-            {r.via === 'subscription' && (
+            {r.via === 'open_gym' && (
+              <p className="text-neutral-600 mb-2">Open gym · go get it.</p>
+            )}
+            {r.via === 'team' && (
+              <p className="text-neutral-600 mb-2">Team · have a good one.</p>
+            )}
+            {typeof r.ptLeft === 'number' && (
               <p className="text-sm text-neutral-500">
-                Monthly membership · have a great day.
+                <span className="font-stat text-2xl text-turquoise-700">
+                  {r.ptLeft}
+                </span>{' '}
+                PT session{r.ptLeft === 1 ? '' : 's'} left after today
+              </p>
+            )}
+            {typeof r.openGymLeft === 'number' && (
+              <p className="text-sm text-neutral-500">
+                <span className="font-stat text-2xl text-turquoise-700">
+                  {r.openGymLeft}
+                </span>{' '}
+                open-gym visit{r.openGymLeft === 1 ? '' : 's'} left
+              </p>
+            )}
+            {r.grace && (
+              <p className="text-sm text-orange-700 mt-2 max-w-sm">
+                Heads up: your {r.grace.planName ?? 'plan'} renewal is{' '}
+                {r.grace.lapsedDays} day{r.grace.lapsedDays === 1 ? '' : 's'}{' '}
+                overdue — renew from your app before it pauses.
+              </p>
+            )}
+            {r.floor && (
+              <p className="text-xs text-neutral-400 mt-3">
+                {r.floor.onFloor} of {r.floor.cap} on the floor
               </p>
             )}
           </>
@@ -235,7 +373,7 @@ export default function MemberCheckinClient() {
               <li key={r.id}>
                 <button
                   type="button"
-                  onClick={() => submitUser(r.id)}
+                  onClick={() => submitUser(r.id, r.fullName ?? r.email)}
                   className="w-full text-left px-3 py-3 hover:bg-neutral-50 text-sm"
                 >
                   <p className="font-medium">{r.fullName ?? 'Member'}</p>
@@ -373,8 +511,18 @@ function PayByPhone({
 
 function NeedsPayment({
   member,
+  kind,
+  title,
+  body,
+  lateBooking,
+  lapsed = false,
 }: {
   member: { id: string; fullName: string | null; email: string }
+  kind: 'pt' | 'open_gym'
+  title: string
+  body: string
+  lateBooking: { coachName: string; startLabel: string } | null
+  lapsed?: boolean
 }) {
   const [passes, setPasses] = useState<KioskPass[] | null>(null)
   const [buying, setBuying] = useState<string | null>(null)
@@ -390,7 +538,8 @@ function NeedsPayment({
         const res = await fetch('/api/checkin/passes')
         if (!res.ok) return
         const data = (await res.json()) as { passes: KioskPass[] }
-        if (!cancelled) setPasses(data.passes)
+        if (!cancelled)
+          setPasses(data.passes.filter((p) => p.sessionKind === kind))
       } catch {
         /* ignore */
       }
@@ -398,7 +547,7 @@ function NeedsPayment({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [kind])
 
   const buy = async (passId: string) => {
     setError(null)
@@ -449,9 +598,21 @@ function NeedsPayment({
   return (
     <>
       <AlertCircle size={48} className="text-orange-500 mb-3" />
-      <h2 className="font-heading text-xl mb-2">No active plan or pass</h2>
-      <p className="text-sm text-neutral-600 mb-5">
-        {member.fullName ?? member.email}, pick a pass to come in today.
+      <h2 className="font-heading text-xl mb-2">{title}</h2>
+      <p className="text-sm text-neutral-600 mb-2 max-w-sm">
+        {(member.fullName ?? member.email).split(' ')[0]}, {body}
+      </p>
+      {lateBooking && (
+        <p className="text-xs text-orange-700 mb-3 max-w-sm">
+          Your PT with {lateBooking.coachName} at {lateBooking.startLabel} has
+          passed its check-in window — ask {lateBooking.coachName} to confirm
+          you in, or use open gym below.
+        </p>
+      )}
+      <p className="text-xs text-neutral-500 mb-4">
+        {lapsed
+          ? 'Renew from your app, pay cash at the desk, or pick a pack to train today.'
+          : 'Pay on your phone below, or cash at the desk.'}
       </p>
 
       {showCode ? (
@@ -527,4 +688,71 @@ function humanError(code: unknown): string {
     default:
       return 'Something went wrong. Try again or ask the manager.'
   }
+}
+
+function PinPad({
+  label,
+  error,
+  onBack,
+  onSubmit,
+}: {
+  label: string
+  error?: string
+  onBack: () => void
+  onSubmit: (pin: string) => void
+}) {
+  const [pin, setPin] = useState('')
+  const press = (d: string) => {
+    if (pin.length >= 4) return
+    const next = pin + d
+    setPin(next)
+    if (next.length === 4) onSubmit(next)
+  }
+  return (
+    <>
+      <h2 className="font-heading text-2xl mb-1">Hi, {label.split(' ')[0]}</h2>
+      <p className="text-sm text-neutral-600 mb-4">Enter your 4-digit PIN</p>
+      <div className="flex gap-3 mb-5" aria-label="PIN entry">
+        {[0, 1, 2, 3].map((i) => (
+          <span
+            key={i}
+            className={
+              pin.length > i
+                ? 'w-4 h-4 rounded-full bg-turquoise-500'
+                : 'w-4 h-4 rounded-full border-2 border-neutral-300'
+            }
+          />
+        ))}
+      </div>
+      {error && <p className="text-sm text-red-700 mb-3">{error}</p>}
+      <div className="grid grid-cols-3 gap-3 w-64">
+        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(
+          (k, i) => (
+            <button
+              key={i}
+              type="button"
+              disabled={k === ''}
+              onClick={() =>
+                k === '⌫' ? setPin((p) => p.slice(0, -1)) : press(k)
+              }
+              className={
+                k === ''
+                  ? 'invisible'
+                  : 'h-16 rounded-full bg-white border border-neutral-200 font-stat text-2xl hover:border-turquoise-500 active:bg-turquoise-50'
+              }
+            >
+              {k}
+            </button>
+          )
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={onBack}
+        className="mt-5 text-sm text-neutral-600 underline"
+      >
+        Back
+      </button>
+    </>
+  )
 }

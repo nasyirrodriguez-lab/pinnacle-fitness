@@ -11,7 +11,9 @@ export async function GET() {
   const admin = createAdminClient()
   const { data } = await admin
     .from('passes')
-    .select('id, name, price_cents, currency, uses_total, validity_days')
+    .select(
+      'id, name, price_cents, currency, uses_total, validity_days, session_kind'
+    )
     .eq('is_active', true)
     .eq('is_private', false)
     .order('price_cents', { ascending: true })
@@ -24,6 +26,7 @@ export async function GET() {
         currency: string
         uses_total: number
         validity_days: number
+        session_kind: string | null
       }
       return {
         id: r.id,
@@ -32,6 +35,7 @@ export async function GET() {
         currency: r.currency,
         usesTotal: r.uses_total,
         validityDays: r.validity_days,
+        sessionKind: r.session_kind ?? 'pt',
       }
     }),
   })
