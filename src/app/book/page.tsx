@@ -1,131 +1,133 @@
 import Link from 'next/link'
-import { cookies } from 'next/headers'
 import type { Metadata } from 'next'
-import { Users, ArrowRight } from 'lucide-react'
-import { createClient } from '@/utils/supabase/server'
+import { ArrowRight, Users } from 'lucide-react'
+import { createAdminClient } from '@/utils/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/current-user'
+import { floorStatus } from '@/lib/gym/floor'
+import { memberAccess } from '@/lib/gym/entitlement'
+import {
+  loadPtResources,
+  loadWindowSlots,
+  nextAvailableSlot,
+} from '@/lib/booking/pt'
+import { fmtAstTime, fmtAstWeekdayDate } from '@/lib/time/ast'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Book a room — The Worx',
-  description:
-    'Book a meeting room or conference room at The Worx coworking space in Port of Spain.',
-}
-
-interface BookableResource {
-  id: string
-  name: string
-  description: string | null
-  kind: string
-  capacity: number
-  price_per_hour_cents: number | null
-  currency: string
-}
-
-async function loadBookableResources(): Promise<BookableResource[]> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-  const { data, error } = await supabase
-    .from('resources')
-    .select(
-      'id, name, description, kind, capacity, price_per_hour_cents, currency, is_bookable, requires_contact, admin_only'
-    )
-    .eq('is_bookable', true)
-    .neq('requires_contact', true)
-    .neq('admin_only', true)
-    .order('display_order', { ascending: true })
-
-  if (error || !data) return []
-  return data.map((row: Record<string, unknown>) => ({
-    id: row.id as string,
-    name: row.name as string,
-    description: (row.description as string | null) ?? null,
-    kind: row.kind as string,
-    capacity: row.capacity as number,
-    price_per_hour_cents: (row.price_per_hour_cents as number | null) ?? null,
-    currency: row.currency as string,
-  }))
-}
-
-function priceLabel(r: BookableResource): string {
-  if (r.price_per_hour_cents == null) return '—'
-  const dollars = r.price_per_hour_cents / 100
-  return `${r.currency} $${dollars.toFixed(0)}/hr`
+  title: 'Book — Pinnacle Fitness',
+  description: 'Book a small-group PT session with Nasyir or Matthew.',
 }
 
 export default async function BookIndexPage() {
-  const resources = await loadBookableResources()
+  const admin = createAdminClient()
+  const user = await getCurrentUser()
+  const [resources, floor, access] = await Promise.all([
+    loadPtResources(admin),
+    floorStatus(admin),
+    user ? memberAccess(admin, user.id) : null,
+  ])
+  const nextByResource = await Promise.all(
+    resources.map(async (r) =>
+      nextAvailableSlot(await loadWindowSlots(admin, r, user?.id ?? null))
+    )
+  )
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
-      <div className="mb-10">
-        <p className="text-sm font-medium text-turquoise-700 uppercase tracking-wide mb-2">
-          Bookings
-        </p>
-        <h1 className="font-heading text-4xl md:text-5xl mb-3">Book a room.</h1>
-        <p className="text-lg text-neutral-600 max-w-2xl">
-          Pick a meeting room or the conference room. Choose your slot — one
-          continuous block or several throughout the day.
-        </p>
-      </div>
+    <div className="max-w-3xl mx-auto px-4 py-10 md:py-14">
+      <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground mb-2">
+        Book
+      </p>
+      <h1 className="font-heading text-4xl md:text-5xl mb-2">Who are you training with?</h1>
+      <p className="text-muted-foreground mb-8 max-w-xl">
+        Small-group PT, one hour, coached. Booking holds your spot; the
+        session is used when you scan in.
+      </p>
 
-      {resources.length === 0 ? (
-        <div className="bg-white border border-neutral-200 rounded-lg p-12 text-center text-neutral-500">
-          No rooms available right now. Email{' '}
-          <a
-            href="mailto:team@theworx.io"
-            className="text-turquoise-700 underline"
-          >
-            team@theworx.io
-          </a>
-          .
+      {access && (
+        <div className="mb-6 bg-card border border-border rounded-[22px] px-5 py-4 flex items-center gap-4">
+          <span className="font-stat text-4xl text-primary">
+            {access.ptUnlimited ? '∞' : access.ptBalance}
+          </span>
+          <div className="text-sm">
+            <p className="font-semibold">
+              {access.ptUnlimited ? 'Unlimited PT' : 'PT sessions left'}
+            </p>
+            <p className="text-muted-foreground">
+              {access.plan ? access.plan.name : 'No plan yet'}
+              {access.periodEnd && ` · renews ${fmtAstWeekdayDate(access.periodEnd)}`}
+            </p>
+          </div>
         </div>
-      ) : (
-        <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {resources.map((r) => (
+      )}
+
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {resources.map((r, i) => {
+          const next = nextByResource[i]
+          return (
             <li key={r.id}>
               <Link
-                href={`/book/${r.id}`}
-                className="group flex flex-col h-full bg-white border border-neutral-200 rounded-lg p-6 hover:border-turquoise-500 hover:shadow-sm transition"
+                href={user ? `/book/${r.id}` : `/sign-in?next=${encodeURIComponent(`/book/${r.id}`)}`}
+                className="group flex flex-col h-full bg-card border border-border rounded-[22px] p-6 hover:border-primary transition"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <h2 className="font-heading text-xl">{r.name}</h2>
+                <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground mb-2">
+                  PT · up to {r.capacity}
+                </p>
+                <h2 className="font-heading text-3xl mb-3">
+                  {r.coach?.displayName ?? r.name}
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6 line-clamp-3">
+                  {r.coach?.bio ?? ''}
+                </p>
+                <div className="mt-auto flex items-center justify-between gap-3">
+                  <span className="text-sm">
+                    {next ? (
+                      <>
+                        Next:{' '}
+                        <span className="font-stat text-lg text-primary">
+                          {fmtAstWeekdayDate(next.startIso)} {fmtAstTime(next.startIso)}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">Nothing open this fortnight</span>
+                    )}
+                  </span>
                   <ArrowRight
                     size={18}
-                    className="text-neutral-400 group-hover:text-turquoise-600 group-hover:translate-x-0.5 transition mt-1 shrink-0"
+                    className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition shrink-0"
                   />
-                </div>
-
-                <p className="font-heading text-2xl text-neutral-900 mb-3">
-                  {priceLabel(r)}
-                </p>
-
-                <p className="text-sm text-neutral-600 mb-4">
-                  {r.description ?? ''}
-                </p>
-
-                <div className="mt-auto flex items-center gap-1 text-xs text-neutral-500">
-                  <Users size={14} />
-                  Up to {r.capacity} {r.capacity === 1 ? 'person' : 'people'}
                 </div>
               </Link>
             </li>
-          ))}
-        </ul>
-      )}
+          )
+        })}
+      </ul>
 
-      <div className="mt-12 pt-8 border-t border-neutral-200">
-        <p className="text-sm text-neutral-600">
-          Hosting an event?{' '}
-          <a
-            href="mailto:team@theworx.io"
-            className="text-turquoise-700 underline font-medium"
-          >
-            Get in touch about our event space
-          </a>
+      <div className="mt-6 bg-card border border-border rounded-[22px] p-5 flex items-center gap-4">
+        <div className="w-11 h-11 rounded-full bg-background border border-border flex items-center justify-center shrink-0">
+          <Users size={20} className="text-muted-foreground" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold">Open gym isn&apos;t booked</p>
+          <p className="text-sm text-muted-foreground">
+            Come in during opening hours and scan in at the iPad. Right now{' '}
+            <span className="font-stat text-lg text-foreground">
+              {floor.onFloor} of {floor.cap}
+            </span>{' '}
+            on the floor.
+          </p>
+        </div>
+      </div>
+
+      {!user && (
+        <p className="mt-8 text-sm text-muted-foreground">
+          Not a member yet?{' '}
+          <Link href="/apply" className="underline">
+            Apply to join
+          </Link>
           .
         </p>
-      </div>
+      )}
     </div>
   )
 }

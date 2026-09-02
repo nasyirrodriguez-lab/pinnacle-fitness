@@ -5,6 +5,7 @@ import { expirePacks, spendSession } from '@/lib/sessions/ledger'
 import { loadGymSettings } from '@/lib/gym/settings'
 import { isNoShow } from '@/lib/gym/rules'
 import { parseTstzRange } from '@/lib/booking/slots'
+import { expireLapsedInvites } from '@/lib/applications/approve'
 
 // =====================================================================
 // Cron, every 15 minutes: keep the gym's live state honest.
@@ -29,6 +30,7 @@ export async function GET(request: NextRequest) {
   const settings = await loadGymSettings(admin)
   const signedOut = await autoSignOutStale(admin)
   const { expired } = await expirePacks(admin)
+  const invitesExpired = await expireLapsedInvites(admin)
 
   // No-shows: confirmed PT bookings that started more than the no-show
   // window ago, never checked in, not already marked.
@@ -68,5 +70,11 @@ export async function GET(request: NextRequest) {
     noShows++
   }
 
-  return NextResponse.json({ ok: true, signedOut, expired, noShows })
+  return NextResponse.json({
+    ok: true,
+    signedOut,
+    expired,
+    noShows,
+    invitesExpired,
+  })
 }
