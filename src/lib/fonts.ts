@@ -1,15 +1,12 @@
-import { Sen, Unbounded } from 'next/font/google'
+import { Archivo } from 'next/font/google'
 
-export const sen = Sen({
-  weight: ['400', '500', '700'],
+// One family for everything. Archivo's variable width axis (62–125) gives
+// the wide sporty headings and the tight body from a single download;
+// the italic face is what the stat numbers use (see `font-stat`).
+export const archivo = Archivo({
   subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-})
-
-export const unbounded = Unbounded({
-  weight: ['300', '400', '700', '900'],
-  subsets: ['latin'],
-  variable: '--font-heading',
+  axes: ['wdth'],
+  style: ['normal', 'italic'],
+  variable: '--font-archivo',
   display: 'swap',
 })

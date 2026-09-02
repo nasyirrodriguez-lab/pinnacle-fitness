@@ -1,7 +1,7 @@
 import type { Viewport } from 'next'
 import '@/theme/globals.css'
-import { sen, unbounded } from '@/lib/fonts'
-import { metadata as seoMetadata, jsonLd } from '@/seo'
+import { archivo } from '@/lib/fonts'
+import { metadata as seoMetadata } from '@/seo'
 import Header from '@/components/header/header'
 import Footer from '@/components/footer/footer'
 import SiteChrome from '@/components/site-chrome/site-chrome'
@@ -12,13 +12,14 @@ export const metadata = {
   ...seoMetadata,
   appleWebApp: {
     capable: true,
-    title: 'The Worx',
+    title: 'Pinnacle',
     statusBarStyle: 'black-translucent' as const,
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#D9E01F',
+  themeColor: '#0B0E0C',
+  colorScheme: 'dark',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
@@ -30,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${sen.variable} ${unbounded.variable}`}>
+    <html lang="en" className={`${archivo.variable} dark`}>
       <head>
         <link
           rel="apple-touch-icon"
@@ -48,10 +49,6 @@ export default function RootLayout({
           type="image/png"
           sizes="16x16"
           href="/favicon-16x16.png"
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>
