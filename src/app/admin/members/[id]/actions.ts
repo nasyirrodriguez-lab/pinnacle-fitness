@@ -1021,3 +1021,87 @@ export async function adminEditPaymentRequest(
   revalidatePath('/admin/payments')
   return { ok: true }
 }
+
+// =====================================================================
+// Gym: session adjustments and the coaching profile.
+// =====================================================================
+
+const adjustSessionsSchema = z.object({
+  userId: z.string().uuid(),
+  kind: z.enum(['pt', 'open_gym']),
+  delta: z.number().int().refine((n) => n !== 0, 'Enter a non-zero number'),
+  note: z.string().trim().max(200).optional().nullable(),
+})
+
+export async function adminAdjustSessions(
+  input: z.infer<typeof adjustSessionsSchema>
+): Promise<AdminActionResult> {
+  const auth = await assertAdmin()
+  if ('error' in auth) return { ok: false, error: auth.error }
+  let data
+  try {
+    data = adjustSessionsSchema.parse(input)
+  } catch (err) {
+    const msg =
+      err instanceof z.ZodError ? (err.issues[0]?.message ?? 'Invalid') : 'Invalid'
+    return { ok: false, error: msg }
+  }
+  const admin = createAdminClient()
+  const { adjustSessions } = await import('@/lib/sessions/admin')
+  const r = await adjustSessions(admin, {
+    userId: data.userId,
+    kind: data.kind,
+    delta: data.delta,
+    createdBy: auth.adminId,
+  })
+  if (!r.ok) return { ok: false, error: r.error }
+  await admin.from('admin_notes').insert({
+    user_id: data.userId,
+    author_id: auth.adminId,
+    body: `Adjusted ${data.kind === 'pt' ? 'PT' : 'open-gym'} sessions by ${data.delta > 0 ? '+' : ''}${data.delta} (now ${r.balance}).${data.note?.trim() ? ` ${data.note.trim()}` : ''}`,
+  })
+  revalidatePath(`/admin/members/${data.userId}`)
+  return { ok: true }
+}
+
+const gymProfileSchema = z.object({
+  userId: z.string().uuid(),
+  pinCode: z
+    .string()
+    .regex(/^\d{4}$/, 'PIN is 4 digits')
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  clearPin: z.boolean().optional(),
+  preferredCoachId: z.string().uuid().nullable(),
+  goal: z.string().trim().max(200).optional().nullable(),
+  trainingNotes: z.string().trim().max(2000).optional().nullable(),
+  experienceBracket: z.enum(['under_6m', '6_24m', '2y_plus']).nullable(),
+})
+
+export async function adminUpdateGymProfile(
+  input: z.infer<typeof gymProfileSchema>
+): Promise<AdminActionResult> {
+  const auth = await assertAdmin()
+  if ('error' in auth) return { ok: false, error: auth.error }
+  let data
+  try {
+    data = gymProfileSchema.parse(input)
+  } catch (err) {
+    const msg =
+      err instanceof z.ZodError ? (err.issues[0]?.message ?? 'Invalid') : 'Invalid'
+    return { ok: false, error: msg }
+  }
+  const admin = createAdminClient()
+  const update: Record<string, unknown> = {
+    preferred_coach_id: data.preferredCoachId,
+    goal: data.goal?.trim() || null,
+    training_notes: data.trainingNotes?.trim() || null,
+    experience_bracket: data.experienceBracket,
+  }
+  if (data.clearPin) update.pin_code = null
+  else if (data.pinCode) update.pin_code = data.pinCode
+  const { error } = await admin.from('profiles').update(update).eq('id', data.userId)
+  if (error) return { ok: false, error: 'Could not save' }
+  revalidatePath(`/admin/members/${data.userId}`)
+  return { ok: true }
+}

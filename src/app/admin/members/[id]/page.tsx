@@ -5,20 +5,14 @@ import { notFound } from 'next/navigation'
 import { ChevronLeft, Coins, User } from 'lucide-react'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { parseTstzRange } from '@/lib/booking/slots'
-import {
-  benefitHoursPerMonth,
-  parseRoomBenefits,
-  planRoomUsage,
-} from '@/lib/booking/plan-benefits'
+import { listLedger, sessionBalance } from '@/lib/sessions/ledger'
 import { getCreditBalanceCents } from '@/lib/credits/balance'
 import { signedVisitorPhotoUrl } from '@/lib/photos/upload'
 import { fmtAstDate, fmtAstDateTime } from '@/lib/time/ast'
 import AdminMemberForm from '@/components/admin/admin-member-form'
 import AdminNoteForm from '@/components/admin/admin-note-form'
 import AdminSubscriptionControls from '@/components/admin/admin-subscription-controls'
-import AdminRoomCreditsCard, {
-  type RoomCreditRow,
-} from '@/components/admin/admin-room-credits-card'
+import AdminSessionsCard from '@/components/admin/admin-sessions-card'
 import AdminDirectCreditForm from '@/components/admin/admin-direct-credit-form'
 import AdminAddonsCard, {
   type AddonRow,
@@ -62,6 +56,11 @@ interface MemberDetail {
   termsAcceptedAt: string | null
   nexudusId: string | null
   selfieUrl: string | null
+  pinCode: string | null
+  goal: string | null
+  trainingNotes: string | null
+  preferredCoachId: string | null
+  experienceBracket: string | null
 }
 
 interface PassRow {
@@ -145,18 +144,6 @@ interface SubscriptionInfo {
   lapsed: boolean
 }
 
-interface PlanUsageRow {
-  resourceId: string
-  hoursPerMonth: number
-  hoursUsed: number
-}
-
-interface VirtualOfficeInfo {
-  businessName: string
-  forwardingEmail: string | null
-  isActive: boolean
-}
-
 async function loadCredits(
   admin: ReturnType<typeof createAdminClient>,
   userId: string
@@ -217,9 +204,9 @@ async function loadMember(id: string) {
     authRes,
     visitsRes,
     subscriptionRes,
-    voRes,
-    roomCreditsRes,
-    resourcesRes,
+    ptBalance,
+    openGymBalance,
+    ledger,
     addonsRes,
     planProductsRes,
     passProductsRes,
@@ -227,7 +214,7 @@ async function loadMember(id: string) {
     admin
       .from('profiles')
       .select(
-        'id, email, full_name, phone, company, address, city, pincode, role, designation, archived, created_at, registered_at, terms_version, terms_accepted_at, nexudus_id, selfie_path'
+        'id, email, full_name, phone, company, address, city, pincode, role, designation, archived, created_at, registered_at, terms_version, terms_accepted_at, nexudus_id, selfie_path, pin_code, goal, training_notes, preferred_coach_id, experience_bracket'
       )
       .eq('id', id)
       .maybeSingle(),
@@ -277,24 +264,9 @@ async function loadMember(id: string) {
       .in('status', ['active', 'past_due', 'paused'])
       .order('created_at', { ascending: false })
       .limit(1),
-    admin
-      .from('virtual_office_subscriptions')
-      .select('business_name, forwarding_email, is_active')
-      .eq('user_id', id)
-      .maybeSingle(),
-    admin
-      .from('room_hour_credits')
-      .select(
-        'id, resource_id, hours_granted, hours_used, expires_at, reason, resources(name)'
-      )
-      .eq('user_id', id)
-      .order('created_at', { ascending: false })
-      .limit(20),
-    admin
-      .from('resources')
-      .select('id, name')
-      .eq('is_bookable', true)
-      .order('display_order', { ascending: true }),
+    sessionBalance(admin, id, 'pt'),
+    sessionBalance(admin, id, 'open_gym'),
+    listLedger(admin, id, 30),
     admin
       .from('member_addons')
       .select('id, label, amount_cents, expires_at')
@@ -344,6 +316,11 @@ async function loadMember(id: string) {
     termsAcceptedAt: (m.terms_accepted_at as string | null) ?? null,
     nexudusId: (m.nexudus_id as string | null) ?? null,
     selfieUrl,
+    pinCode: (m.pin_code as string | null) ?? null,
+    goal: (m.goal as string | null) ?? null,
+    trainingNotes: (m.training_notes as string | null) ?? null,
+    preferredCoachId: (m.preferred_coach_id as string | null) ?? null,
+    experienceBracket: (m.experience_bracket as string | null) ?? null,
   }
 
   const passes: PassRow[] = (
@@ -469,7 +446,6 @@ async function loadMember(id: string) {
   const subRaw = ((subscriptionRes.data as Record<string, unknown>[] | null) ??
     [])[0]
   let subscription: SubscriptionInfo | null = null
-  let planUsage: PlanUsageRow[] = []
   if (subRaw) {
     const planRaw = subRaw.plans as
       | { name?: string; room_benefits?: unknown }
@@ -484,50 +460,7 @@ async function loadMember(id: string) {
       currentPeriodEnd: periodEnd,
       lapsed: new Date(periodEnd).getTime() < Date.now(),
     }
-    // What the plan includes per room and how much of it this month's
-    // covered bookings have used.
-    const benefits = parseRoomBenefits(plan?.room_benefits)
-    planUsage = await Promise.all(
-      benefits.map(async (b) => {
-        const usage = await planRoomUsage(admin, {
-          userId: id,
-          resourceId: b.resourceId,
-        })
-        return {
-          resourceId: b.resourceId,
-          hoursPerMonth: usage?.hoursPerMonth ?? benefitHoursPerMonth(b),
-          hoursUsed: usage?.hoursUsed ?? 0,
-        }
-      })
-    )
   }
-
-  const voRaw = voRes.data as Record<string, unknown> | null
-  const virtualOffice: VirtualOfficeInfo | null = voRaw
-    ? {
-        businessName: voRaw.business_name as string,
-        forwardingEmail: (voRaw.forwarding_email as string | null) ?? null,
-        isActive: (voRaw.is_active as boolean) ?? false,
-      }
-    : null
-
-  const roomCredits: RoomCreditRow[] = (
-    (roomCreditsRes.data as Record<string, unknown>[] | null) ?? []
-  ).map((r) => {
-    const resRaw = r.resources as { name?: string } | { name?: string }[] | null
-    const res = Array.isArray(resRaw) ? (resRaw[0] ?? null) : resRaw
-    return {
-      id: r.id as string,
-      resourceName: res?.name ?? (r.resource_id as string),
-      hoursGranted: Number(r.hours_granted),
-      hoursUsed: Number(r.hours_used),
-      expiresAt: (r.expires_at as string | null) ?? null,
-      reason: (r.reason as string | null) ?? null,
-    }
-  })
-  const bookableResources = (
-    (resourcesRes.data as { id: string; name: string }[] | null) ?? []
-  ).map((r) => ({ id: r.id, name: r.name }))
 
   const addons: AddonRow[] = (
     (addonsRes.data as Record<string, unknown>[] | null) ?? []
@@ -570,12 +503,9 @@ async function loadMember(id: string) {
     credits,
     visits,
     subscription,
-    virtualOffice,
-    roomCredits,
-    bookableResources,
     addons,
     requestableProducts,
-    planUsage,
+    sessions: { ptBalance, openGymBalance, ledger },
   }
 }
 
@@ -588,10 +518,18 @@ function fmtPrice(cents: number, currency = 'TTD'): string {
 
 export default async function AdminMemberDetailPage({ params }: PageProps) {
   const { id } = await params
-  const [data, designationRoles] = await Promise.all([
+  const [data, designationRoles, coachRows] = await Promise.all([
     loadMember(id),
     loadDesignationRoles(createAdminClient()),
+    createAdminClient()
+      .from('coaches')
+      .select('id, display_name')
+      .eq('is_active', true)
+      .order('display_order'),
   ])
+  const coaches = (
+    (coachRows.data as { id: string; display_name: string }[] | null) ?? []
+  ).map((c) => ({ id: c.id, name: c.display_name }))
   if (!data) notFound()
   const {
     member,
@@ -602,12 +540,9 @@ export default async function AdminMemberDetailPage({ params }: PageProps) {
     credits,
     visits,
     subscription,
-    virtualOffice,
-    roomCredits,
-    bookableResources,
     addons,
     requestableProducts,
-    planUsage,
+    sessions,
   } = data
 
   return (
@@ -708,51 +643,26 @@ export default async function AdminMemberDetailPage({ params }: PageProps) {
           </section>
 
           <section className="bg-white border border-neutral-200 rounded-lg p-6">
-            <h2 className="font-heading text-lg mb-1">Room hours</h2>
+            <h2 className="font-heading text-lg mb-1">Sessions</h2>
             <p className="text-xs text-neutral-500 mb-4">
-              Free meeting/conference room time. Bookings use these hours
-              automatically before charging.
+              What&apos;s left this month. Sessions are spent at the iPad on
+              check-in; packs expire 30 days after purchase.
             </p>
-            <AdminRoomCreditsCard
+            <AdminSessionsCard
               userId={member.id}
-              credits={roomCredits}
-              resources={bookableResources}
+              ptBalance={sessions.ptBalance}
+              openGymBalance={sessions.openGymBalance}
+              ledger={sessions.ledger}
+              gym={{
+                pinSet: Boolean(member.pinCode),
+                preferredCoachId: member.preferredCoachId,
+                trainingNotes: member.trainingNotes,
+                goal: member.goal,
+                experienceBracket: member.experienceBracket,
+              }}
+              coaches={coaches}
             />
           </section>
-
-          {planUsage.length > 0 && (
-            <section className="bg-white border border-neutral-200 rounded-lg p-6">
-              <h2 className="font-heading text-lg mb-1">
-                Plan usage this month
-              </h2>
-              <p className="text-xs text-neutral-500 mb-4">
-                Room time included in {subscription?.planName ?? 'the plan'} and
-                how much is left this month.
-              </p>
-              <ul className="space-y-2 text-sm">
-                {planUsage.map((u) => {
-                  const name =
-                    bookableResources.find((r) => r.id === u.resourceId)
-                      ?.name ?? u.resourceId
-                  const unlimited = u.hoursPerMonth >= 100000
-                  const left = Math.max(0, u.hoursPerMonth - u.hoursUsed)
-                  return (
-                    <li
-                      key={u.resourceId}
-                      className="flex items-center justify-between gap-3"
-                    >
-                      <span className="font-medium">{name}</span>
-                      <span className="text-neutral-600">
-                        {unlimited
-                          ? `${u.hoursUsed}h used · unlimited`
-                          : `${u.hoursUsed}h used · ${left}h left of ${u.hoursPerMonth}h`}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
-            </section>
-          )}
 
           <section className="bg-white border border-neutral-200 rounded-lg p-6">
             <h2 className="font-heading text-lg mb-1">Add-ons</h2>

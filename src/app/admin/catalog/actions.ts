@@ -56,31 +56,10 @@ const planSchema = z.object({
   isPrivate: z.boolean(),
   isSpecialized: z.boolean().default(false),
   groupSize: z.number().int().min(2).max(50).nullable().default(null),
-  includesDayAccess: z.boolean().default(true),
-  roomBenefits: z
-    .array(
-      z
-        .object({
-          resourceId: z.string().min(1).max(60),
-          unit: z.enum(['minutes', 'hours', 'days', 'months']),
-          amount: z.number().min(0.5),
-          maxHoursPerDay: z.number().min(0.5).max(24).nullable(),
-        })
-        .refine(
-          (b) => {
-            const max = {
-              minutes: 10_000,
-              hours: 500,
-              days: 30,
-              months: 12,
-            }[b.unit]
-            return b.amount <= max
-          },
-          { message: 'Amount too large for that unit (days max 30)' }
-        )
-    )
-    .max(20)
-    .default([]),
+  // Gym allowances: blank PT = unlimited, 0 = no PT on this plan.
+  ptSessionsPerMonth: z.number().int().min(0).max(200).nullable().default(null),
+  includesOpenGym: z.boolean().default(false),
+  openGymVisitsPerMonth: z.number().int().min(0).max(200).nullable().default(null),
 })
 
 export async function updatePlan(
@@ -116,8 +95,10 @@ export async function updatePlan(
       is_private: data.isPrivate,
       is_specialized: data.isSpecialized,
       group_size: data.groupSize,
-      includes_day_access: data.includesDayAccess,
-      room_benefits: data.roomBenefits,
+      pt_sessions_per_month: data.ptSessionsPerMonth,
+      includes_pt: data.ptSessionsPerMonth !== 0,
+      includes_open_gym: data.includesOpenGym,
+      open_gym_visits_per_month: data.openGymVisitsPerMonth,
     })
     .eq('id', data.id)
 

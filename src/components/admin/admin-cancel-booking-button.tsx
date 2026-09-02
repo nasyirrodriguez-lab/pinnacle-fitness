@@ -1,122 +1,43 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useRouter } from 'next/navigation'
 import { adminCancelBooking } from '@/app/admin/bookings/actions'
 
-interface Props {
-  bookingId: string
-  // All slot ids when this row represents a merged multi-slot booking.
-  bookingIds?: string[]
-  resourceName: string
-  startIso: string
-  memberName?: string | null
-  compact?: boolean
-}
-
-function fmtWhen(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', {
-    timeZone: 'America/Port_of_Spain',
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  })
-}
-
-export default function AdminCancelBookingButton({
-  bookingId,
-  bookingIds,
-  resourceName,
-  startIso,
-  memberName,
-  compact,
-}: Props) {
-  const allIds = bookingIds && bookingIds.length > 0 ? bookingIds : [bookingId]
-  const [open, setOpen] = useState(false)
+// Two taps, no dialog. The second tap offers to waive the session for
+// late cancellations (the coach's call).
+export default function AdminCancelBookingButton({ bookingId }: { bookingId: string }) {
+  const router = useRouter()
+  const [arm, setArm] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
-
-  const onConfirm = () => {
+  const run = (waiveSession: boolean) => {
     setError(null)
     startTransition(async () => {
-      for (const id of allIds) {
-        const result = await adminCancelBooking({ bookingId: id })
-        if (!result.ok && result.error !== 'Already cancelled') {
-          setError(result.error)
-          return
-        }
-      }
-      setOpen(false)
+      const r = await adminCancelBooking({ bookingId, waiveSession })
+      if (!r.ok) { setError(r.error); return }
+      router.refresh()
     })
   }
-
+  if (!arm) {
+    return (
+      <button type="button" onClick={() => setArm(true)} className="text-xs text-neutral-500 hover:text-red-700">
+        Cancel
+      </button>
+    )
+  }
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) setError(null)
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button variant="outline" size={compact ? 'sm' : 'default'}>
-          Cancel
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Cancel booking?</DialogTitle>
-          <DialogDescription>
-            {memberName ? `${memberName}'s ` : ''}
-            {resourceName} on {fmtWhen(startIso)} will be released
-            {allIds.length > 1
-              ? ` (all ${allIds.length} slots of this booking)`
-              : ''}
-            .
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-xs text-orange-900">
-          This is an admin override — the standard 60-minute cutoff is skipped.
-          A note will be logged on the member&apos;s record. Refunds are still
-          processed manually via the Wam dashboard.
-        </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-            disabled={isPending}
-          >
-            Keep booking
-          </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={isPending}
-            variant="destructive"
-          >
-            {isPending ? 'Cancelling…' : 'Cancel booking'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <span className="inline-flex flex-col items-end gap-1">
+      <span className="inline-flex gap-1">
+        <button type="button" disabled={isPending} onClick={() => run(false)} className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+          Cancel · rules apply
+        </button>
+        <button type="button" disabled={isPending} onClick={() => run(true)} className="px-2 py-1 text-xs font-semibold rounded-full border border-neutral-300">
+          Cancel · waive session
+        </button>
+        <button type="button" onClick={() => setArm(false)} className="px-2 py-1 text-xs text-neutral-500">Back</button>
+      </span>
+      {error && <span className="text-xs text-red-700">{error}</span>}
+    </span>
   )
 }

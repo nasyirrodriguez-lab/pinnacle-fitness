@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 import { createAdminClient } from '@/utils/supabase/admin'
-import { parseRoomBenefits } from '@/lib/booking/plan-benefits'
 import PlanEditForm from '@/components/admin/plan-edit-form'
 import ProductDeleteButton from '@/components/admin/product-delete-button'
 
@@ -17,7 +16,7 @@ async function loadPlan(id: string) {
   const { data, error } = await admin
     .from('plans')
     .select(
-      'id, name, description, price_cents, discounted_price_cents, discount_expires_at, discount_label, currency, billing_period, features, is_active, is_private, is_specialized, group_size, includes_day_access, room_benefits'
+      'id, name, description, price_cents, discounted_price_cents, discount_expires_at, discount_label, currency, billing_period, features, is_active, is_private, is_specialized, group_size, pt_sessions_per_month, includes_open_gym, open_gym_visits_per_month'
     )
     .eq('id', id)
     .maybeSingle()
@@ -38,28 +37,16 @@ async function loadPlan(id: string) {
     isPrivate: (row.is_private as boolean) ?? false,
     isSpecialized: (row.is_specialized as boolean) ?? false,
     groupSize: (row.group_size as number | null) ?? null,
-    includesDayAccess: (row.includes_day_access as boolean) ?? true,
-    roomBenefits: parseRoomBenefits(row.room_benefits),
+    ptSessionsPerMonth: (row.pt_sessions_per_month as number | null) ?? null,
+    includesOpenGym: (row.includes_open_gym as boolean) ?? false,
+    openGymVisitsPerMonth: (row.open_gym_visits_per_month as number | null) ?? null,
   }
 }
 
-async function loadResources() {
-  const admin = createAdminClient()
-  const { data } = await admin
-    .from('resources')
-    .select('id, name, is_bookable')
-    .order('display_order', { ascending: true })
-  return (
-    (data as { id: string; name: string; is_bookable: boolean }[] | null) ?? []
-  ).map((r) => ({
-    id: r.id,
-    name: r.is_bookable ? r.name : `${r.name} (access only)`,
-  }))
-}
 
 export default async function AdminPlanEditPage({ params }: PageProps) {
   const { id } = await params
-  const [plan, resources] = await Promise.all([loadPlan(id), loadResources()])
+  const plan = await loadPlan(id)
   if (!plan) notFound()
 
   return (
@@ -84,7 +71,7 @@ export default async function AdminPlanEditPage({ params }: PageProps) {
       </div>
 
       <div className="bg-white border border-neutral-200 rounded-lg p-6 max-w-2xl">
-        <PlanEditForm plan={plan} resources={resources} />
+        <PlanEditForm plan={plan} />
       </div>
 
       <ProductDeleteButton kind="plan" id={plan.id} name={plan.name} />

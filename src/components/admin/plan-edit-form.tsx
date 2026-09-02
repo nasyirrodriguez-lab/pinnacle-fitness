@@ -37,7 +37,9 @@ const schema = z.object({
   isActive: z.boolean(),
   isPrivate: z.boolean(),
   isSpecialized: z.boolean(),
-  includesDayAccess: z.boolean(),
+  ptSessions: z.string().regex(/^\d*$/, 'Whole number, or blank for unlimited').optional(),
+  includesOpenGym: z.boolean(),
+  openGymVisits: z.string().regex(/^\d*$/, 'Whole number, or blank').optional(),
   benefitsTouched: z.string().optional(),
 })
 
@@ -57,37 +59,16 @@ interface Props {
     isPrivate: boolean
     isSpecialized: boolean
     groupSize: number | null
-    includesDayAccess: boolean
-    roomBenefits: {
-      resourceId: string
-      unit: 'minutes' | 'hours' | 'days' | 'months'
-      amount: number
-      maxHoursPerDay: number | null
-    }[]
+    ptSessionsPerMonth: number | null
+    includesOpenGym: boolean
+    openGymVisitsPerMonth: number | null
   }
-  resources: { id: string; name: string }[]
 }
 
-export default function PlanEditForm({ plan, resources }: Props) {
+export default function PlanEditForm({ plan }: Props) {
   const [groupSize, setGroupSize] = useState(
     plan.groupSize != null ? String(plan.groupSize) : ''
   )
-  const [benefits, setBenefits] = useState<
-    Record<string, { unit: string; amount: string; day: string }>
-  >(() => {
-    const initial: Record<
-      string,
-      { unit: string; amount: string; day: string }
-    > = {}
-    for (const b of plan.roomBenefits) {
-      initial[b.resourceId] = {
-        unit: b.unit,
-        amount: String(b.amount),
-        day: b.maxHoursPerDay != null ? String(b.maxHoursPerDay) : '',
-      }
-    }
-    return initial
-  })
   const [error, setError] = useState<string | null>(null)
   const [savedAt, setSavedAt] = useState<number | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -110,7 +91,9 @@ export default function PlanEditForm({ plan, resources }: Props) {
       isActive: plan.isActive,
       isPrivate: plan.isPrivate,
       isSpecialized: plan.isSpecialized,
-      includesDayAccess: plan.includesDayAccess,
+      ptSessions: plan.ptSessionsPerMonth != null ? String(plan.ptSessionsPerMonth) : '',
+      includesOpenGym: plan.includesOpenGym,
+      openGymVisits: plan.openGymVisitsPerMonth != null ? String(plan.openGymVisitsPerMonth) : '',
       benefitsTouched: '',
     },
   })
@@ -143,24 +126,19 @@ export default function PlanEditForm({ plan, resources }: Props) {
         isActive: values.isActive,
         isPrivate: values.isPrivate,
         isSpecialized: values.isSpecialized,
-        includesDayAccess: values.includesDayAccess,
+        ptSessionsPerMonth:
+          values.ptSessions && values.ptSessions.length > 0
+            ? Number(values.ptSessions)
+            : null,
+        includesOpenGym: values.includesOpenGym,
+        openGymVisitsPerMonth:
+          values.openGymVisits && values.openGymVisits.length > 0
+            ? Number(values.openGymVisits)
+            : null,
         groupSize:
           groupSize.trim().length > 0 && Number(groupSize) >= 2
             ? Number(groupSize)
             : null,
-        roomBenefits: Object.entries(benefits)
-          .map(([resourceId, v]) => ({
-            resourceId,
-            unit: (v.unit || 'hours') as
-              | 'minutes'
-              | 'hours'
-              | 'days'
-              | 'months',
-            amount: Number.parseFloat(v.amount),
-            maxHoursPerDay:
-              v.day.trim().length > 0 ? Number.parseFloat(v.day) : null,
-          }))
-          .filter((b) => Number.isFinite(b.amount) && b.amount > 0),
       })
       if (!result.ok) {
         setError(result.error)
@@ -333,7 +311,7 @@ export default function PlanEditForm({ plan, resources }: Props) {
                 />
               </FormControl>
               <FormLabel className="font-normal text-sm cursor-pointer">
-                Active (visible on /spaces)
+                Active (visible on /pricing)
               </FormLabel>
               <FormMessage />
             </FormItem>
@@ -363,113 +341,68 @@ export default function PlanEditForm({ plan, resources }: Props) {
           </p>
         </div>
 
-        <FormField
-          control={form.control}
-          name="includesDayAccess"
-          render={({ field }) => (
-            <FormItem className="flex items-center gap-2 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={(v) => field.onChange(v === true)}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <FormLabel className="font-normal text-sm cursor-pointer">
-                Includes daily workspace access — members on this plan check in
-                free (hot desk / day pass access)
-              </FormLabel>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="border border-neutral-200 rounded-md p-4 space-y-3">
+        <div className="border border-neutral-200 rounded-md p-4 space-y-4">
           <div>
-            <p className="text-sm font-medium">Room access included</p>
+            <p className="text-sm font-medium">What this plan includes each month</p>
             <p className="text-xs text-neutral-500">
-              What this plan includes on each space, per month — pick a unit
-              (minutes, hours, days, or months = unlimited) and an amount, plus
-              an optional daily cap. Days count as 8 hours, max 30. Blank amount
-              = not included. Covered time books free; anything beyond is
-              charged normally.
+              Sessions reset on the renewal date — nothing rolls over.
             </p>
           </div>
-          {resources.map((r) => {
-            const value = benefits[r.id] ?? {
-              unit: 'hours',
-              amount: '',
-              day: '',
-            }
-            const update = (
-              patch: Partial<{ unit: string; amount: string; day: string }>
-            ) => {
-              setBenefits((prev) => ({
-                ...prev,
-                [r.id]: { ...value, ...patch },
-              }))
-              form.setValue('benefitsTouched', String(Math.random()), {
-                shouldDirty: true,
-              })
-            }
-            return (
-              <div key={r.id} className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm truncate">{r.name}</span>
-                  <div className="flex rounded-md border border-neutral-200 overflow-hidden">
-                    {(
-                      [
-                        ['minutes', 'Min'],
-                        ['hours', 'Hrs'],
-                        ['days', 'Days'],
-                        ['months', 'Mths'],
-                      ] as const
-                    ).map(([unit, label]) => (
-                      <button
-                        key={unit}
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => update({ unit })}
-                        className={
-                          value.unit === unit
-                            ? 'px-2.5 py-1 text-xs font-medium bg-darkBlue-900 text-white'
-                            : 'px-2.5 py-1 text-xs text-neutral-600 hover:bg-neutral-50'
-                        }
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
+          <FormField
+            control={form.control}
+            name="ptSessions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>PT sessions per month</FormLabel>
+                <FormControl>
                   <Input
-                    type="number"
-                    min={0}
-                    step={0.5}
-                    placeholder={
-                      value.unit === 'months'
-                        ? 'months included'
-                        : `${value.unit}/month`
-                    }
-                    value={value.amount}
-                    onChange={(e) => update({ amount: e.target.value })}
+                    {...field}
+                    inputMode="numeric"
+                    placeholder="Blank = unlimited · 0 = no PT"
                     disabled={isPending}
-                    className="h-9"
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="includesOpenGym"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(v) => field.onChange(v === true)}
+                    disabled={isPending}
+                  />
+                </FormControl>
+                <FormLabel className="font-normal text-sm cursor-pointer">
+                  Includes open gym — walk in whenever there&apos;s room on the floor
+                </FormLabel>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="openGymVisits"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Open-gym visits per month (if not unlimited)</FormLabel>
+                <FormControl>
                   <Input
-                    type="number"
-                    min={0}
-                    step={0.5}
-                    placeholder="max hrs/day"
-                    value={value.day}
-                    onChange={(e) => update({ day: e.target.value })}
-                    disabled={isPending || value.unit === 'months'}
-                    className="h-9"
+                    {...field}
+                    inputMode="numeric"
+                    placeholder="Blank = not capped"
+                    disabled={isPending}
                   />
-                </div>
-              </div>
-            )
-          })}
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
