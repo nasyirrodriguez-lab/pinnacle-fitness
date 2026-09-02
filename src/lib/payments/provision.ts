@@ -1,8 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { grantSessions, resetMonthlyGrant } from '@/lib/sessions/ledger'
 
 // Shared product-provision helpers used by the Wam webhook, the manual
-// admin payment recorder, and the reconcile action. Pulled out so all
-// three code paths grant the same way and we never grow drift bugs.
+// admin payment recorder, payment requests, the kiosk cash confirm and
+// the reconcile action. Every activation path funnels through these two
+// functions so the session ledger is always written the same way:
+//   - a plan month → hard-reset grant of that plan's PT / open-gym sessions
+//   - a pack → a grant with a 30-day (validity_days) expiry
 
 export interface ProvisionResult {
   ok: boolean
@@ -21,15 +25,19 @@ export async function grantPassFromMetadata(
 ): Promise<ProvisionResult> {
   const { data: pass } = await admin
     .from('passes')
-    .select('uses_total, validity_days')
+    .select('uses_total, validity_days, session_kind')
     .eq('id', args.passId)
     .maybeSingle()
   if (!pass) return { ok: false, error: `Pass "${args.passId}" not found` }
-  const p = pass as { uses_total: number; validity_days: number }
+  const p = pass as {
+    uses_total: number
+    validity_days: number
+    session_kind: 'pt' | 'open_gym' | null
+  }
 
-  // Idempotency: if we've already minted a pass_purchase tied to this
-  // payment, return that. We don't store payment_id on pass_purchases
-  // directly so we dedupe on (user_id, pass_id, recently-created).
+  // Idempotency: a pass_purchase for this member + pack minted in the
+  // last 5 minutes means a double-fired provision — return it, and
+  // don't grant twice.
   const { data: existing } = await admin
     .from('pass_purchases')
     .select('id')
@@ -58,7 +66,19 @@ export async function grantPassFromMetadata(
   if (error || !row) {
     return { ok: false, error: error?.message ?? 'insert failed' }
   }
-  return { ok: true, passPurchaseId: (row as { id: string }).id }
+  const passPurchaseId = (row as { id: string }).id
+
+  const grant = await grantSessions(admin, {
+    userId: args.userId,
+    kind: p.session_kind ?? 'pt',
+    count: p.uses_total,
+    reason: 'pack_purchase',
+    passPurchaseId,
+    paymentId: args.paymentId,
+    expiresAt: expiresAt.toISOString(),
+  })
+  if (!grant.ok) return { ok: false, error: grant.error, passPurchaseId }
+  return { ok: true, passPurchaseId }
 }
 
 export async function confirmBookingGroupFromMetadata(
@@ -81,11 +101,51 @@ export async function confirmBookingGroupFromMetadata(
   return { ok: true }
 }
 
+// The plan's monthly allowances land in the ledger as a hard reset.
+// null pt_sessions_per_month = unlimited (entitlement handles it, no
+// ledger row); 0 = no PT on this plan.
+async function grantPlanMonth(
+  admin: SupabaseClient,
+  args: { userId: string; planId: string; paymentId?: string | null }
+): Promise<void> {
+  const { data: plan } = await admin
+    .from('plans')
+    .select('pt_sessions_per_month, open_gym_visits_per_month')
+    .eq('id', args.planId)
+    .maybeSingle()
+  const p = plan as {
+    pt_sessions_per_month: number | null
+    open_gym_visits_per_month: number | null
+  } | null
+  if (!p) return
+  if (typeof p.pt_sessions_per_month === 'number' && p.pt_sessions_per_month > 0) {
+    await resetMonthlyGrant(admin, {
+      userId: args.userId,
+      kind: 'pt',
+      perMonth: p.pt_sessions_per_month,
+      paymentId: args.paymentId ?? null,
+    })
+  }
+  if (
+    typeof p.open_gym_visits_per_month === 'number' &&
+    p.open_gym_visits_per_month > 0
+  ) {
+    await resetMonthlyGrant(admin, {
+      userId: args.userId,
+      kind: 'open_gym',
+      perMonth: p.open_gym_visits_per_month,
+      paymentId: args.paymentId ?? null,
+    })
+  }
+}
+
 export async function grantSubscriptionFromMetadata(
   admin: SupabaseClient,
   args: {
     userId: string
     planId: string
+    paymentId?: string | null
+    // Legacy flag from the coworking fork; ignored.
     isVirtualOffice?: boolean
   }
 ): Promise<ProvisionResult> {
@@ -136,12 +196,7 @@ export async function grantSubscriptionFromMetadata(
         })
         .eq('id', existing.id)
       if (extendErr) return { ok: false, error: extendErr.message }
-      if (args.isVirtualOffice || args.planId === 'virtual-office-monthly') {
-        await admin
-          .from('virtual_office_subscriptions')
-          .update({ is_active: true, subscription_id: existing.id })
-          .eq('user_id', args.userId)
-      }
+      await grantPlanMonth(admin, args)
       return { ok: true, subscriptionId: existing.id }
     }
     // Different plan while one is active — surface rather than stack.
@@ -170,22 +225,6 @@ export async function grantSubscriptionFromMetadata(
   if (error || !row) {
     return { ok: false, error: error?.message ?? 'insert failed' }
   }
-  const subscriptionId = (row as { id: string }).id
-
-  if (args.isVirtualOffice || args.planId === 'virtual-office-monthly') {
-    const { error: voErr } = await admin
-      .from('virtual_office_subscriptions')
-      .update({ is_active: true, subscription_id: subscriptionId })
-      .eq('user_id', args.userId)
-    if (voErr) {
-      // Subscription is live; flag for admin via log but don't fail.
-      console.error(
-        '[provision] virtual_office activation failed',
-        args.userId,
-        voErr
-      )
-    }
-  }
-
-  return { ok: true, subscriptionId }
+  await grantPlanMonth(admin, args)
+  return { ok: true, subscriptionId: (row as { id: string }).id }
 }
