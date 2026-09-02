@@ -40,12 +40,12 @@ values
    'For the self-directed member who already has a program. The floor, the turf and the racks whenever the gym is open and there is room. No coaching included.',
    45000, 'month',
    '["Unlimited open gym","Scan in at the door","No coached sessions"]'::jsonb,
-   false, null, true, false, 40),
+   false, 0, true, false, 40),
   ('open-gym-addon', 'Open Gym add-on',
    'Adds open gym to the 8 Sessions plan. Applied by the team.',
    15000, 'month',
    '["Open gym included with your 8 Sessions plan"]'::jsonb,
-   false, null, true, true, 50)
+   false, 0, true, true, 50)
 on conflict (id) do nothing;
 
 -- =====================================================================

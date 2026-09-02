@@ -147,9 +147,10 @@ create table if not exists public.plans (
   is_private boolean not null default false,
   is_specialized boolean not null default false,
   display_order integer not null default 0,
-  -- Session allowances. pt_sessions_per_month null + includes_pt = unlimited PT.
+  -- Session allowances. pt_sessions_per_month: null = unlimited PT, 0 = no PT
+  -- (open-gym-only plan). includes_pt is derived convenience for the catalog.
   includes_pt boolean not null default true,
-  pt_sessions_per_month integer check (pt_sessions_per_month is null or pt_sessions_per_month > 0),
+  pt_sessions_per_month integer check (pt_sessions_per_month is null or pt_sessions_per_month >= 0),
   includes_open_gym boolean not null default false,
   open_gym_visits_per_month integer check (open_gym_visits_per_month is null or open_gym_visits_per_month > 0),
   -- Legacy platform fields kept for code compatibility.
@@ -163,6 +164,9 @@ alter table public.plans add column if not exists is_private boolean not null de
 alter table public.plans add column if not exists is_specialized boolean not null default false;
 alter table public.plans add column if not exists includes_pt boolean not null default true;
 alter table public.plans add column if not exists pt_sessions_per_month integer;
+alter table public.plans drop constraint if exists plans_pt_sessions_per_month_check;
+alter table public.plans add constraint plans_pt_sessions_per_month_check
+  check (pt_sessions_per_month is null or pt_sessions_per_month >= 0);
 alter table public.plans add column if not exists includes_open_gym boolean not null default false;
 alter table public.plans add column if not exists open_gym_visits_per_month integer;
 alter table public.plans add column if not exists room_benefits jsonb not null default '[]'::jsonb;
@@ -558,6 +562,9 @@ insert into public.settings (key, value) values
   ('auto_signout_hours', '3'::jsonb),               -- forgot-to-scan-out safety
   ('pt_cancel_hours', '4'::jsonb),                  -- free cancel window before a PT slot
   ('no_show_minutes', '60'::jsonb),                 -- minutes after slot start before a no-show is charged
+  ('checkin_early_minutes', '30'::jsonb),           -- how early a PT booking can scan in
+  ('checkin_late_minutes', '30'::jsonb),            -- how late before the slot no longer matches
+  ('lapse_grace_days', '3'::jsonb),                 -- days past period end before a membership lapses
   ('rent_target_cents', '0'::jsonb),                -- monthly pool target; owners set it
   ('opening_hours', '{
      "0": null,
@@ -981,6 +988,7 @@ create table if not exists public.applications (
   goal text,
   heard_from text,
   referred_by text,
+  plan_interest text,          -- plan id picked on the form; no FK so a retired plan doesn't block old rows
   code_accepted_at timestamptz,
   status text not null default 'new' check (status in (
     'new','screened_out','intro_booked','waitlisted','invited','approved','declined'
@@ -996,6 +1004,7 @@ create table if not exists public.applications (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+alter table public.applications add column if not exists plan_interest text;
 create index if not exists applications_status_idx on public.applications (status, created_at);
 create index if not exists applications_email_idx on public.applications (lower(email));
 drop trigger if exists applications_updated_at on public.applications;

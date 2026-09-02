@@ -48,7 +48,7 @@ staff: `update public.profiles set role = 'staff', designation = 'staff' where e
 | `coaches` | Public bits + `group_cap` per coach; PK = profile id; `slug` nasyir / matthew. |
 | `coach_availability` | Weekly template in minutes-since-midnight (`weekday`, `start_minute`, `end_minute`). |
 | `coach_blocks` | One-off unavailability (`starts_at`, `ends_at`, `reason`). |
-| `plans` | Monthly memberships. `pt_sessions_per_month` (null = unlimited), `includes_open_gym`. |
+| `plans` | Monthly memberships. `pt_sessions_per_month` (null = unlimited PT, 0 = no PT), `includes_open_gym`. |
 | `passes` | Session packs. `session_kind` pt / open_gym, `uses_total`, `validity_days` 30. |
 | `resources` | What gets booked: `pt-nasyir`, `pt-matthew` (kind pt, capacity = group cap), `open-gym` (kind open_gym, capacity = floor cap, never slot-booked). |
 | `subscriptions` | Live plan per member; hard monthly reset. |
@@ -59,8 +59,8 @@ staff: `update public.profiles set role = 'staff', designation = 'staff' where e
 | `invoices` | Numbered `PIN-YYYY-0001` documents backed by a pending payment. |
 | `visits` | The door: every scan in / out. `kind` member / guest / tour / pt / open_gym; `floor_count()` = open visits. |
 | `checkin_devices` / `reception_status` | Paired iPads; "Be Right Back" banner singleton. |
-| `settings` | `floor_cap`, `auto_signout_hours`, `pt_cancel_hours`, `no_show_minutes`, `rent_target_cents`, `opening_hours`. |
-| `applications` | The front door. `status` new → screened_out / intro_booked / waitlisted / invited / approved / declined; invite expiry + payment link; nudge tracking. |
+| `settings` | `floor_cap` 20, `auto_signout_hours` 3, `pt_cancel_hours` 4, `no_show_minutes` 60, `checkin_early_minutes` 30, `checkin_late_minutes` 30, `lapse_grace_days` 3, `rent_target_cents` 0, `opening_hours`. |
+| `applications` | The front door. `plan_interest` (plan id from the form); `status` new → screened_out / intro_booked / waitlisted / invited / approved / declined; invite expiry + payment link; nudge tracking. |
 | `products` / `stock_moves` / `sales` | The fridge. Sales stamp `sold_by`; stock kept in step by trigger. |
 | `expenses` / `pool_contributions` | Finance tracker + what each coach put toward rent. |
 | `credit_grants` / `credit_ledger` | TTD account credit. |
