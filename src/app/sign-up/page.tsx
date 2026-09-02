@@ -1,92 +1,46 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import SignInForm from '@/components/sign-in-form/sign-in-form'
 
 export const metadata: Metadata = {
-  title: 'Sign up — The Worx',
+  title: 'Membership by application — Pinnacle Fitness',
   description:
-    'Join The Worx coworking community in Port of Spain. Sign up with your email — no password required.',
+    'Pinnacle isn’t a first gym. Membership is by application — apply, come in for an intro session, and we’ll take it from there.',
   robots: { index: true, follow: true },
 }
 
-interface PageProps {
-  searchParams: Promise<{
-    next?: string
-    error?: string
-    referred?: string
-  }>
-}
-
-const ERROR_MESSAGES: Record<string, string> = {
-  expired:
-    'That sign-up link expired. Request a new one — links are valid for a few minutes.',
-  invalid: 'That sign-up link is invalid or has already been used.',
-  missing: 'No sign-up token. Request a new link below.',
-}
-
-export default async function SignUpPage({ searchParams }: PageProps) {
-  const { next, error, referred } = await searchParams
-  const safeNext =
-    next && next.startsWith('/') && !next.startsWith('//') ? next : undefined
-  const errorMessage = error ? ERROR_MESSAGES[error] : undefined
-  const isReferred = referred === '1'
-
+// There is no public sign-up. Accounts are created when an application
+// is approved; this page just points people the right way.
+export default function SignUpPage() {
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-16">
+    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-5 py-16">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <p className="text-sm font-medium text-turquoise-700 uppercase tracking-wide mb-2">
-            Join The Worx
-          </p>
-          <h1 className="font-heading text-3xl mb-2">Create your account</h1>
-          <p className="text-neutral-600">
-            We&apos;ll email you a one-time link. No password required.
-          </p>
-        </div>
-
-        {errorMessage && (
-          <div className="mb-4 rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-900">
-            {errorMessage}
-          </div>
-        )}
-
-        {isReferred && (
-          <div className="mb-4 rounded-md border border-turquoise-200 bg-turquoise-50 px-4 py-3 text-sm text-turquoise-900">
-            <p className="font-medium mb-0.5">
-              You were referred by a Worx member.
-            </p>
-            <p className="text-xs">
-              Sign up and make your first purchase — you both get a free Day
-              Pass.
-            </p>
-          </div>
-        )}
-
-        <div className="bg-white border border-neutral-200 rounded-lg p-8 shadow-sm">
-          <SignInForm next={safeNext} mode="sign-up" />
-        </div>
-
-        <p className="text-sm text-neutral-600 text-center mt-6">
-          Already a member?{' '}
+        <p className="text-[11px] tracking-[0.18em] uppercase text-turf mb-3">
+          Membership by application
+        </p>
+        <h1 className="heading-display text-4xl sm:text-5xl mb-4">
+          Pinnacle isn’t
+          <br />a first gym.
+        </h1>
+        <p className="text-ice-dim mb-8">
+          Our sessions are coached and progressive, so we look for people who
+          already train and want to be pushed further. Apply, come in for an
+          intro session, and if it’s a fit you’ll get your account, your app,
+          and your first booking.
+        </p>
+        <div className="flex flex-col gap-3">
           <Link
-            href={
-              safeNext
-                ? `/sign-in?next=${encodeURIComponent(safeNext)}`
-                : '/sign-in'
-            }
-            className="text-turquoise-700 underline font-medium"
+            href="/apply"
+            className="h-14 rounded-full bg-primary text-primary-foreground font-heading text-sm inline-flex items-center justify-center"
           >
-            Sign in
+            Apply to join
           </Link>
-        </p>
-
-        <p className="text-xs text-neutral-500 text-center mt-4">
-          By continuing you&apos;ll review and accept our{' '}
-          <Link href="/terms" className="underline">
-            Terms and Conditions
+          <Link
+            href="/sign-in"
+            className="h-14 rounded-full border border-ice text-ice font-heading text-sm inline-flex items-center justify-center"
+          >
+            Already a member? Sign in
           </Link>
-          .
-        </p>
+        </div>
       </div>
     </div>
   )

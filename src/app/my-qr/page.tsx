@@ -4,17 +4,53 @@ import { redirect } from 'next/navigation'
 import QRCode from 'qrcode'
 import { getCurrentUser } from '@/lib/auth/current-user'
 import { issueCheckinToken } from '@/lib/checkin/qr'
+import { createAdminClient } from '@/utils/supabase/admin'
+import { memberAccess } from '@/lib/gym/entitlement'
+import { nextPtBooking } from '@/lib/members/next-booking'
+import { loadGymSettings } from '@/lib/gym/settings'
+import { astIsSameDay, fmtAstTime, fmtAstWeekdayDate } from '@/lib/time/ast'
+import LeavingButton from '@/components/dashboard/leaving-button'
+import HomeScreenNudge from '@/components/dashboard/home-screen-nudge'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'My check-in QR | The Worx',
+  title: 'My QR — Pinnacle Fitness',
   robots: { index: false, follow: false },
+}
+
+function buildStatusLine(
+  next: Awaited<ReturnType<typeof nextPtBooking>>,
+  access: Awaited<ReturnType<typeof memberAccess>>,
+  settings: Awaited<ReturnType<typeof loadGymSettings>>
+): string {
+  const now = Date.now()
+  if (next && astIsSameDay(next.startIso, new Date(now))) {
+    const cancelBy = new Date(
+      new Date(next.startIso).getTime() - settings.ptCancelHours * 60 * 60 * 1000
+    )
+    return `PT with ${next.coachName} today ${fmtAstTime(next.startIso)}${
+      cancelBy.getTime() > now
+        ? ` · cancel free until ${fmtAstTime(cancelBy.toISOString())}`
+        : ''
+    }`
+  }
+  if (next) {
+    return `Next PT: ${next.coachName} · ${fmtAstWeekdayDate(next.startIso)} ${fmtAstTime(next.startIso)}`
+  }
+  if (access.openGymUnlimited) return 'Open gym · included in your plan'
+  return `Open gym · ${access.openGymBalance} visit${access.openGymBalance === 1 ? '' : 's'} left`
 }
 
 export default async function MyQrPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/sign-in?next=/my-qr')
+  const admin = createAdminClient()
+  const [access, next, settings] = await Promise.all([
+    memberAccess(admin, user.id),
+    nextPtBooking(admin, user.id),
+    loadGymSettings(admin),
+  ])
 
   const token = issueCheckinToken(user.id)
   const svg = await QRCode.toString(token, {
@@ -22,37 +58,41 @@ export default async function MyQrPage() {
     margin: 1,
     width: 320,
     errorCorrectionLevel: 'M',
-    color: { dark: '#0a1620', light: '#ffffff' },
+    color: { dark: '#0B0E0C', light: '#E5E8E6' },
   })
 
+  const statusLine = buildStatusLine(next, access, settings)
+
   return (
-    <div className="min-h-[calc(100vh-200px)] bg-neutral-50 flex items-center justify-center px-4 py-12">
-      <div className="bg-white border border-neutral-200 rounded-lg p-6 md:p-8 max-w-md w-full text-center">
-        <p className="text-xs uppercase tracking-wide text-turquoise-700 font-medium mb-2">
-          Check-in
-        </p>
-        <h1 className="font-heading text-2xl mb-2">
-          Show this at the front desk
-        </h1>
-        <p className="text-sm text-neutral-600 mb-6">
-          {user.fullName || user.email}
-        </p>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-10 text-center">
+      <p className="text-[11px] tracking-[0.18em] uppercase text-ice-mute mb-2">
+        Scan at the iPad
+      </p>
+      <h1 className="heading-display text-3xl mb-6">
+        {user.fullName || user.email}
+      </h1>
 
-        <div
-          className="mx-auto mb-6 w-[260px] h-[260px] flex items-center justify-center"
-          dangerouslySetInnerHTML={{ __html: svg }}
-        />
+      <div
+        className="w-[min(78vw,320px)] aspect-square rounded-lg overflow-hidden bg-ice p-3 [&_svg]:w-full [&_svg]:h-full"
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
 
-        <p className="text-xs text-neutral-500 mb-4">
-          This code rotates every 24 hours for your security. If the front desk
-          can&apos;t scan it, just refresh this page.
+      <p className="mt-6 text-sm text-ice-dim max-w-xs">{statusLine}</p>
+      {access.subscriptionStatus === 'lapsed' && (
+        <p className="mt-2 text-sm text-bad max-w-xs">
+          Your plan has lapsed — renew before you head in, or pay at the desk.
         </p>
+      )}
 
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center justify-center text-sm text-neutral-600 hover:text-neutral-900"
-        >
-          ← Back to dashboard
+      <div className="mt-8 flex flex-col items-center gap-4">
+        <LeavingButton />
+        <HomeScreenNudge />
+        <p className="text-xs text-ice-mute">
+          This code refreshes daily. If it won’t scan, find your name on the
+          iPad and use your PIN.
+        </p>
+        <Link href="/dashboard" className="text-sm text-ice-dim underline">
+          Back to home
         </Link>
       </div>
     </div>

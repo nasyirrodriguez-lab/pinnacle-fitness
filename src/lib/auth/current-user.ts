@@ -13,6 +13,7 @@ export interface CurrentUserProfile {
   // Set when this person has a coaches row (coach or owner who trains).
   coachId: string | null
   designation: string | null
+  pinCode: string | null
   termsVersion: string | null
   termsAcceptedAt: string | null
 }
@@ -30,7 +31,7 @@ export const getCurrentUser = cache(
     const { data: profile } = await supabase
       .from('profiles')
       .select(
-        'id, email, full_name, phone, company, role, designation, terms_version, terms_accepted_at, coaches(id)'
+        'id, email, full_name, phone, company, role, designation, pin_code, terms_version, terms_accepted_at, coaches(id)'
       )
       .eq('id', user.id)
       .maybeSingle()
@@ -46,6 +47,7 @@ export const getCurrentUser = cache(
         role: 'member',
         coachId: null,
         designation: null,
+        pinCode: null,
         termsVersion: null,
         termsAcceptedAt: null,
       }
@@ -64,6 +66,7 @@ export const getCurrentUser = cache(
       role,
       coachId: isTeam(role) && coach?.id ? coach.id : null,
       designation: (row.designation as string | null) ?? null,
+      pinCode: (row.pin_code as string | null) ?? null,
       termsVersion: (row.terms_version as string | null) ?? null,
       termsAcceptedAt: (row.terms_accepted_at as string | null) ?? null,
     }

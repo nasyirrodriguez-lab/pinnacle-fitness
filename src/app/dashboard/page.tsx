@@ -1,188 +1,219 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
-import {
-  ArrowRight,
-  Calendar,
-  CreditCard,
-  Sparkles,
-  Ticket,
-  Inbox,
-} from 'lucide-react'
+import { QrCode, CalendarPlus, Inbox } from 'lucide-react'
 import { getCurrentUser } from '@/lib/auth/current-user'
-import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { unreadNotificationCount } from '@/lib/notifications/notify'
-import { fmtAstDate } from '@/lib/time/ast'
+import { memberAccess } from '@/lib/gym/entitlement'
+import { floorStatus } from '@/lib/gym/floor'
+import { nextPtBooking } from '@/lib/members/next-booking'
+import { astDaysBetween, fmtAstTime, fmtAstWeekdayDate } from '@/lib/time/ast'
 
 export const dynamic = 'force-dynamic'
 
-interface PassBalance {
-  pass_id: string
-  pass_name: string
-  uses_remaining: number
-  expires_at: string
-}
-
-async function loadActivePasses(userId: string): Promise<PassBalance[]> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-  const { data, error } = await supabase
-    .from('pass_purchases')
-    .select('pass_id, uses_remaining, expires_at, passes(name)')
-    .eq('user_id', userId)
-    .gt('uses_remaining', 0)
-    .gt('expires_at', new Date().toISOString())
-    .order('expires_at', { ascending: true })
-
-  if (error || !data) return []
-  return data.map((row) => {
-    const passes = row.passes as { name?: string } | { name?: string }[] | null
-    const name = Array.isArray(passes) ? passes[0]?.name : passes?.name
-    return {
-      pass_id: row.pass_id as string,
-      pass_name: name ?? row.pass_id,
-      uses_remaining: row.uses_remaining as number,
-      expires_at: row.expires_at as string,
-    }
-  })
-}
-
-function Tile({
-  title,
-  body,
-  href,
-  icon,
-}: {
-  title: string
-  body: string
-  href: string
-  icon: React.ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      className="group block bg-white border border-neutral-200 rounded-lg p-6 hover:border-turquoise-400 hover:shadow-sm transition"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div className="w-10 h-10 rounded-md bg-turquoise-50 text-turquoise-700 flex items-center justify-center">
-          {icon}
-        </div>
-        <ArrowRight
-          size={16}
-          className="text-neutral-400 group-hover:text-turquoise-600 transition"
-        />
-      </div>
-      <h2 className="font-heading text-base mb-1">{title}</h2>
-      <p className="text-sm text-neutral-600">{body}</p>
-    </Link>
+function greeting(): string {
+  const hour = Number(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Port_of_Spain',
+      hour: 'numeric',
+      hour12: false,
+    }).format(new Date())
   )
-}
-
-function PassBalanceCard({ passes }: { passes: PassBalance[] }) {
-  const totalRemaining = passes.reduce((sum, p) => sum + p.uses_remaining, 0)
-  return (
-    <div className="bg-white border border-neutral-200 rounded-lg p-6 mb-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-md bg-turquoise-50 text-turquoise-700 flex items-center justify-center shrink-0">
-            <Ticket size={20} />
-          </div>
-          <div>
-            <h2 className="font-heading text-base mb-1">Your passes</h2>
-            <p className="text-sm text-neutral-600 mb-2">
-              {totalRemaining} {totalRemaining === 1 ? 'day' : 'days'} remaining
-              across {passes.length} {passes.length === 1 ? 'pass' : 'passes'}.
-            </p>
-            <ul className="text-xs text-neutral-500 space-y-1">
-              {passes.map((p, i) => (
-                <li key={i}>
-                  {p.pass_name} — {p.uses_remaining} remaining, expires{' '}
-                  {fmtAstDate(p.expires_at)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <Link href="/buy/day-pass">
-          <button
-            type="button"
-            className="px-4 py-2 text-sm font-medium border border-neutral-200 rounded-md hover:bg-neutral-50 whitespace-nowrap"
-          >
-            Buy more
-          </button>
-        </Link>
-      </div>
-    </div>
-  )
+  if (hour < 12) return 'Morning'
+  if (hour < 17) return 'Afternoon'
+  return 'Evening'
 }
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/sign-in')
+  const admin = createAdminClient()
 
-  const [passes, unreadMessages] = await Promise.all([
-    loadActivePasses(user.id),
-    unreadNotificationCount(createAdminClient(), user.id),
+  const [access, floor, next, unread] = await Promise.all([
+    memberAccess(admin, user.id),
+    floorStatus(admin),
+    nextPtBooking(admin, user.id),
+    unreadNotificationCount(admin, user.id),
   ])
-  const firstName = (user.fullName ?? user.email).split(' ')[0].split('@')[0]
+  const first = (user.fullName ?? user.email).split(' ')[0].split('@')[0]
+
+  const daysToRenew = access.periodEnd
+    ? Math.max(0, astDaysBetween(access.periodEnd, new Date()))
+    : null
+  const planTotal = access.plan?.ptSessionsPerMonth ?? null
+  const pct =
+    planTotal && planTotal > 0
+      ? Math.min(100, Math.round((access.ptBalance / planTotal) * 100))
+      : null
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="font-heading text-3xl mb-1">
-          {firstName ? `Hey ${firstName}` : 'Welcome'}
-        </h1>
-        <p className="text-neutral-600">
-          Your member dashboard. Book a spot, manage your plan, see your
-          history.
-        </p>
-      </div>
+    <div className="max-w-xl">
+      <h1 className="heading-display text-4xl sm:text-5xl mb-6">
+        {greeting()},
+        <br />
+        {first}.
+      </h1>
 
-      {unreadMessages > 0 && (
+      {access.subscriptionStatus === 'lapsed' && (
         <Link
-          href="/dashboard/messages"
-          className="mb-6 flex items-center gap-3 bg-turquoise-50 border border-turquoise-200 rounded-lg px-5 py-4 hover:border-turquoise-400 transition"
+          href="/dashboard/plan"
+          className="block rounded-lg border border-bad/40 bg-bad/10 px-5 py-4 mb-4"
         >
-          <Inbox size={20} className="text-turquoise-700 shrink-0" />
-          <span className="flex-1 text-sm font-medium text-turquoise-900">
-            You have {unreadMessages} new message
-            {unreadMessages === 1 ? '' : 's'} from The Worx team.
-          </span>
-          <span className="text-sm text-turquoise-700 font-medium shrink-0">
-            Read →
-          </span>
+          <p className="font-heading text-sm text-bad mb-0.5">
+            Your plan has lapsed
+          </p>
+          <p className="text-sm text-ice-dim">
+            {access.plan?.name ?? 'Membership'} renewal is {access.lapsedDays}{' '}
+            days overdue — the iPad won’t let you in until it’s settled. Renew
+            in a tap →
+          </p>
+        </Link>
+      )}
+      {access.subscriptionStatus === 'grace' && (
+        <Link
+          href="/dashboard/plan"
+          className="block rounded-lg border border-warn/40 bg-warn/10 px-5 py-4 mb-4"
+        >
+          <p className="font-heading text-sm text-warn mb-0.5">
+            Renewal overdue
+          </p>
+          <p className="text-sm text-ice-dim">
+            You’re in the grace period — renew now to keep training without
+            interruption →
+          </p>
         </Link>
       )}
 
-      {passes.length > 0 && <PassBalanceCard passes={passes} />}
+      {unread > 0 && (
+        <Link
+          href="/dashboard/messages"
+          className="mb-4 flex items-center gap-3 rounded-full bg-card border border-border px-5 py-3"
+        >
+          <Inbox size={18} className="text-turf shrink-0" />
+          <span className="flex-1 text-sm">
+            {unread} new message{unread === 1 ? '' : 's'} from the coaches
+          </span>
+          <span className="text-sm text-turf font-medium">Read</span>
+        </Link>
+      )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Tile
-          title="Book a room"
-          body="Meeting room or conference room, by the hour."
+      <section className="rounded-lg bg-primary text-primary-foreground p-5 mb-4">
+        <p className="text-[11px] tracking-[0.15em] uppercase opacity-70 mb-1">
+          Next up
+        </p>
+        {next ? (
+          <>
+            <p className="font-heading text-2xl leading-tight">
+              PT with {next.coachName}
+            </p>
+            <p className="text-sm opacity-80 mt-1">
+              {fmtAstWeekdayDate(next.startIso)} ·{' '}
+              <span className="font-stat text-lg">
+                {fmtAstTime(next.startIso)}
+              </span>{' '}
+              · 60 min{next.checkedIn ? ' · checked in' : ''}
+            </p>
+            <Link
+              href="/dashboard/bookings"
+              className="inline-block mt-3 text-sm underline underline-offset-4"
+            >
+              Manage booking
+            </Link>
+          </>
+        ) : (
+          <>
+            <p className="font-heading text-2xl leading-tight">
+              Nothing booked
+            </p>
+            <p className="text-sm opacity-80 mt-1">
+              Grab an hour with Nasyir or Matthew, or just scan in for open gym.
+            </p>
+            <Link
+              href="/book"
+              className="inline-flex items-center gap-2 mt-4 h-11 px-5 rounded-full bg-ground text-ice font-heading text-sm"
+            >
+              <CalendarPlus size={16} />
+              Book a session
+            </Link>
+          </>
+        )}
+      </section>
+
+      <section className="rounded-lg bg-card border border-border p-5 mb-4">
+        <div className="grid grid-cols-3 gap-3">
+          <Stat
+            value={access.ptUnlimited ? '∞' : String(access.ptBalance)}
+            label="PT sessions left"
+          />
+          <Stat
+            value={
+              access.openGymUnlimited ? '∞' : String(access.openGymBalance)
+            }
+            label="Open-gym visits"
+          />
+          <Stat
+            value={daysToRenew === null ? '—' : String(daysToRenew)}
+            label="Days to renew"
+          />
+        </div>
+        {pct !== null && (
+          <div className="mt-4">
+            <div className="h-1.5 rounded-full bg-bronze-raised overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <p className="text-xs text-ice-mute mt-2">
+              {access.plan?.name} · {access.ptBalance} of {planTotal} left
+              {access.periodEnd && ` · renews ${fmtAstWeekdayDate(access.periodEnd)}`}
+            </p>
+          </div>
+        )}
+        {!access.plan && (
+          <p className="text-xs text-ice-mute mt-4">
+            No membership yet.{' '}
+            <Link href="/buy" className="text-turf underline">
+              Pick a plan or a pack
+            </Link>
+            .
+          </p>
+        )}
+      </section>
+
+      <div className="flex gap-3 mb-4">
+        <Link
           href="/book"
-          icon={<Calendar size={20} />}
-        />
-        <Tile
-          title="Buy a day pass"
-          body="Day, 5-day, or 10-day pass."
-          href="/buy"
-          icon={<Ticket size={20} />}
-        />
-        <Tile
-          title="Plans & passes"
-          body="Pick a monthly plan or buy a multi-day pass."
-          href="/pricing"
-          icon={<CreditCard size={20} />}
-        />
-        <Tile
-          title="Refer a friend"
-          body="Bring builders into the community."
-          href="/dashboard/refer"
-          icon={<Sparkles size={20} />}
-        />
+          className="flex-1 h-14 rounded-full bg-primary text-primary-foreground font-heading text-sm inline-flex items-center justify-center gap-2"
+        >
+          <CalendarPlus size={18} />
+          Book
+        </Link>
+        <Link
+          href="/my-qr"
+          className="flex-1 h-14 rounded-full border border-ice text-ice font-heading text-sm inline-flex items-center justify-center gap-2"
+        >
+          <QrCode size={18} />
+          My QR
+        </Link>
       </div>
+
+      <p className="text-xs text-ice-mute">
+        <span className="font-stat text-base text-ice">{floor.onFloor}</span>{' '}
+        of {floor.cap} on the floor right now
+        {floor.isFull && ' · full — the next scan-out opens a spot'}
+      </p>
+    </div>
+  )
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <p className="font-stat text-3xl text-turf leading-none">{value}</p>
+      <p className="text-[11px] tracking-[0.1em] uppercase text-ice-mute mt-1.5">
+        {label}
+      </p>
     </div>
   )
 }

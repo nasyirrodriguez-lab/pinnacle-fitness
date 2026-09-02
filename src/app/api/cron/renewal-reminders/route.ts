@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
     })
     await sendMemberNotification(admin, {
       userId: raw.user_id,
-      title: `Your ${planName} membership renews in 3 days`,
-      body: 'Your next payment is coming up. Settle at the front desk (cash or card) or from your dashboard and everything keeps rolling.',
+      title: `Your ${planName} plan renews in 3 days`,
+      body: 'Renew from your Plan page or pay cash at the desk. Sessions reset the day it renews — no rollover, so use what you have.',
       createdBy: null,
     })
     if (emailed) sent++
