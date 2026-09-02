@@ -10,11 +10,6 @@ import SubscribeButton from '@/components/checkout/subscribe-button'
 
 export const dynamic = 'force-dynamic'
 
-const SELF_SERVE_PLAN_IDS = new Set([
-  'hot-desk-monthly',
-  'dedicated-desk-monthly',
-])
-
 interface PlanDetail {
   id: string
   name: string
@@ -84,9 +79,9 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps) {
   const { planId } = await params
   const plan = await loadPlan(planId)
-  if (!plan) return { title: 'Plan not found — The Worx' }
+  if (!plan) return { title: 'Plan not found — Pinnacle Fitness' }
   return {
-    title: `Subscribe to ${plan.name} — The Worx`,
+    title: `${plan.name} — Pinnacle Fitness`,
     description: plan.description ?? undefined,
   }
 }
@@ -98,7 +93,6 @@ export default async function SubscribePage({ params }: PageProps) {
     ? await getCreditBalanceCents(createAdminClient(), user.id)
     : 0
   if (!plan) notFound()
-  if (!SELF_SERVE_PLAN_IDS.has(plan.id)) notFound()
 
   const finalPrice = `${plan.currency} $${(
     plan.priceCents / 100
@@ -183,18 +177,18 @@ export default async function SubscribePage({ params }: PageProps) {
                 Sign in to subscribe
               </button>
               <p className="text-xs text-neutral-500 text-center mt-3">
-                We&apos;ll email you a one-time sign-in link — no password.
+                Members only — we&apos;ll email you a one-time sign-in link.
               </p>
             </Link>
           ) : existingSub ? (
             <div className="rounded-md border border-orange-200 bg-orange-50 px-3 py-3 text-sm text-orange-900">
-              You already have an active membership ({existingSub.planName}). To
-              switch plans, email{' '}
+              You&apos;re already on {existingSub.planName}. To switch plans,
+              ask a coach or email{' '}
               <a
-                href="mailto:team@theworx.io"
+                href="mailto:hello@pinnaclefitness.app"
                 className="underline font-medium"
               >
-                team@theworx.io
+                hello@pinnaclefitness.app
               </a>
               .
             </div>
@@ -205,7 +199,7 @@ export default async function SubscribePage({ params }: PageProps) {
                   You have TTD ${(creditCents / 100).toFixed(0)} account credit
                   {plan && creditCents >= plan.priceCents
                     ? ' — it covers this plan, no card needed.'
-                    : ' — ask the front desk to apply it.'}
+                    : ' — it applies at checkout.'}
                 </p>
               )}
               <SubscribeButton
@@ -214,9 +208,9 @@ export default async function SubscribePage({ params }: PageProps) {
                 fullWidth
               />
               <p className="text-xs text-neutral-500 text-center mt-3">
-                You&apos;ll be taken to Wam to enter your card. We&apos;ll
-                charge you {finalPrice} today and remind you before next
-                month&apos;s charge.
+                You&apos;ll pay {finalPrice} through Wam today. Your sessions
+                land the moment it confirms, and we&apos;ll remind you three
+                days before next month.
               </p>
             </>
           )}

@@ -66,9 +66,9 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps) {
   const { itemId } = await params
   const pass = await loadPass(itemId)
-  if (!pass) return { title: 'Pass not found — The Worx' }
+  if (!pass) return { title: 'Pack not found — Pinnacle Fitness' }
   return {
-    title: `${pass.name} — The Worx`,
+    title: `${pass.name} — Pinnacle Fitness`,
     description: pass.description ?? undefined,
   }
 }
@@ -109,7 +109,7 @@ export default async function BuyPassPage({ params }: PageProps) {
         className="inline-flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900 mb-6"
       >
         <ChevronLeft size={16} />
-        All passes
+        All packs
       </Link>
 
       <div className="bg-white border border-neutral-200 rounded-lg overflow-hidden">
@@ -129,10 +129,10 @@ export default async function BuyPassPage({ params }: PageProps) {
           <dl className="grid grid-cols-2 gap-6 text-sm">
             <div>
               <dt className="text-xs uppercase tracking-wide text-neutral-500 mb-1">
-                Days included
+                Sessions included
               </dt>
               <dd className="font-medium text-base">
-                {pass.uses_total} {pass.uses_total === 1 ? 'day' : 'days'}
+                {pass.uses_total} {pass.uses_total === 1 ? 'session' : 'sessions'}
               </dd>
             </div>
             <div>
@@ -177,7 +177,7 @@ export default async function BuyPassPage({ params }: PageProps) {
               <p className="font-heading text-3xl">{finalPrice}</p>
               {crewOffCents > 0 && (
                 <p className="text-xs text-lime-700 font-medium mt-1">
-                  Crew discount: −{fmtTtd(crewOffCents)} on your first pass
+                  Referral discount: −{fmtTtd(crewOffCents)} on your first pack
                 </p>
               )}
               {savingsLabel && promoEndsLabel && (
@@ -195,7 +195,7 @@ export default async function BuyPassPage({ params }: PageProps) {
                   You have TTD ${(creditCents / 100).toFixed(0)} account credit
                   {creditCents >= finalCents
                     ? ' — it covers this pass, no card needed.'
-                    : ' — ask the front desk to apply it.'}
+                    : ' — it applies at checkout.'}
                 </p>
               )}
               <PayPassButton
