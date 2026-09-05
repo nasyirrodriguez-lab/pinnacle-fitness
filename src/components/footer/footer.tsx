@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className="px-6 lg:px-12 py-16 bg-ground border-t border-bronze-line text-ice">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="md:col-span-1">
-          <Wordmark width={170} variant="stacked" />
+          <Wordmark width={170} dark />
           <p className="mt-4 text-sm text-ice-dim max-w-xs">
             A members-only coached gym. Small by design, so every coach knows
             every member by name.

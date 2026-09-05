@@ -36,8 +36,8 @@ function Header() {
       <div className="px-6 py-4 lg:px-12">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-10">
-            <Link href="/" className="text-ice">
-              <Wordmark width={150} />
+            <Link href="/">
+              <Wordmark width={150} dark />
             </Link>
             <nav className="hidden lg:flex items-center gap-7">
               {NAV_LINKS.map((link) => (
@@ -108,7 +108,7 @@ function Header() {
             <SheetContent side="right" className="bg-ground border-bronze-line">
               <SheetHeader>
                 <SheetTitle className="text-ice">
-                  <Wordmark width={130} />
+                  <Wordmark width={130} dark />
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-1 px-4">
