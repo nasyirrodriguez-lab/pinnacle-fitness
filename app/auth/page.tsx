@@ -63,7 +63,7 @@ export default function AuthPage() {
         <div className="text-center mb-10">
           <a href="/" className="inline-flex justify-center mb-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 50 }} />
+            <img src="/pinnacle-logo-transparent.png" alt="Pinnacle Fitness" style={{ height: 50 }} />
           </a>
           <p className="text-[#6B6560] text-sm mt-2">
             {mode === 'signin' ? 'Welcome back' : 'Create your account'}

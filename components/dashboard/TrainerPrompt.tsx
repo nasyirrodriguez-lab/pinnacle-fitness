@@ -37,7 +37,7 @@ export default function TrainerPrompt() {
         {/* Logo */}
         <a href="/" className="inline-block mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 48 }} className="mx-auto" />
+          <img src="/pinnacle-logo-transparent.png" alt="Pinnacle Fitness" style={{ height: 48 }} className="mx-auto" />
         </a>
 
         <h1 className="font-serif text-2xl text-[#3A3733] mb-2">Choose your trainer</h1>

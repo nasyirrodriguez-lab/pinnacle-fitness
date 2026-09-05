@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: 'Pinnacle Fitness',
     images: [
       {
-        url: 'https://pinnaclefitnesstt.vercel.app/PHOTO-2026-08-25-06-14-47.jpg',
+        url: 'https://pinnaclefitnesstt.vercel.app/pinnacle-logo-transparent.png',
         width: 1200,
         height: 630,
         alt: 'Pinnacle Fitness',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Pinnacle Fitness — Train with us',
     description: "Trinidad's premier boutique gym. Book your first class free.",
-    images: ['https://pinnaclefitnesstt.vercel.app/PHOTO-2026-08-25-06-14-47.jpg'],
+    images: ['https://pinnaclefitnesstt.vercel.app/pinnacle-logo-transparent.png'],
   },
 }
 

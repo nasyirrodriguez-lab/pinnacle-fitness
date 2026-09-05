@@ -9,7 +9,7 @@ export default function Footer() {
             <div className="mb-3">
               <a href="/">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 36, filter: 'brightness(0) invert(1)' }} />
+                <img src="/pinnacle-logo-transparent.png" alt="Pinnacle Fitness" style={{ height: 36, filter: 'brightness(0) invert(1)' }} />
               </a>
             </div>
             <p className="text-sm text-[#E8E4DC]/60 leading-relaxed max-w-xs">

@@ -76,7 +76,7 @@ export default function FreeTrialPage() {
       <div className="px-6 sm:px-12 pt-8 max-w-xl mx-auto">
         <a href="/">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 40 }} />
+          <img src="/pinnacle-logo-transparent.png" alt="Pinnacle Fitness" style={{ height: 40 }} />
         </a>
       </div>
       <div className="py-10 px-6 sm:px-12 max-w-xl mx-auto">

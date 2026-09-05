@@ -72,7 +72,7 @@ export default async function AdminPage() {
               <span className="text-xs font-black text-white">P</span>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/PHOTO-2026-08-25-06-14-47.jpg" alt="Pinnacle Fitness" style={{ height: 32, filter: 'brightness(0) invert(1)' }} className="hidden sm:block" />
+            <img src="/pinnacle-logo-transparent.png" alt="Pinnacle Fitness" style={{ height: 32, filter: 'brightness(0) invert(1)' }} className="hidden sm:block" />
             <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-medium">Admin</span>
           </div>
           <div className="flex items-center gap-4">
