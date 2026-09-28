@@ -65,7 +65,7 @@ async function loadCatalog(): Promise<CatalogItem[]> {
     supabase
       .from('plans')
       .select(
-        'id, name, description, price_cents, discounted_price_cents, discount_expires_at, features, display_order, pt_sessions_per_month, includes_open_gym'
+        'id, name, description, price_cents, discounted_price_cents, discount_expires_at, features, display_order, pt_sessions_per_month, includes_open_gym, includes_pt'
       )
       .eq('is_active', true)
       .eq('is_private', false)
